@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --font-roboto: "Roboto", sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+@layer components {
+  .btn {
+    @apply px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-300 outline-none;
+  }
+  .btn-hover {
+    @apply hover:bg-blue-100 transition-colors duration-200;
+  }
+}
