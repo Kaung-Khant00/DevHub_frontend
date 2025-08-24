@@ -1,0 +1,61 @@
+import { FaPlus, FaImage, FaCode, FaFile } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
+function Composer() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="card bg-base-100 border border-base-300 shadow-md hover:shadow-lg transition mt-2">
+      <div className="card-body p-4">
+        <div className="flex gap-3 items-center">
+          {/* Avatar */}
+          <div className="avatar">
+            <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+              <img src="https://i.pravatar.cc/100?img=31" alt="avatar" />
+            </div>
+          </div>
+
+          {/* Fake Input (clickable) */}
+          <button
+            onClick={() => navigate("/create/post")}
+            className="flex-1 text-left input input-bordered cursor-pointer hover:bg-base-200 transition"
+          >
+            Start a post…
+          </button>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-3 flex justify-between items-center text-sm text-base-content/70">
+          <div className="flex gap-5">
+            <button
+              className="flex items-center gap-2 hover:text-primary"
+              onClick={() => navigate("/create/post?tab=image")}
+            >
+              <FaImage /> Photo
+            </button>
+            <button
+              className="flex items-center gap-2 hover:text-primary"
+              onClick={() => navigate("/create/post?tab=code")}
+            >
+              <FaCode /> Code
+            </button>
+            <button
+              className="flex items-center gap-2 hover:text-primary"
+              onClick={() => navigate("/create/post?tab=file")}
+            >
+              <FaFile /> File
+            </button>
+          </div>
+          <button
+            onClick={() => navigate("/create/post")}
+            className="btn btn-primary btn-sm"
+          >
+            <FaPlus /> New Post
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Composer;

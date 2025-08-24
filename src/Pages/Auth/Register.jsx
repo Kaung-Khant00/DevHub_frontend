@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { TbLock, TbLockCheck } from "react-icons/tb";
 import { Link } from "react-router-dom";
-import FormInput from "../../Components/FormInput";
+import FormInput from "../../Components/Common/FormInput";
 import { useDispatch, useSelector } from "react-redux";
 import { __REGISTER__ } from "../../Redux/user/userAction";
 

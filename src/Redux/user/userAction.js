@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { api } from "../../axios_instance";
+import { api } from "../../Services/axios_instance";
 
 export const __REGISTER__ = (form) => {
   return async (dispatch) => {

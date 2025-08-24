@@ -13,14 +13,14 @@ const FormInput = ({
   return (
     <div className="relative m-0 mt-2">
       {Icon && (
-        <Icon className="text-gray-500 absolute inset-y-0 my-auto ms-3" />
+        <Icon className="text-gray-500 absolute inset-y-0 my-auto ms-3 z-1" />
       )}
       <input
         type={isPasswordInput ? (visible ? "text" : "password") : type}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="w-full btn ps-10"
+        className="w-full btn ps-10 text-start"
       />
       {isPasswordInput && (
         <div

@@ -6,11 +6,10 @@ const GuestLayout = () => {
   const { token } = useSelector((state) => state.user);
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("Helleo mate");
     if (token) {
-      navigate("/home");
+      navigate("/feed");
     }
-  }, [token]);
+  }, [navigate, token]);
   return (
     <div className="bg-gray-50 font-inter">
       <Outlet />

@@ -1,0 +1,537 @@
+/*   !!  This code is generated from AI . Credit to ChatGPT and I understand it   !! */
+
+import React, { useRef, useState, useMemo, useEffect } from "react";
+import {
+  FaImage,
+  FaFileAlt,
+  FaPaperPlane,
+  FaTag,
+  FaTrashAlt,
+  FaTimes,
+  FaCode,
+} from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
+
+export default function CreatePostAlt() {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+
+  // parse `tab` query param; allow comma-separated values (e.g. ?tab=code,image)
+
+  const tab = useMemo(() => {
+    const p = new URLSearchParams(search);
+    return p.get("tab");
+  }, [search]);
+
+  // if tab is empty => default behavior (all sections open on mobile)
+  const isOpen = (section) => {
+    return tab === section;
+  };
+
+  const [content, setContent] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [code, setCode] = useState("");
+  const [codeLang, setCodeLang] = useState("javascript");
+  const [errors, setErrors] = useState({});
+
+  const imageInputRef = useRef();
+  const fileInputRef = useRef();
+  const codeRef = useRef();
+
+  // Guards to ensure the actions (focus/click) run only once even if component mounts twice
+  const hasTriedOpenImageRef = useRef(false);
+  const hasTriedOpenFileRef = useRef(false);
+  const hasTriedFocusCodeRef = useRef(false);
+
+  useEffect(() => {
+    // Focus code textarea if requested, but only once
+    if (tab === "code" && codeRef.current && !hasTriedFocusCodeRef.current) {
+      hasTriedFocusCodeRef.current = true;
+      // small timeout to ensure element is mounted and visible
+      setTimeout(() => {
+        codeRef.current.focus();
+        const len = codeRef.current.value.length;
+        codeRef.current.setSelectionRange(len, len);
+      }, 120);
+    }
+
+    // Attempt to open image file picker if requested (best-effort), but only once
+    if (
+      tab === "image" &&
+      imageInputRef.current &&
+      !hasTriedOpenImageRef.current
+    ) {
+      hasTriedOpenImageRef.current = true;
+      setTimeout(() => {
+        imageInputRef.current.click();
+      }, 200);
+    }
+    if (
+      tab === "file" &&
+      fileInputRef.current &&
+      !hasTriedOpenFileRef.current
+    ) {
+      hasTriedOpenFileRef.current = true;
+      setTimeout(() => {
+        fileInputRef.current.click();
+      }, 200);
+    }
+  }, [tab]);
+
+  function onImageSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    console.log(file);
+    if (!file.type.startsWith("image/")) {
+      setErrors((s) => ({ ...s, image: "Please upload a valid image file." }));
+      return;
+    }
+    setErrors((s) => ({ ...s, image: null }));
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function onFileSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setErrors((s) => ({ ...s, file: "File size must be less than 10MB." }));
+      return;
+    }
+    setErrors((s) => ({ ...s, file: null }));
+    setAttachedFile(file);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+  }
+
+  function addTagFromInput() {
+    const t = tagInput.trim();
+    if (!t) return;
+    if (tags.includes(t)) return setTagInput("");
+    setTags((s) => [...s, t]);
+    setTagInput("");
+  }
+
+  function removeTag(index) {
+    setTags((s) => s.filter((_, i) => i !== index));
+  }
+
+  async function publish() {
+    setErrors({});
+    if (!content.trim()) {
+      setErrors({
+        form: "Post can't be empty. Please add your content.",
+      });
+      return;
+    }
+    setPublishing(true);
+
+    // Simulated upload
+    await new Promise((r) => setTimeout(r, 700));
+
+    setPublishing(false);
+    alert("Published (demo). Replace with API call.");
+  }
+
+  return (
+    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-4xl mx-auto">
+      <header className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <button
+            className="btn btn-ghost btn-sm md:hidden"
+            onClick={() => navigate(-1)}
+            aria-label="Back"
+          >
+            Back
+          </button>
+          <h1 className="text-xl md:text-2xl font-semibold text-primary">
+            Create a Post
+          </h1>
+        </div>
+        <div className="hidden md:flex items-center gap-3">
+          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+            Back
+          </button>
+        </div>
+      </header>
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* LEFT: main column */}
+        <div className="space-y-5">
+          {/* Content Card */}
+          <section
+            className={`collapse ${
+              isOpen("content") ? "collapse-open" : ""
+            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+          >
+            <input
+              type="checkbox"
+              className="hidden"
+              defaultChecked={isOpen("content")}
+            />
+            <div className="card-body p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-md font-semibold">Content</h2>
+                <span className="text-sm text-base-content/60 hidden md:inline">
+                  Characters: {content.length}
+                </span>
+              </div>
+
+              <p className="text-sm text-base-content/60 mb-3 md:hidden">
+                Main text that will appear in the post. Keep it clear and
+                focused.
+              </p>
+
+              <textarea
+                rows={3}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="What's on your mind?"
+                className="textarea w-full h-20 resize-y font-sans text-sm"
+              />
+
+              <div className="mt-3 flex items-center gap-3">
+                <button
+                  onClick={() => setContent("")}
+                  className="btn btn-ghost btn-sm"
+                >
+                  Clear
+                </button>
+                <div className="ml-auto text-sm text-base-content/60 md:hidden">
+                  Characters: {content.length}
+                </div>
+              </div>
+              {errors.form && (
+                <div className="text-sm text-error mt-2">{errors.form}</div>
+              )}
+            </div>
+          </section>
+
+          {/* Code Card */}
+          <section
+            className={`collapse ${
+              isOpen("code") ? "collapse-open" : ""
+            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+          >
+            <input
+              type="checkbox"
+              className="hidden"
+              defaultChecked={isOpen("code")}
+            />
+            <div className="card-body p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-md font-semibold flex items-center gap-2">
+                  <FaCode /> Code Snippet
+                </h2>
+                <select
+                  value={codeLang}
+                  onChange={(e) => setCodeLang(e.target.value)}
+                  className="select select-sm select-bordered w-36"
+                >
+                  <option value="javascript">JavaScript</option>
+                  <option value="typescript">TypeScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                  <option value="csharp">C#</option>
+                  <option value="cpp">C++</option>
+                  <option value="sql">SQL</option>
+                  <option value="bash">Bash</option>
+                </select>
+              </div>
+
+              <textarea
+                ref={codeRef}
+                rows={3}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder={"Paste your code here."}
+                className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2"
+              />
+
+              {code && (
+                <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
+                  <input type="checkbox" />
+                  <div className="collapse-title text-sm font-medium flex items-center gap-2">
+                    <FaCode /> View code snippet
+                  </div>
+                  <div className="collapse-content">
+                    <pre className="bg-base-300/60 p-3 rounded-lg overflow-x-auto text-sm">
+                      <code>{code}</code>
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-3 flex justify-end">
+                <button
+                  onClick={() => setCode("")}
+                  className="btn btn-ghost btn-sm"
+                >
+                  Clear Code
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* RIGHT: sidebar (balanced width) */}
+        <aside className="space-y-5">
+          {/* Media (Image + Attachment grouped) */}
+          <section className="bg-base-100 border border-base-300 shadow-sm rounded-lg">
+            <div className="card-body p-4 grid grid-cols-1 gap-4">
+              <div>
+                <h3 className="text-md font-semibold">Image</h3>
+                <p className="text-sm text-base-content/60 mb-2 md:hidden">
+                  Drag & drop or upload an image to include in the post.
+                </p>
+
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  className="border-dashed border-2 border-base-300 rounded-lg p-3 flex flex-col items-center justify-center text-center bg-base-100"
+                  style={{ minHeight: 120 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <FaImage className="text-xl text-primary" />
+                    <div>
+                      <div className="font-medium">Drop an image here</div>
+                    </div>
+                  </div>
+
+                  {imagePreview ? (
+                    <div className="mt-3 w-full">
+                      <div className="flex items-start justify-between gap-2">
+                        <img
+                          src={imagePreview}
+                          alt="preview"
+                          className="rounded max-h-36 object-cover"
+                        />
+                        <div className="flex flex-col items-end">
+                          <button
+                            className="btn btn-xs btn-ghost mb-2"
+                            onClick={() => {
+                              setImageFile(null);
+                              setImagePreview(null);
+                            }}
+                          >
+                            Remove
+                          </button>
+                          <div className="text-xs text-base-content/70">
+                            Image ready to upload
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-3 text-sm text-base-content/70">
+                      No image attached
+                    </div>
+                  )}
+
+                  <div className="mt-3 w-full flex gap-2">
+                    <label
+                      className="btn btn-outline btn-sm flex-1"
+                      onClick={() =>
+                        imageInputRef.current && imageInputRef.current.click()
+                      }
+                    >
+                      <FaImage className="mr-2 text-primary" /> Upload Image
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={imageInputRef}
+                      onChange={(e) => onImageSelect(e)}
+                      className="hidden"
+                    />
+                  </div>
+
+                  {errors.image && (
+                    <div className="text-sm text-error mt-2">
+                      {errors.image}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-md font-semibold">Attachment</h3>
+                <p className="text-sm text-base-content/60 mb-2 md:hidden">
+                  Attach a file (docs, zip, pdf). Max 10MB in this demo.
+                </p>
+
+                <div className="flex flex-col gap-3 items-stretch justify-center h-full">
+                  {attachedFile ? (
+                    <div className="bg-base-200 p-3 rounded flex items-center justify-between gap-3 w-full">
+                      <div className="flex items-center gap-3">
+                        <FaFileAlt className="text-lg text-primary" />
+                        <div>
+                          <div className="text-sm font-medium">
+                            {attachedFile.name}
+                          </div>
+                          <div className="text-xs text-base-content/70">
+                            {Math.round(attachedFile.size / 1024)} KB
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          onClick={() => setAttachedFile(null)}
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-base-content/70">
+                      No file attached
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <label
+                      className="btn btn-outline btn-sm flex-1"
+                      onClick={() =>
+                        fileInputRef.current && fileInputRef.current.click()
+                      }
+                    >
+                      <FaFileAlt className="mr-2 text-primary" /> Upload File
+                    </label>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={(e) => onFileSelect(e)}
+                      className="hidden"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => setAttachedFile(null)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  {errors.file && (
+                    <div className="text-sm text-error">{errors.file}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Tags Card */}
+          <section
+            className={`collapse ${
+              isOpen("tags") ? "collapse-open" : ""
+            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+          >
+            <input
+              type="checkbox"
+              className="hidden"
+              defaultChecked={isOpen("tags")}
+            />
+            <div className="card-body p-4">
+              <h2 className="text-md font-semibold">Tags</h2>
+              <p className="text-sm text-base-content/60 mb-3 md:hidden">
+                Add keywords to help others discover your post.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {tags.map((t, i) => (
+                  <div
+                    key={i}
+                    className="badge badge-outline py-2 px-2 flex items-center gap-2"
+                  >
+                    <span className="text-sm">{t}</span>
+                    <button
+                      onClick={() => removeTag(i)}
+                      className="btn btn-ghost btn-xs"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                ))}
+
+                <input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addTagFromInput();
+                    }
+                    if (e.key === "Backspace" && tagInput === "") {
+                      setTags((s) => s.slice(0, s.length - 1));
+                    }
+                  }}
+                  placeholder="Add a tag and press Enter (e.g. javascript, react)"
+                  className="input input-sm input-bordered w-full"
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className=" bg-base-100 border border-base-300 shadow-sm rounded-lg">
+            <div className="card-body p-4 flex items-center justify-between">
+              <div className="text-sm text-base-content/70">
+                Preview, save or publish your post when ready.
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    setContent("");
+                    setImageFile(null);
+                    setImagePreview(null);
+                    setAttachedFile(null);
+                    setTags([]);
+                    setCode("");
+                  }}
+                >
+                  <FaTrashAlt /> Clear All
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => publish()}
+                  disabled={publishing}
+                >
+                  {publishing ? (
+                    "Publishing..."
+                  ) : (
+                    <>
+                      <FaPaperPlane className="mr-2" /> Publish
+                    </>
+                  )}
+                </button>
+              </div>
+              {errors.form && (
+                <div className="sm:hidden block text-sm text-error mt-2 font-bold">
+                  {errors.form}
+                </div>
+              )}
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  );
+}

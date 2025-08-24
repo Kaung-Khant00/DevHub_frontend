@@ -2,8 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import GuestLayout from "../Pages/Auth/GuestLayout";
 import Login from "../Pages/Auth/Login";
 import Register from "../Pages/Auth/Register";
-import Home from "../Pages/Main/Home";
 import Layout from "../Pages/Main/Layout/Layout";
+import Feed from "../Pages/Main/Feed/Feed";
+import CreatePost from "../Pages/Main/Feed/CreatePost";
 
 const router = createBrowserRouter([
   {
@@ -11,8 +12,17 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "home",
-        element: <Home />,
+        path: "feed",
+        element: <Feed />,
+      },
+      {
+        path: "create",
+        children: [
+          {
+            path: "post",
+            element: <CreatePost />,
+          },
+        ],
       },
     ],
   },
