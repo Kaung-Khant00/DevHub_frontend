@@ -1,4 +1,5 @@
 import axios from "axios";
+import { store } from "../Redux/store";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL + "/api",
@@ -18,7 +19,21 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error("API error:", error);
+    const status = error.response?.status;
+    const url = error.config?.url;
+    console.log(error);
+
+    if (
+      status === 401 &&
+      !url.includes("/login") &&
+      !url.includes("/register")
+    ) {
+      localStorage.removeItem("token");
+      store.dispatch({ type: "LOGOUT_SUCCESS" });
+      window.location.href = "/auth/login";
+    } else {
+      console.error("API error:", error);
+    }
     return Promise.reject(error);
   }
 );

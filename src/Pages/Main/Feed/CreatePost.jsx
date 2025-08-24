@@ -10,11 +10,15 @@ import {
   FaTimes,
   FaCode,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { __CREATE_POST__ } from "../../../Redux/post/postAction";
+import LangSelector from "../../../Components/Feed/LangSelector";
 
 export default function CreatePostAlt() {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const { loading, error } = useSelector((state) => state.post.create);
 
   // parse `tab` query param; allow comma-separated values (e.g. ?tab=code,image)
 
@@ -34,10 +38,8 @@ export default function CreatePostAlt() {
   const [attachedFile, setAttachedFile] = useState(null);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
-  const [publishing, setPublishing] = useState(false);
   const [code, setCode] = useState("");
-  const [codeLang, setCodeLang] = useState("javascript");
-  const [errors, setErrors] = useState({});
+  const [codeLang, setCodeLang] = useState();
 
   const imageInputRef = useRef();
   const fileInputRef = useRef();
@@ -47,6 +49,7 @@ export default function CreatePostAlt() {
   const hasTriedOpenImageRef = useRef(false);
   const hasTriedOpenFileRef = useRef(false);
   const hasTriedFocusCodeRef = useRef(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Focus code textarea if requested, but only once
@@ -87,11 +90,6 @@ export default function CreatePostAlt() {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     console.log(file);
-    if (!file.type.startsWith("image/")) {
-      setErrors((s) => ({ ...s, image: "Please upload a valid image file." }));
-      return;
-    }
-    setErrors((s) => ({ ...s, image: null }));
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
   }
@@ -99,11 +97,6 @@ export default function CreatePostAlt() {
   function onFileSelect(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      setErrors((s) => ({ ...s, file: "File size must be less than 10MB." }));
-      return;
-    }
-    setErrors((s) => ({ ...s, file: null }));
     setAttachedFile(file);
   }
 
@@ -133,20 +126,15 @@ export default function CreatePostAlt() {
   }
 
   async function publish() {
-    setErrors({});
-    if (!content.trim()) {
-      setErrors({
-        form: "Post can't be empty. Please add your content.",
-      });
-      return;
-    }
-    setPublishing(true);
-
-    // Simulated upload
-    await new Promise((r) => setTimeout(r, 700));
-
-    setPublishing(false);
-    alert("Published (demo). Replace with API call.");
+    const form = {
+      content,
+      image: imageFile,
+      file: attachedFile,
+      code,
+      codeLang,
+      tags,
+    };
+    dispatch(__CREATE_POST__(form));
   }
 
   return (
@@ -204,6 +192,9 @@ export default function CreatePostAlt() {
                 placeholder="What's on your mind?"
                 className="textarea w-full h-20 resize-y font-sans text-sm"
               />
+              {error?.content && (
+                <div className="text-sm text-error mt-2">{error.content}</div>
+              )}
 
               <div className="mt-3 flex items-center gap-3">
                 <button
@@ -216,8 +207,8 @@ export default function CreatePostAlt() {
                   Characters: {content.length}
                 </div>
               </div>
-              {errors.form && (
-                <div className="text-sm text-error mt-2">{errors.form}</div>
+              {error?.form && (
+                <div className="text-sm text-error mt-2">{error.form}</div>
               )}
             </div>
           </section>
@@ -238,20 +229,7 @@ export default function CreatePostAlt() {
                 <h2 className="text-md font-semibold flex items-center gap-2">
                   <FaCode /> Code Snippet
                 </h2>
-                <select
-                  value={codeLang}
-                  onChange={(e) => setCodeLang(e.target.value)}
-                  className="select select-sm select-bordered w-36"
-                >
-                  <option value="javascript">JavaScript</option>
-                  <option value="typescript">TypeScript</option>
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                  <option value="csharp">C#</option>
-                  <option value="cpp">C++</option>
-                  <option value="sql">SQL</option>
-                  <option value="bash">Bash</option>
-                </select>
+                <LangSelector setCodeLang={setCodeLang} codeLang={codeLang} />
               </div>
 
               <textarea
@@ -262,6 +240,9 @@ export default function CreatePostAlt() {
                 placeholder={"Paste your code here."}
                 className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2"
               />
+              {error?.code && (
+                <div className="text-sm text-error mt-2">{error.code}</div>
+              )}
 
               {code && (
                 <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
@@ -354,17 +335,15 @@ export default function CreatePostAlt() {
                     </label>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/png, image/jpeg, image/jpg, image/webp, image/git"
                       ref={imageInputRef}
                       onChange={(e) => onImageSelect(e)}
                       className="hidden"
                     />
                   </div>
 
-                  {errors.image && (
-                    <div className="text-sm text-error mt-2">
-                      {errors.image}
-                    </div>
+                  {error?.image && (
+                    <div className="text-sm text-error mt-2">{error.image}</div>
                   )}
                 </div>
               </div>
@@ -416,6 +395,12 @@ export default function CreatePostAlt() {
                     <input
                       type="file"
                       ref={fileInputRef}
+                      accept=".html,.css,.scss,.sass,.js,.ts,.jsx,.tsx,.vue,
+          .php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
+          .json,.xml,.yml,.yaml,.sql,.csv,.env,
+          .md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
+          .jpg,.jpeg,.png,.gif,.webp,.svg,
+          .zip,.rar,.7z,.tar,.gz"
                       onChange={(e) => onFileSelect(e)}
                       className="hidden"
                     />
@@ -430,8 +415,12 @@ export default function CreatePostAlt() {
                     </button>
                   </div>
 
-                  {errors.file && (
-                    <div className="text-sm text-error">{errors.file}</div>
+                  {error?.file && (
+                    <div className="text-sm text-error mt-2">{error.file}</div>
+                  )}
+                  {/* Tag error hint */}
+                  {error?.tags && (
+                    <div className="text-sm text-error mt-2">{error.tags}</div>
                   )}
                 </div>
               </div>
@@ -512,10 +501,13 @@ export default function CreatePostAlt() {
                 <button
                   className="btn btn-primary"
                   onClick={() => publish()}
-                  disabled={publishing}
+                  disabled={loading}
                 >
-                  {publishing ? (
-                    "Publishing..."
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="loading loading-ring loading-md"></div>
+                      Publishing...
+                    </div>
                   ) : (
                     <>
                       <FaPaperPlane className="mr-2" /> Publish
@@ -523,9 +515,9 @@ export default function CreatePostAlt() {
                   )}
                 </button>
               </div>
-              {errors.form && (
+              {error?.form && (
                 <div className="sm:hidden block text-sm text-error mt-2 font-bold">
-                  {errors.form}
+                  {error.form}
                 </div>
               )}
             </div>

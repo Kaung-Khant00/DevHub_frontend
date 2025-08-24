@@ -1,9 +1,18 @@
 import { IoMdNotifications } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { __LOGOUT__ } from "../../Redux/user/userAction";
 
 const NavBar = () => {
+  const { logoutLoading } = useSelector((state) => state.user);
+
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  function handleLogout() {
+    dispatch(__LOGOUT__());
+  }
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -98,8 +107,13 @@ const NavBar = () => {
             <li>
               <a className="btn-purple">Setting</a>
             </li>
-            <li>
-              <a className="btn-purple">Logout</a>
+            <li onClick={handleLogout}>
+              <a className="btn-purple">
+                <div>Logout</div>
+                {logoutLoading && (
+                  <div className="loading loading-ring loading-md"></div>
+                )}
+              </a>
             </li>
           </ul>
         </div>
