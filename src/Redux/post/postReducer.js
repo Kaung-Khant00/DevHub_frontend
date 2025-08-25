@@ -1,6 +1,16 @@
 const initialState = {
   posts: [],
+  pagination: {
+    perPage: 2,
+    page: 1,
+    lastPage: null,
+    category: "newest",
+  },
   create: {
+    loading: false,
+    error: null,
+  },
+  fetch: {
     loading: false,
     error: null,
   },
@@ -22,6 +32,14 @@ export const postReducer = (state = initialState, action) => {
           error: null,
         },
       };
+    case "FETCH_POSTS_REQUEST":
+      return {
+        ...state,
+        fetch: {
+          loading: true,
+          error: null,
+        },
+      };
     /*
 |________________________________________________________________
 | SUCCESS
@@ -34,6 +52,22 @@ export const postReducer = (state = initialState, action) => {
           loading: false,
         },
       };
+    case "FETCH_POSTS_SUCCESS":
+      return {
+        ...state,
+        posts: [...state.posts, ...action.payload.data],
+        pagination: {
+          ...state.pagination,
+          perPage: action.payload.per_page,
+          page: action.payload.current_page + 1,
+          nextPageURL: action.payload.next_page_url,
+          lastPage: action.payload.last_page,
+        },
+        fetch: {
+          loading: false,
+          error: null,
+        },
+      };
     /*
 |________________________________________________________________
 | FAILURE
@@ -43,6 +77,14 @@ export const postReducer = (state = initialState, action) => {
       return {
         ...state,
         create: {
+          loading: false,
+          error: action.payload,
+        },
+      };
+    case "FETCH_POSTS_FAILURE":
+      return {
+        ...state,
+        fetch: {
           loading: false,
           error: action.payload,
         },

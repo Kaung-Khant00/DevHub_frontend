@@ -1,50 +1,46 @@
 import { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import NavBar from "../../../Components/Feed/NavBar";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { __GET_USER__ } from "../../../Redux/user/userAction";
 
 const Layout = () => {
-  const { token } = useSelector((state) => state.user);
-  const navigate = useNavigate();
   const navbarRef = useRef();
-
-  useGSAP(() => {
-    let lastScroll = 0;
-
-    ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      onUpdate: (self) => {
-        const currentScroll = self.scroll();
-        const isScrollingDown = currentScroll > lastScroll;
-
-        gsap.to(navbarRef.current, {
-          yPercent: isScrollingDown ? -100 : 0,
-          duration: 0.5,
-          ease: "power1.out",
-        });
-
-        lastScroll = currentScroll;
-      },
-    });
-  });
+  const lastScrollRef = useRef(0);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/auth/login");
-    }
-  }, [token, navigate]);
+    const handleScroll = () => {
+      if (lastScrollRef.current < window.scrollY) {
+        gsap.to(navbarRef.current, {
+          y: "-100%",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(navbarRef.current, {
+          y: "0%",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+      lastScrollRef.current = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollRef]);
+
   return (
     <div className="min-h-screen">
+      {/* Spacer */}
       <div className="w-full h-[65px]"></div>
+
+      {/* Navbar */}
       <div className="fixed top-0 inset-x-0 z-10" ref={navbarRef}>
         <NavBar />
       </div>
+
+      {/* Page content */}
       <Outlet />
     </div>
   );

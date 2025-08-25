@@ -22,7 +22,7 @@ export const __REGISTER__ = (form) => {
       toast.success("Registration successful!");
       localStorage.setItem("token", response.data.token);
 
-      dispatch({ type: "USER_SUCCESS", payload: response.data });
+      dispatch({ type: "LOGIN_REGISTER_SUCCESS", payload: response.data });
     } catch (error) {
       dispatch({
         type: "REGISTER_FAILURE",
@@ -52,7 +52,7 @@ export const __LOGIN__ = (form) => {
       toast.success("Login successful!");
       localStorage.setItem("token", response.data.token);
 
-      dispatch({ type: "USER_SUCCESS", payload: response.data });
+      dispatch({ type: "LOGIN_REGISTER_SUCCESS", payload: response.data });
     } catch (error) {
       dispatch({
         type: "LOGIN_FAILURE",
@@ -66,7 +66,7 @@ export const __LOGIN__ = (form) => {
 
 /*
 |-------------------------------------------------------------------------
-| LOGOUT
+| LOGOUT (AUTHENTICATED)
 |--------------------------------------------------------------------------
 */
 export const __LOGOUT__ = () => {
@@ -78,7 +78,7 @@ export const __LOGOUT__ = () => {
 
       localStorage.removeItem("token");
       dispatch({ type: "LOGOUT_SUCCESS" });
-
+      window.location.href = "/auth/login";
       toast.success(response.data?.message || "Logged out successfully");
     } catch (error) {
       dispatch({ type: "LOGOUT_FAILURE" });
@@ -86,5 +86,41 @@ export const __LOGOUT__ = () => {
 
       toast.error("Logout failed");
     }
+  };
+};
+
+/*
+|-------------------------------------------------------------------------
+| GET USER (AUTHENTICATED)
+|--------------------------------------------------------------------------
+*/
+export const __GET_USER__ = () => {
+  return async (dispatch) => {
+    dispatch({ type: "USER_REQUEST" });
+
+    try {
+      const response = await api.get("/user");
+      console.log(response);
+      if (!response.data.role) {
+        window.location.href = "/select/role";
+      }
+      dispatch({ type: "USER_SUCCESS", payload: response.data });
+    } catch (error) {
+      console.log("Logout", error);
+      dispatch({
+        type: "USER_FAILURE",
+      });
+    }
+  };
+};
+
+/*
+|-------------------------------------------------------------------------
+| SET TOKEN (AFTER OAUTH)
+|--------------------------------------------------------------------------
+*/
+export const __SET_TOKEN__ = (token) => {
+  return async (dispatch) => {
+    dispatch({ type: "SET_TOKEN", payload: token });
   };
 };

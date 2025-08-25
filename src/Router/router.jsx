@@ -5,6 +5,9 @@ import Register from "../Pages/Auth/Register";
 import Layout from "../Pages/Main/Layout/Layout";
 import Feed from "../Pages/Main/Feed/Feed";
 import CreatePost from "../Pages/Main/Feed/CreatePost";
+import ChooseRole from "../Pages/Auth/ChooseRole";
+import OAuthCallBack from "../Pages/Auth/OAuthCallBack";
+import Secure from "../Pages/Auth/Secure";
 
 const router = createBrowserRouter([
   {
@@ -12,17 +15,27 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "feed",
-        element: <Feed />,
-      },
-      {
-        path: "create",
+        path: "/",
+        element: <Secure />,
         children: [
           {
-            path: "post",
-            element: <CreatePost />,
+            path: "feed",
+            element: <Feed />,
+          },
+          {
+            path: "create",
+            children: [
+              {
+                path: "post",
+                element: <CreatePost />,
+              },
+            ],
           },
         ],
+      },
+      {
+        path: "select/role",
+        element: <ChooseRole />,
       },
     ],
   },
@@ -37,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+      },
+      {
+        path: "oauth/callback",
+        element: <OAuthCallBack />,
       },
     ],
   },

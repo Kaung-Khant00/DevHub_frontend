@@ -1,7 +1,7 @@
 import FilterTabs from "../../../Components/Feed/FilterTabs";
 import Composer from "../../../Components/Feed/Composer";
-import PostCard from "../../../Components/Feed/PostCard";
 import CreatorSnapshot from "../../../Components/Feed/CreatorSnapshot";
+import PostContainer from "../../../Components/Feed/PostContainer";
 
 const Feed = () => {
   return (
@@ -9,9 +9,7 @@ const Feed = () => {
       <main className="w-full col-span-2 ">
         <FilterTabs />
         <Composer />
-        <div className="flex items-center flex-col mt-2">
-          <PostCard />
-        </div>
+        <PostContainer />
       </main>
       <div className="xl:block hidden">
         <CreatorSnapshot />

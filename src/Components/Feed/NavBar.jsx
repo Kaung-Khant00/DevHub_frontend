@@ -111,7 +111,7 @@ const NavBar = () => {
               <a className="btn-purple">
                 <div>Logout</div>
                 {logoutLoading && (
-                  <div className="loading loading-ring loading-md"></div>
+                  <span className="loading loading-spinner text-primary"></span>
                 )}
               </a>
             </li>

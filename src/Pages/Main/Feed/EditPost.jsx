@@ -1,6 +1,6 @@
 /*   !!  This code is generated from AI . Credit to ChatGPT and I understand it   !! */
 
-import React, { useRef, useState, useMemo, useEffect } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import {
   FaImage,
   FaFileAlt,
@@ -13,9 +13,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { __CREATE_POST__ } from "../../../Redux/post/postAction";
-import LangSelector from "../../../Components/Feed/LangSelector";
 
-export default function CreatePost() {
+export default function EditPost() {
   const navigate = useNavigate();
   const { search } = useLocation();
   const { loading, error } = useSelector((state) => state.post.create);
@@ -46,46 +45,7 @@ export default function CreatePost() {
   const fileInputRef = useRef();
   const codeRef = useRef();
 
-  // Guards to ensure the actions (focus/click) run only once even if component mounts twice
-  const hasTriedOpenImageRef = useRef(false);
-  const hasTriedOpenFileRef = useRef(false);
-  const hasTriedFocusCodeRef = useRef(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // Focus code textarea if requested, but only once
-    if (tab === "code" && codeRef.current && !hasTriedFocusCodeRef.current) {
-      hasTriedFocusCodeRef.current = true;
-      // small timeout to ensure element is mounted and visible
-      setTimeout(() => {
-        codeRef.current.focus();
-        const len = codeRef.current.value.length;
-        codeRef.current.setSelectionRange(len, len);
-      }, 120);
-    }
-
-    // Attempt to open image file picker if requested (best-effort), but only once
-    if (
-      tab === "image" &&
-      imageInputRef.current &&
-      !hasTriedOpenImageRef.current
-    ) {
-      hasTriedOpenImageRef.current = true;
-      setTimeout(() => {
-        imageInputRef.current.click();
-      }, 200);
-    }
-    if (
-      tab === "file" &&
-      fileInputRef.current &&
-      !hasTriedOpenFileRef.current
-    ) {
-      hasTriedOpenFileRef.current = true;
-      setTimeout(() => {
-        fileInputRef.current.click();
-      }, 200);
-    }
-  }, [tab]);
 
   function onImageSelect(e) {
     const file = e.target.files && e.target.files[0];

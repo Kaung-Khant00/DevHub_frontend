@@ -7,10 +7,27 @@ import { Link } from "react-router-dom";
 import FormInput from "../../Components/Common/FormInput";
 import { useDispatch, useSelector } from "react-redux";
 import { __REGISTER__ } from "../../Redux/user/userAction";
+import { api } from "../../Services/axios_instance";
 
 const Register = () => {
   const { registerError } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const handleGitHubLogin = async () => {
+    try {
+      const response = await api.get("auth/github");
+      window.open(response.data.url, "_self");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await api.get("auth/google");
+      window.open(response.data.url, "_self");
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -41,11 +58,17 @@ const Register = () => {
           |--------------------------------------------------------------------------
            */}
           <div className="flex justify-center gap-4">
-            <div className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center">
+            <div
+              onClick={handleGoogleLogin}
+              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center"
+            >
               <FcGoogle size={25} />
               <span className="text-gray-600">Login with Google</span>
             </div>
-            <div className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center">
+            <div
+              onClick={handleGitHubLogin}
+              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center"
+            >
               <FaGithub size={25} />
               <span className="text-gray-600">Login with Github</span>
             </div>
