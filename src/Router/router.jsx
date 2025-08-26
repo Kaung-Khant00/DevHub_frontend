@@ -9,6 +9,8 @@ import EditPost from "../Pages/Main/Feed/EditPost";
 import ChooseRole from "../Pages/Auth/ChooseRole";
 import OAuthCallBack from "../Pages/Auth/OAuthCallBack";
 import Secure from "../Pages/Auth/Secure";
+import Profile from "../Pages/Main/Profile/Profile";
+import EditDevProfile from "../Pages/Main/Profile/EditDevProfile";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
                 element: <EditPost />,
               },
             ],
+          },
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+          {
+            path: "profile/edit",
+            element: <EditDevProfile />,
           },
         ],
       },
