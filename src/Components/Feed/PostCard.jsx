@@ -10,13 +10,19 @@ import { PiShareFat, PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "./ImageWIthSkeleton";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function PostCard({ post }) {
   const { user, content, title, code, image, created_at_formatted } = post;
+  const navigate = useNavigate();
   const { data } = useSelector((state) => state.user.user);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
+
+  const handleEditPost = () => {
+    navigate(`/post/edit/${post.id}`);
+  };
 
   const toggleLike = () => {
     setLiked((s) => !s);
@@ -64,7 +70,7 @@ function PostCard({ post }) {
                 <a>Unfollow User</a>
               </li> */}
               {user.id === data?.id && (
-                <li>
+                <li onClick={handleEditPost}>
                   <a>Edit Post</a>
                 </li>
               )}

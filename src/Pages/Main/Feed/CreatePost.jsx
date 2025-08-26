@@ -13,7 +13,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { __CREATE_POST__ } from "../../../Redux/post/postAction";
-import LangSelector from "../../../Components/Feed/LangSelector";
 
 export default function CreatePost() {
   const navigate = useNavigate();

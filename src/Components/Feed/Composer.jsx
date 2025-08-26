@@ -17,7 +17,7 @@ function Composer() {
 
           {/* Fake Input (clickable) */}
           <button
-            onClick={() => navigate("/create/post")}
+            onClick={() => navigate("/post/create")}
             className="flex-1 text-left input input-bordered cursor-pointer hover:bg-base-200 transition"
           >
             Start a post…
@@ -29,25 +29,25 @@ function Composer() {
           <div className="flex gap-5">
             <button
               className="flex items-center gap-2 hover:text-primary"
-              onClick={() => navigate("/create/post?tab=image")}
+              onClick={() => navigate("/post/create?tab=image")}
             >
               <FaImage /> Photo
             </button>
             <button
               className="flex items-center gap-2 hover:text-primary"
-              onClick={() => navigate("/create/post?tab=code")}
+              onClick={() => navigate("/post/create?tab=code")}
             >
               <FaCode /> Code
             </button>
             <button
               className="flex items-center gap-2 hover:text-primary"
-              onClick={() => navigate("/create/post?tab=file")}
+              onClick={() => navigate("/post/create?tab=file")}
             >
               <FaFile /> File
             </button>
           </div>
           <button
-            onClick={() => navigate("/create/post")}
+            onClick={() => navigate("/post/create")}
             className="btn btn-primary btn-sm"
           >
             <FaPlus /> New Post

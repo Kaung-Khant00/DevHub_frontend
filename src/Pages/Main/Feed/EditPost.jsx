@@ -1,25 +1,30 @@
 /*   !!  This code is generated from AI . Credit to ChatGPT and I understand it   !! */
 
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import {
   FaImage,
   FaFileAlt,
   FaPaperPlane,
-  FaTag,
   FaTrashAlt,
   FaTimes,
   FaCode,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
-import { __CREATE_POST__ } from "../../../Redux/post/postAction";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import {
+  __EDIT_POST__,
+  __FETCH_SPECIFIC_POST__,
+} from "../../../Redux/post/postAction";
+import { RiEditFill } from "react-icons/ri";
 
 export default function EditPost() {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const { id } = useParams();
   const navigate = useNavigate();
   const { search } = useLocation();
-  const { loading, error } = useSelector((state) => state.post.create);
-
-  // parse `tab` query param; allow comma-separated values (e.g. ?tab=code,image)
+  const { loading, error, data } = useSelector((state) => state.post.edit);
+  const dispatch = useDispatch();
+  const [post, setPost] = useState(null);
 
   const tab = useMemo(() => {
     const p = new URLSearchParams(search);
@@ -31,21 +36,32 @@ export default function EditPost() {
     return tab === section;
   };
 
-  const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState();
   const [attachedFile, setAttachedFile] = useState(null);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
-  const [code, setCode] = useState("");
-  const [codeLang, setCodeLang] = useState();
+  const [deletingPrevious, setDeletingPrevious] = useState({
+    image: false,
+    file: false,
+  });
 
   const imageInputRef = useRef();
   const fileInputRef = useRef();
   const codeRef = useRef();
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(__FETCH_SPECIFIC_POST__(id, setPost));
+  }, [dispatch, id]);
+  useEffect(() => {
+    if (data) {
+      setPost(data);
+      if (data.image) {
+        setImagePreview(`${backendURL}/storage/${data?.image}`);
+      }
+      setTags(data.tags);
+    }
+  }, [data]);
 
   function onImageSelect(e) {
     const file = e.target.files && e.target.files[0];
@@ -86,16 +102,20 @@ export default function EditPost() {
     setTags((s) => s.filter((_, i) => i !== index));
   }
 
-  async function publish() {
+  async function handleEdit() {
     const form = {
-      content,
+      title: post.title,
+      content: post.content,
       image: imageFile,
       file: attachedFile,
-      code,
-      codeLang,
-      tags,
+      code: post.code,
+      codeLang: post.code_lang,
+      tags: tags,
+      isDeleteImage: deletingPrevious.image,
+      isDeleteFile: deletingPrevious.file,
+      user_id: data.user.id,
     };
-    dispatch(__CREATE_POST__(form));
+    dispatch(__EDIT_POST__(post.id, form));
   }
 
   return (
@@ -110,7 +130,7 @@ export default function EditPost() {
             Back
           </button>
           <h1 className="text-xl md:text-2xl font-semibold text-primary">
-            Create a Post
+            Edit Post
           </h1>
         </div>
         <div className="hidden md:flex items-center gap-3">
@@ -119,387 +139,420 @@ export default function EditPost() {
           </button>
         </div>
       </header>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* LEFT: main column */}
-        <div className="space-y-5">
-          {/* Content Card */}
-          <section
-            className={`collapse ${
-              isOpen("content") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-          >
-            <input
-              type="checkbox"
-              className="hidden"
-              defaultChecked={isOpen("content")}
-            />
-            <div className="card-body p-4">
-              <div>
-                <input
-                  type="text"
-                  className="input input-bordered w-full mb-3 font-semibold text-lg"
-                  placeholder="title your post"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-md font-semibold">Content</h2>
-                <span className="text-sm text-base-content/60 hidden md:inline">
-                  Characters: {content.length}
-                </span>
-              </div>
-
-              <p className="text-sm text-base-content/60 mb-3 md:hidden">
-                Main text that will appear in the post. Keep it clear and
-                focused.
-              </p>
-
-              <textarea
-                rows={3}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="What's on your mind?"
-                className="textarea w-full h-20 resize-y font-sans text-sm"
-              />
-              {error?.content && (
-                <div className="text-sm text-error mt-2">{error.content}</div>
-              )}
-
-              <div className="mt-3 flex items-center gap-3">
-                <button
-                  onClick={() => setContent("")}
-                  className="btn btn-ghost btn-sm"
-                >
-                  Clear
-                </button>
-                <div className="ml-auto text-sm text-base-content/60 md:hidden">
-                  Characters: {content.length}
-                </div>
-              </div>
-              {error?.form && (
-                <div className="text-sm text-error mt-2">{error.form}</div>
-              )}
-            </div>
-          </section>
-
-          {/* Code Card */}
-          <section
-            className={`collapse ${
-              isOpen("code") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-          >
-            <input
-              type="checkbox"
-              className="hidden"
-              defaultChecked={isOpen("code")}
-            />
-            <div className="card-body p-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-md font-semibold flex items-center gap-2">
-                  <FaCode /> Code Snippet
-                </h2>
-                <input
-                  type="text"
-                  value={codeLang}
-                  onChange={(e) => setCodeLang(e.target.value)}
-                  className="input input-sm w-full max-w-[150px] text-sm"
-                  placeholder="Enter the Language"
-                />
-              </div>
-
-              <textarea
-                ref={codeRef}
-                rows={3}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder={"Paste your code here."}
-                className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2"
-              />
-              {error?.code && (
-                <div className="text-sm text-error mt-2">{error.code}</div>
-              )}
-
-              {code && (
-                <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
-                  <input type="checkbox" />
-                  <div className="collapse-title text-sm font-medium flex items-center gap-2">
-                    <FaCode /> View code snippet
-                  </div>
-                  <div className="collapse-content">
-                    <pre className="bg-base-300/60 p-3 rounded-lg overflow-x-auto text-sm">
-                      <code>{code}</code>
-                    </pre>
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-3 flex justify-end">
-                <button
-                  onClick={() => setCode("")}
-                  className="btn btn-ghost btn-sm"
-                >
-                  Clear Code
-                </button>
-              </div>
-            </div>
-          </section>
+      {loading && (
+        <div className="h-30 flex flex-col justify-center items-center gap-1">
+          <div className="text-primary text-lg">Please wait</div>
+          <span className="loading loading-dots loading-lg text-primary"></span>
         </div>
+      )}
+      {data && (
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* LEFT: main column */}
+          <div className="space-y-5">
+            {/* Content Card */}
+            <section
+              className={`collapse ${
+                isOpen("content") ? "collapse-open" : ""
+              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+            >
+              <input
+                type="checkbox"
+                className="hidden"
+                defaultChecked={isOpen("content")}
+              />
+              <div className="card-body p-4">
+                <div>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full mb-3 font-semibold text-lg"
+                    placeholder="title your post"
+                    value={post?.title || ""}
+                    onChange={(e) =>
+                      setPost({ ...post, title: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-md font-semibold">Content</h2>
+                  <span className="text-sm text-base-content/60 hidden md:inline">
+                    Characters: {post?.content?.length}
+                  </span>
+                </div>
 
-        {/* RIGHT: sidebar (balanced width) */}
-        <aside className="space-y-5">
-          {/* Media (Image + Attachment grouped) */}
-          <section className="bg-base-100 border border-base-300 shadow-sm rounded-lg">
-            <div className="card-body p-4 grid grid-cols-1 gap-4">
-              <div>
-                <h3 className="text-md font-semibold">Image</h3>
-                <p className="text-sm text-base-content/60 mb-2 md:hidden">
-                  Drag & drop or upload an image to include in the post.
+                <p className="text-sm text-base-content/60 mb-3 md:hidden">
+                  Main text that will appear in the post. Keep it clear and
+                  focused.
                 </p>
 
-                <div
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  className="border-dashed border-2 border-base-300 rounded-lg p-3 flex flex-col items-center justify-center text-center bg-base-100"
-                  style={{ minHeight: 120 }}
-                >
-                  <div className="flex items-center gap-2">
-                    <FaImage className="text-xl text-primary" />
-                    <div>
-                      <div className="font-medium">Drop an image here</div>
+                <textarea
+                  rows={3}
+                  value={post?.content || ""}
+                  onChange={(e) =>
+                    setPost({ ...post, content: e.target.value })
+                  }
+                  placeholder="What's on your mind?"
+                  className="textarea w-full h-20 resize-y font-sans text-sm"
+                />
+                {error?.content && (
+                  <div className="text-sm text-error mt-2">{error.content}</div>
+                )}
+
+                <div className="mt-3 flex items-center gap-3">
+                  <button
+                    onClick={() => setPost({ ...post, content: "" })}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    Clear
+                  </button>
+                  <div className="ml-auto text-sm text-base-content/60 md:hidden">
+                    Characters: {post?.content?.length}
+                  </div>
+                </div>
+                {error?.form && (
+                  <div className="text-sm text-error mt-2">{error.form}</div>
+                )}
+              </div>
+            </section>
+
+            {/* Code Card */}
+            <section
+              className={`collapse ${
+                isOpen("code") ? "collapse-open" : ""
+              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+            >
+              <input
+                type="checkbox"
+                className="hidden"
+                defaultChecked={isOpen("code")}
+              />
+              <div className="card-body p-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-md font-semibold flex items-center gap-2">
+                    <FaCode /> Code Snippet
+                  </h2>
+                  <input
+                    type="text"
+                    value={post?.code_lang || ""}
+                    onChange={(e) =>
+                      setPost({ ...post, code_lang: e.target.value })
+                    }
+                    className="input input-sm w-full max-w-[150px] text-sm"
+                    placeholder="Enter the Language"
+                  />
+                </div>
+
+                <textarea
+                  ref={codeRef}
+                  rows={3}
+                  value={post?.code || ""}
+                  onChange={(e) => setPost({ ...post, code: e.target.value })}
+                  placeholder={"Paste your code here."}
+                  className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2"
+                />
+                {error?.code && (
+                  <div className="text-sm text-error mt-2">{error.code}</div>
+                )}
+
+                {post?.code && (
+                  <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
+                    <input type="checkbox" />
+                    <div className="collapse-title text-sm font-medium flex items-center gap-2">
+                      <FaCode /> View code snippet
+                    </div>
+                    <div className="collapse-content">
+                      <pre className="bg-base-300/60 p-3 rounded-lg overflow-x-auto text-sm">
+                        <code>{post?.code}</code>
+                      </pre>
                     </div>
                   </div>
+                )}
 
-                  {imagePreview ? (
-                    <div className="mt-3 w-full">
-                      <div className="flex items-start justify-between gap-2">
-                        <img
-                          src={imagePreview}
-                          alt="preview"
-                          className="rounded max-h-36 object-cover"
-                        />
-                        <div className="flex flex-col items-end">
+                <div className="mt-3 flex justify-end">
+                  <button
+                    onClick={() => setPost({ ...post, code: "" })}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    Clear Code
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* RIGHT: sidebar (balanced width) */}
+          <aside className="space-y-5">
+            {/* Media (Image + Attachment grouped) */}
+            <section className="bg-base-100 border border-base-300 shadow-sm rounded-lg">
+              <div className="card-body p-4 grid grid-cols-1 gap-4">
+                <div>
+                  <h3 className="text-md font-semibold">Image</h3>
+                  <p className="text-sm text-base-content/60 mb-2 md:hidden">
+                    Drag & drop or upload an image to include in the post.
+                  </p>
+
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    className="border-dashed border-2 border-base-300 rounded-lg p-3 flex flex-col items-center justify-center text-center bg-base-100"
+                    style={{ minHeight: 120 }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <FaImage className="text-xl text-primary" />
+                      <div>
+                        <div className="font-medium">Drop an image here</div>
+                      </div>
+                    </div>
+
+                    {imagePreview ? (
+                      <div className=" mt-3 w-full">
+                        <div className="flex items-center justify-center gap-2">
+                          <img
+                            src={imagePreview}
+                            alt="preview"
+                            className=" rounded max-h-36 object-cover"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-3 text-sm text-base-content/70">
+                        No image attached
+                      </div>
+                    )}
+
+                    <div className="mt-3 w-full flex">
+                      <label
+                        className="btn btn-outline btn-sm flex-1 gap-1"
+                        onClick={() =>
+                          imageInputRef.current && imageInputRef.current.click()
+                        }
+                      >
+                        <FaImage className="mr-2 text-primary" /> Upload Image
+                      </label>
+                      {post?.image && (
+                        <div className="flex-1">
                           <button
-                            className="btn btn-xs btn-ghost mb-2"
+                            className="btn btn-sm btn-error mb-2 w-full text-white"
                             onClick={() => {
+                              setDeletingPrevious((pre) => ({
+                                ...pre,
+                                image: true,
+                              }));
                               setImageFile(null);
                               setImagePreview(null);
                             }}
                           >
-                            Remove
+                            Remove image
                           </button>
-                          <div className="text-xs text-base-content/70">
-                            Image ready to upload
-                          </div>
                         </div>
-                      </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg, image/webp, image/git"
+                        ref={imageInputRef}
+                        onChange={(e) => onImageSelect(e)}
+                        className="hidden"
+                      />
                     </div>
-                  ) : (
-                    <div className="mt-3 text-sm text-base-content/70">
-                      No image attached
-                    </div>
-                  )}
 
-                  <div className="mt-3 w-full flex gap-2">
-                    <label
-                      className="btn btn-outline btn-sm flex-1"
-                      onClick={() =>
-                        imageInputRef.current && imageInputRef.current.click()
-                      }
-                    >
-                      <FaImage className="mr-2 text-primary" /> Upload Image
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/png, image/jpeg, image/jpg, image/webp, image/git"
-                      ref={imageInputRef}
-                      onChange={(e) => onImageSelect(e)}
-                      className="hidden"
-                    />
+                    {error?.image && (
+                      <div className="text-sm text-error mt-2">
+                        {error.image}
+                      </div>
+                    )}
                   </div>
-
-                  {error?.image && (
-                    <div className="text-sm text-error mt-2">{error.image}</div>
-                  )}
                 </div>
-              </div>
 
-              <div>
-                <h3 className="text-md font-semibold">Attachment</h3>
-                <p className="text-sm text-base-content/60 mb-2 md:hidden">
-                  Attach a file (docs, zip, pdf). Max 10MB in this demo.
-                </p>
+                <div>
+                  <h3 className="text-md font-semibold">Attachment</h3>
+                  <p className="text-sm text-base-content/60 mb-2 md:hidden">
+                    Attach a file (docs, zip, pdf). Max 10MB in this demo.
+                  </p>
 
-                <div className="flex flex-col gap-3 items-stretch justify-center h-full">
-                  {attachedFile ? (
-                    <div className="bg-base-200 p-3 rounded flex items-center justify-between gap-3 w-full">
-                      <div className="flex items-center gap-3">
-                        <FaFileAlt className="text-lg text-primary" />
-                        <div>
-                          <div className="text-sm font-medium">
-                            {attachedFile.name}
-                          </div>
-                          <div className="text-xs text-base-content/70">
-                            {Math.round(attachedFile.size / 1024)} KB
+                  <div className="flex flex-col gap-3 items-stretch justify-center h-full">
+                    {attachedFile ? (
+                      <div className="bg-base-200 p-3 rounded flex items-center justify-between gap-3 w-full">
+                        <div className="flex items-center gap-3">
+                          <FaFileAlt className="text-lg text-primary" />
+                          <div>
+                            <div className="text-sm font-medium">
+                              {attachedFile.name}
+                            </div>
+                            <div className="text-xs text-base-content/70">
+                              {Math.round(attachedFile.size / 1024)} KB
+                            </div>
                           </div>
                         </div>
+                        <div>
+                          <button
+                            className="btn btn-ghost btn-xs"
+                            onClick={() => setAttachedFile(null)}
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <button
-                          className="btn btn-ghost btn-xs"
-                          onClick={() => setAttachedFile(null)}
-                        >
-                          <FaTimes />
-                        </button>
+                    ) : (
+                      <div className="text-sm text-base-content/70">
+                        {post?.file ? (
+                          <div>
+                            Upload new file will delete the previous file (
+                            {post.file.split("/")[1]})
+                          </div>
+                        ) : (
+                          <div>No File uploaded yet</div>
+                        )}
                       </div>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-base-content/70">
-                      No file attached
-                    </div>
-                  )}
+                    )}
 
-                  <div className="flex gap-2">
-                    <label
-                      className="btn btn-outline btn-sm flex-1"
-                      onClick={() =>
-                        fileInputRef.current && fileInputRef.current.click()
-                      }
-                    >
-                      <FaFileAlt className="mr-2 text-primary" /> Upload File
-                    </label>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      accept=".html,.css,.scss,.sass,.js,.ts,.jsx,.tsx,.vue,
+                    <div className="flex gap-1">
+                      <label
+                        className="btn btn-outline btn-sm flex-1"
+                        onClick={() =>
+                          fileInputRef.current && fileInputRef.current.click()
+                        }
+                      >
+                        <FaFileAlt className="mr-2 text-primary" /> Upload File
+                      </label>
+                      {post?.file && (
+                        <div className="flex-1">
+                          <button
+                            className="btn btn-sm btn-error mb-2 w-full text-white"
+                            onClick={() => {
+                              setDeletingPrevious((pre) => ({
+                                ...pre,
+                                file: true,
+                              }));
+                              setAttachedFile(null);
+                            }}
+                          >
+                            Remove File
+                          </button>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept=".html,.css,.scss,.sass,.js,.ts,.jsx,.tsx,.vue,
           .php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
           .json,.xml,.yml,.yaml,.sql,.csv,.env,
           .md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
           .jpg,.jpeg,.png,.gif,.webp,.svg,
           .zip,.rar,.7z,.tar,.gz"
-                      onChange={(e) => onFileSelect(e)}
-                      className="hidden"
-                    />
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => setAttachedFile(null)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  {error?.file && (
-                    <div className="text-sm text-error mt-2">{error.file}</div>
-                  )}
-                  {/* Tag error hint */}
-                  {error?.tags && (
-                    <div className="text-sm text-error mt-2">{error.tags}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Tags Card */}
-          <section
-            className={`collapse ${
-              isOpen("tags") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-          >
-            <input
-              type="checkbox"
-              className="hidden"
-              defaultChecked={isOpen("tags")}
-            />
-            <div className="card-body p-4">
-              <h2 className="text-md font-semibold">Tags</h2>
-              <p className="text-sm text-base-content/60 mb-3 md:hidden">
-                Add keywords to help others discover your post.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {tags.map((t, i) => (
-                  <div
-                    key={i}
-                    className="badge badge-outline py-2 px-2 flex items-center gap-2"
-                  >
-                    <span className="text-sm">{t}</span>
-                    <button
-                      onClick={() => removeTag(i)}
-                      className="btn btn-ghost btn-xs"
-                    >
-                      <FaTimes />
-                    </button>
-                  </div>
-                ))}
-
-                <input
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTagFromInput();
-                    }
-                    if (e.key === "Backspace" && tagInput === "") {
-                      setTags((s) => s.slice(0, s.length - 1));
-                    }
-                  }}
-                  placeholder="Add a tag and press Enter (e.g. javascript, react)"
-                  className="input input-sm input-bordered w-full"
-                />
-              </div>
-            </div>
-          </section>
-
-          <section className=" bg-base-100 border border-base-300 shadow-sm rounded-lg">
-            <div className="card-body p-4 flex items-center justify-between">
-              <div className="text-sm text-base-content/70">
-                Preview, save or publish your post when ready.
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => {
-                    setContent("");
-                    setImageFile(null);
-                    setImagePreview(null);
-                    setAttachedFile(null);
-                    setTags([]);
-                    setCode("");
-                  }}
-                >
-                  <FaTrashAlt /> Clear All
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => publish()}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <div className="loading loading-ring loading-md"></div>
-                      Publishing...
+                        onChange={(e) => onFileSelect(e)}
+                        className="hidden"
+                      />
                     </div>
-                  ) : (
-                    <>
-                      <FaPaperPlane className="mr-2" /> Publish
-                    </>
-                  )}
-                </button>
-              </div>
-              {error?.form && (
-                <div className="sm:hidden block text-sm text-error mt-2 font-bold">
-                  {error.form}
+
+                    {error?.file && (
+                      <div className="text-sm text-error mt-2">
+                        {error.file}
+                      </div>
+                    )}
+                    {/* Tag error hint */}
+                    {error?.tags && (
+                      <div className="text-sm text-error mt-2">
+                        {error.tags}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-          </section>
-        </aside>
-      </div>
+              </div>
+            </section>
+
+            {/* Tags Card */}
+            <section
+              className={`collapse ${
+                isOpen("tags") ? "collapse-open" : ""
+              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+            >
+              <input
+                type="checkbox"
+                className="hidden"
+                defaultChecked={isOpen("tags")}
+              />
+              <div className="card-body p-4">
+                <h2 className="text-md font-semibold">Tags</h2>
+                <p className="text-sm text-base-content/60 mb-3 md:hidden">
+                  Add keywords to help others discover your post.
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {tags.map((t, i) => (
+                    <div
+                      key={i}
+                      className="badge badge-outline py-2 px-2 flex items-center gap-2"
+                    >
+                      <span className="text-sm">{t}</span>
+                      <button
+                        onClick={() => removeTag(i)}
+                        className="btn btn-ghost btn-xs"
+                      >
+                        <FaTimes />
+                      </button>
+                    </div>
+                  ))}
+
+                  <input
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTagFromInput();
+                      }
+                      if (e.key === "Backspace" && tagInput === "") {
+                        setTags((s) => s.slice(0, s.length - 1));
+                      }
+                    }}
+                    placeholder="Add a tag and press Enter (e.g. javascript, react)"
+                    className="input input-sm input-bordered w-full"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className=" bg-base-100 border border-base-300 shadow-sm rounded-lg">
+              <div className="card-body p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview(null);
+                      setAttachedFile(null);
+                      setPost({ id: post.id });
+                      setTags([]);
+                    }}
+                  >
+                    <FaTrashAlt /> Clear All
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleEdit()}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="flex items-center">
+                        <div className="loading loading-ring loading-md"></div>
+                        Editing...
+                      </div>
+                    ) : (
+                      <>
+                        <RiEditFill className="mr-2" /> Edit
+                      </>
+                    )}
+                  </button>
+                </div>
+                {error?.form && (
+                  <div className="sm:hidden block text-sm text-error mt-2 font-bold">
+                    {error.form}
+                  </div>
+                )}
+              </div>
+            </section>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }

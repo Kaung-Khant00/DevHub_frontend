@@ -63,30 +63,46 @@ export const __FETCH_POSTS__ = (perPage, page, category, isFetching) => {
     }
   };
 };
-/* export const __FETCH_NEXT_POSTS__ = (nextPageURL, perPage, isFetching) => {
-  return async (dispatch) => {
-    console.log(nextPageURL, "next post");
-    if (!nextPageURL) return;
 
-    dispatch({ type: "FETCH_POSTS_REQUEST" });
+export const __FETCH_SPECIFIC_POST__ = (id) => {
+  return async (dispatch) => {
+    dispatch({ type: "FETCH_SPECIFIC_POST_REQUEST" });
     try {
-      const response = await api.get(nextPageURL, {
-        params: {
-          perPage,
-        },
-      });
-      console.log(response);
+      const response = await api.get(`/posts/${id}`);
       dispatch({
-        type: "FETCH_POSTS_SUCCESS",
+        type: "FETCH_SPECIFIC_POST_SUCCESS",
         payload: response.data.data,
       });
-      isFetching.current = false;
     } catch (error) {
       dispatch({
-        type: "FETCH_POSTS_FAILURE",
+        type: "FETCH_SPECIFIC_POST_FAILURE",
         payload: error.response.data?.errors,
       });
-      isFetching.current = false;
     }
   };
-}; */
+};
+export const __EDIT_POST__ = (id, form) => {
+  return async (dispatch) => {
+    console.log(form);
+
+    dispatch({ type: "EDIT_POST_REQUEST" });
+    try {
+      const response = await api.post(`/posts/edit/${id}`, form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      dispatch({
+        type: "EDIT_POST_SUCCESS",
+        payload: response.data.data,
+      });
+      toast.success("Post updated successfully!");
+      window.location.href = "/feed";
+    } catch (error) {
+      dispatch({
+        type: "EDIT_POST_FAILURE",
+        payload: error.response.data?.errors,
+      });
+    }
+  };
+};

@@ -14,6 +14,11 @@ const initialState = {
     loading: false,
     error: null,
   },
+  edit: {
+    data: null,
+    loading: false,
+    error: null,
+  },
   error: null,
 };
 
@@ -36,6 +41,23 @@ export const postReducer = (state = initialState, action) => {
       return {
         ...state,
         fetch: {
+          loading: true,
+          error: null,
+        },
+      };
+    case "FETCH_SPECIFIC_POST_REQUEST":
+      return {
+        ...state,
+        edit: {
+          loading: true,
+          error: null,
+        },
+      };
+    case "EDIT_POST_REQUEST":
+      return {
+        ...state,
+        edit: {
+          ...state.edit,
           loading: true,
           error: null,
         },
@@ -68,6 +90,24 @@ export const postReducer = (state = initialState, action) => {
           error: null,
         },
       };
+    case "FETCH_SPECIFIC_POST_SUCCESS":
+      return {
+        ...state,
+        edit: {
+          data: action.payload,
+          loading: false,
+          error: null,
+        },
+      };
+    case "EDIT_POST_SUCCESS":
+      return {
+        ...state,
+        edit: {
+          data: action.payload,
+          loading: false,
+          error: null,
+        },
+      };
     /*
 |________________________________________________________________
 | FAILURE
@@ -85,6 +125,24 @@ export const postReducer = (state = initialState, action) => {
       return {
         ...state,
         fetch: {
+          loading: false,
+          error: action.payload,
+        },
+      };
+    case "FETCH_SPECIFIC_POST_FAILURE":
+      return {
+        ...state,
+        edit: {
+          data: null,
+          loading: false,
+          error: action.payload,
+        },
+      };
+    case "EDIT_POST_FAILURE":
+      return {
+        ...state,
+        edit: {
+          ...state.edit,
           loading: false,
           error: action.payload,
         },
