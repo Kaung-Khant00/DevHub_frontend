@@ -97,7 +97,6 @@ export const __LOGOUT__ = () => {
 export const __GET_USER__ = () => {
   return async (dispatch) => {
     dispatch({ type: "USER_REQUEST" });
-
     try {
       const response = await api.get("/user");
       console.log(response);
@@ -114,6 +113,54 @@ export const __GET_USER__ = () => {
   };
 };
 
+/*
+|-------------------------------------------------------------------------
+| GET USER DATA IN DETAIL
+|--------------------------------------------------------------------------
+*/
+export const __GET_USER_PROFILE__ = () => {
+  return async (dispatch) => {
+    dispatch({ type: "PROFILE_REQUEST" });
+    try {
+      const response = await api.get("/profile");
+      console.log("PROFILE DATA -->", response);
+
+      dispatch({ type: "PROFILE_SUCCESS", payload: response.data.profile });
+    } catch (error) {
+      console.log("Get User Profile", error);
+      toast.error("Something went wrong !");
+      dispatch({
+        type: "PROFILE_FAILURE",
+      });
+    }
+  };
+};
+/*
+|-------------------------------------------------------------------------
+| EDIT PROFILE
+|--------------------------------------------------------------------------
+*/
+export const __EDIT_PROFILE__ = (formData) => {
+  return async (dispatch) => {
+    dispatch({ type: "PROFILE_EDIT_REQUEST" });
+    try {
+      const response = await api.post("/profile/developer/edit", formData);
+      dispatch({
+        type: "PROFILE_EDIT_SUCCESS",
+        payload: response.data.profile,
+      });
+      toast.success("Profile updated successfully");
+      window.location.href = "/profile";
+    } catch (error) {
+      console.log("Edit Profile", error);
+      toast.error("Something went wrong !");
+      dispatch({
+        type: "PROFILE_EDIT_FAILURE",
+        payload: error.response.data?.errors,
+      });
+    }
+  };
+};
 /*
 |-------------------------------------------------------------------------
 | SET TOKEN (AFTER OAUTH)

@@ -1,7 +1,12 @@
 const initialState = {
   user: {
     loading: false,
-    data: null,
+    user: null,
+    profile: null,
+  },
+  profileEdit: {
+    loading: false,
+    error: null,
   },
   token: localStorage.getItem("token") || null,
   loading: false,
@@ -31,8 +36,25 @@ export const userReducer = (state = initialState, action) => {
       return {
         ...state,
         user: {
+          ...state.user,
           loading: true,
-          data: null,
+          user: null,
+        },
+      };
+    case "PROFILE_REQUEST":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          loading: true,
+        },
+      };
+    case "PROFILE_EDIT_REQUEST":
+      return {
+        ...state,
+        profileEdit: {
+          error: null,
+          loading: true,
         },
       };
     case "LOGOUT_REQUEST":
@@ -53,8 +75,30 @@ export const userReducer = (state = initialState, action) => {
       return {
         ...state,
         user: {
-          data: action.payload,
+          ...state.user,
+          user: action.payload,
           loading: false,
+        },
+      };
+    case "PROFILE_SUCCESS":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          profile: action.payload,
+          loading: false,
+        },
+      };
+    case "PROFILE_EDIT_SUCCESS":
+      return {
+        ...state,
+        profileEdit: {
+          loading: false,
+          error: null,
+        },
+        user: {
+          ...state.user,
+          profile: action.payload,
         },
       };
     case "LOGOUT_SUCCESS":
@@ -86,7 +130,24 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         user: {
           loading: false,
-          data: null,
+          user: null,
+        },
+      };
+    case "PROFILE_FAILURE":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          profile: null,
+          loading: false,
+        },
+      };
+    case "PROFILE_EDIT_FAILURE":
+      return {
+        ...state,
+        profileEdit: {
+          loading: false,
+          error: action.payload,
         },
       };
     case "LOGIN_FAILURE":

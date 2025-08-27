@@ -11,44 +11,22 @@ import {
   FaGlobe,
   FaUser,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { __EDIT_PROFILE__ } from "../../../Redux/user/userAction";
 
-export default function DeveloperProfileEdit({
-  initialUser = {
-    id: 1,
-    name: "Alex Johnson",
-    email: "alex@devhub.io",
-    profile_url: "https://i.pravatar.cc/300",
-    phone: "+95 9 123 456 789",
-    bio: "Full-stack engineer focused on React and Laravel.",
-  },
-  initialProfile = {
-    skill: "React, Laravel, MySQL",
-    address: "Sanchaung, Yangon, Myanmar",
-    github_url: "https://github.com/example",
-    linkedin_url: "https://linkedin.com/in/example",
-    portfolio_url: "https://example.dev",
-  },
-  onSave = async (payload) => {
-    console.log("Save payload:", payload);
-    // Example: await axios.patch('/api/user/profile', payload)
-    return { ok: true };
-  },
-  onUploadAvatar = null, // async (file) => url
-  onCancel = null,
-  onDelete = null,
-}) {
+export default function DeveloperProfileEdit() {
   // Local form state
-  const [user, setUser] = useState({ ...initialUser });
-  const [profile, setProfile] = useState({ ...initialProfile });
-  const [skills, setSkills] = useState(() => parseSkills(initialProfile.skill));
+  const [user, setUser] = useState({});
+  const [profile, setProfile] = useState({});
+  const [skills, setSkills] = useState(() => parseSkills());
   const [newSkill, setNewSkill] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(user.image || "");
-  const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { profileEdit } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setAvatarPreview(user.profile_url || "");
@@ -58,6 +36,10 @@ export default function DeveloperProfileEdit({
     setSkills(parseSkills(profile.skill));
   }, [profile.skill]);
 
+  function handleRemoveProfile() {
+    setUser((prev) => ({ ...prev, profile_url: "" }));
+    setAvatarPreview("");
+  }
   function parseSkills(skillString) {
     if (!skillString) return [];
     return skillString
@@ -83,58 +65,17 @@ export default function DeveloperProfileEdit({
     setAvatarPreview(URL.createObjectURL(file));
   }
 
-  async function handleSave(e) {
-    e?.preventDefault();
-    setSaving(true);
-    try {
-      let uploadedUrl = null;
-      if (avatarFile && typeof onUploadAvatar === "function") {
-        // upload file and get url
-        uploadedUrl = await onUploadAvatar(avatarFile);
-      }
-
-      const payload = {
-        user: {
-          ...user,
-          profile_url: uploadedUrl || user.profile_url,
-        },
-        profile: {
-          ...profile,
-          skill: skills.join(", "),
-        },
-      };
-
-      const res = await onSave(payload);
-      // onSave should throw or return object indicating success
-      if (res && res.ok === false) {
-        // show server errors if provided
-        setErrors((prev) => ({ ...prev, server: res.error || "Save failed" }));
-      } else {
-        // success: optionally show toast or callback
-        // sync local state with returned data
-        if (res && res.data) {
-          setUser((u) => ({ ...u, ...res.data.user }));
-          setProfile((p) => ({ ...p, ...res.data.profile }));
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      setErrors((prev) => ({ ...prev, server: err.message || String(err) }));
-    } finally {
-      setSaving(false);
-    }
+  async function handleEditProfile(e) {
+    e.preventDefault();
+    dispatch(__EDIT_PROFILE__({ ...user, ...profile, skills }));
   }
 
   async function handleDelete() {
     if (typeof onDelete !== "function") return setShowDeleteConfirm(false);
-    setSaving(true);
     try {
-      await onDelete();
     } catch (err) {
       console.error(err);
-      setErrors((prev) => ({ ...prev, server: err.message || String(err) }));
     } finally {
-      setSaving(false);
       setShowDeleteConfirm(false);
     }
   }
@@ -161,7 +102,7 @@ export default function DeveloperProfileEdit({
             </button>
           </div>
         </header>
-        <form onSubmit={handleSave} className="space-y-6">
+        <form onSubmit={handleEditProfile} className="space-y-6">
           {/* Header */}
           <div className="bg-white dark:bg-base-200 rounded-2xl shadow p-4 md:p-6 border border-base-200">
             <div className="flex items-center gap-4">
@@ -190,9 +131,16 @@ export default function DeveloperProfileEdit({
                   aria-label="Upload avatar"
                   onChange={(e) => handleAvatarFileChange(e.target.files?.[0])}
                   type="file"
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
                   className="file-input file-input-sm file-input-bordered mt-2"
                 />
+                <button
+                  type="button"
+                  className="btn btn-sm btn-error mt-2 text-white"
+                  onClick={handleRemoveProfile}
+                >
+                  Remove Uploading Profile
+                </button>
               </div>
 
               <div className="flex-1">
@@ -203,16 +151,16 @@ export default function DeveloperProfileEdit({
                     </label>
                     <input
                       className={`input input-bordered w-full ${
-                        errors.name ? "input-error" : ""
+                        profileEdit.error?.name ? "input-error" : ""
                       }`}
                       value={user.name}
                       onChange={(e) =>
                         setUser((u) => ({ ...u, name: e.target.value }))
                       }
                     />
-                    {errors.name && (
+                    {profileEdit.error?.name && (
                       <div className="text-xs text-error mt-1">
-                        {errors.name}
+                        {profileEdit.error?.name}
                       </div>
                     )}
                   </div>
@@ -241,23 +189,23 @@ export default function DeveloperProfileEdit({
                   </label>
                   <input
                     className={`input input-bordered w-full ${
-                      errors.email ? "input-error" : ""
+                      profileEdit.error?.email ? "input-error" : ""
                     }`}
                     value={user.email}
                     onChange={(e) =>
                       setUser((u) => ({ ...u, email: e.target.value }))
                     }
                   />
-                  {errors.email && (
+                  {profileEdit.error?.email && (
                     <div className="text-xs text-error mt-1">
-                      {errors.email}
+                      {profileEdit.error?.email}
                     </div>
                   )}
                 </div>
 
                 <div className="mt-4">
                   <label className="label">
-                    <span className="label-text">Short bio</span>
+                    <span className="label-text">Bio</span>
                   </label>
                   <textarea
                     className="textarea textarea-bordered w-full"
@@ -300,7 +248,7 @@ export default function DeveloperProfileEdit({
                   <FaGlobe className="opacity-70" />
                   <input
                     className={`input input-bordered w-full ${
-                      errors.portfolio_url ? "input-error" : ""
+                      profileEdit.error?.portfolio_url ? "input-error" : ""
                     }`}
                     value={profile.portfolio_url || ""}
                     onChange={(e) =>
@@ -312,9 +260,9 @@ export default function DeveloperProfileEdit({
                     placeholder="https://your.site"
                   />
                 </div>
-                {errors.portfolio_url && (
+                {profileEdit.error?.portfolio_url && (
                   <div className="text-xs text-error mt-1">
-                    {errors.portfolio_url}
+                    {profileEdit.error?.portfolio_url}
                   </div>
                 )}
               </div>
@@ -327,7 +275,7 @@ export default function DeveloperProfileEdit({
                   <FaGithub className="opacity-70" />
                   <input
                     className={`input input-bordered w-full ${
-                      errors.github_url ? "input-error" : ""
+                      profileEdit.error?.github_url ? "input-error" : ""
                     }`}
                     value={profile.github_url || ""}
                     onChange={(e) =>
@@ -336,9 +284,9 @@ export default function DeveloperProfileEdit({
                     placeholder="https://github.com/username"
                   />
                 </div>
-                {errors.github_url && (
+                {profileEdit.error?.github_url && (
                   <div className="text-xs text-error mt-1">
-                    {errors.github_url}
+                    {profileEdit.error?.github_url}
                   </div>
                 )}
               </div>
@@ -351,7 +299,7 @@ export default function DeveloperProfileEdit({
                   <FaLinkedin className="opacity-70" />
                   <input
                     className={`input input-bordered w-full ${
-                      errors.linkedin_url ? "input-error" : ""
+                      profileEdit.error?.linkedin_url ? "input-error" : ""
                     }`}
                     value={profile.linkedin_url || ""}
                     onChange={(e) =>
@@ -363,9 +311,9 @@ export default function DeveloperProfileEdit({
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
-                {errors.linkedin_url && (
+                {profileEdit.error?.linkedin_url && (
                   <div className="text-xs text-error mt-1">
-                    {errors.linkedin_url}
+                    {profileEdit.error?.linkedin_url}
                   </div>
                 )}
               </div>
@@ -429,8 +377,10 @@ export default function DeveloperProfileEdit({
             <div className="flex items-center gap-2">
               <button
                 type="submit"
-                className={`btn btn-primary ${saving ? "loading" : ""}`}
-                disabled={saving}
+                className={`btn btn-primary ${
+                  profileEdit?.loading ? "loading" : ""
+                }`}
+                disabled={profileEdit?.loading}
                 aria-label="Save"
               >
                 <FaSave /> <span className="ml-2">Save changes</span>
@@ -454,8 +404,10 @@ export default function DeveloperProfileEdit({
           </div>
 
           {/* Server error */}
-          {errors.server && (
-            <div className="text-sm text-error">{errors.server}</div>
+          {profileEdit.error?.server && (
+            <div className="text-sm text-error">
+              {profileEdit.error?.server}
+            </div>
           )}
         </form>
       </div>
@@ -476,7 +428,9 @@ export default function DeveloperProfileEdit({
                 Cancel
               </button>
               <button
-                className={`btn btn-error ${saving ? "loading" : ""}`}
+                className={`btn btn-error ${
+                  profileEdit?.loading ? "loading" : ""
+                }`}
                 onClick={handleDelete}
               >
                 Yes, delete

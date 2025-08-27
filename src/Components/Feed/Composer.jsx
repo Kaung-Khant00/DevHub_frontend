@@ -1,7 +1,9 @@
 import { FaPlus, FaImage, FaCode, FaFile } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 function Composer() {
+  const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   return (
@@ -10,9 +12,19 @@ function Composer() {
         <div className="flex gap-3 items-center">
           {/* Avatar */}
           <div className="avatar">
-            <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-              <img src="https://i.pravatar.cc/100?img=31" alt="avatar" />
-            </div>
+            <Link to="/profile">
+              <div className="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                {user.loading ? (
+                  <div className="skeleton w-10 h-10 rounded-full"></div>
+                ) : (
+                  <img
+                    alt="Tailwind CSS Navbar component"
+                    src={user.user?.profile_url}
+                    className="w-10 h-10 rounded-full"
+                  />
+                )}
+              </div>
+            </Link>
           </div>
 
           {/* Fake Input (clickable) */}

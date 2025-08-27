@@ -1,11 +1,11 @@
 import { IoMdNotifications } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { __LOGOUT__ } from "../../Redux/user/userAction";
 
 const NavBar = () => {
   const { logoutLoading } = useSelector((state) => state.user);
-
+  const { user } = useSelector((state) => state.user);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -87,22 +87,26 @@ const NavBar = () => {
             role="button"
             className="btn btn-ghost btn-circle avatar"
           >
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
-            </div>
+            {user.loading ? (
+              <div className="skeleton w-10 rounded-full"></div>
+            ) : (
+              <div className="w-10 rounded-full">
+                <img
+                  alt="Tailwind CSS Navbar component"
+                  src={user.user?.profile_url}
+                />
+              </div>
+            )}
           </div>
           <ul
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a className="justify-between btn-purple">
+              <Link to={"profile"} className="justify-between btn-purple">
                 Profile
                 <span className="badge">Developer</span>
-              </a>
+              </Link>
             </li>
             <li>
               <a className="btn-purple">Setting</a>

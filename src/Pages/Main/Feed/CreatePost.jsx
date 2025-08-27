@@ -350,7 +350,7 @@ export default function CreatePost() {
                     </label>
                     <input
                       type="file"
-                      accept="image/png, image/jpeg, image/jpg, image/webp, image/git"
+                      accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
                       ref={imageInputRef}
                       onChange={(e) => onImageSelect(e)}
                       className="hidden"

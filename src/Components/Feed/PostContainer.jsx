@@ -44,8 +44,15 @@ const PostContainer = () => {
       ) : (
         <>
           {fetch.loading ? (
-            <div className="m-3">
-              <span className="loading loading-spinner loading-xl text-primary"></span>
+            <div className="card-body p-5 rounded shadow-sm my-2 max-w-[650px] bg-white flex w-full flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <div className="skeleton h-16 w-16 shrink-0 rounded-full"></div>
+                <div className="flex flex-col gap-4">
+                  <div className="skeleton h-4 w-20"></div>
+                  <div className="skeleton h-4 w-28"></div>
+                </div>
+              </div>
+              <div className="skeleton h-32 w-full"></div>
             </div>
           ) : (
             <div

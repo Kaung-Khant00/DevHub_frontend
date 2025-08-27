@@ -11,6 +11,7 @@ import OAuthCallBack from "../Pages/Auth/OAuthCallBack";
 import Secure from "../Pages/Auth/Secure";
 import Profile from "../Pages/Main/Profile/Profile";
 import EditDevProfile from "../Pages/Main/Profile/EditDevProfile";
+import ProfileLayout from "../Pages/Main/Profile/ProfileLayout";
 
 const router = createBrowserRouter([
   {
@@ -40,11 +41,17 @@ const router = createBrowserRouter([
           },
           {
             path: "profile",
-            element: <Profile />,
-          },
-          {
-            path: "profile/edit",
-            element: <EditDevProfile />,
+            element: <ProfileLayout />,
+            children: [
+              {
+                index: true,
+                element: <Profile />,
+              },
+              {
+                path: "edit",
+                element: <EditDevProfile />,
+              },
+            ],
           },
         ],
       },
