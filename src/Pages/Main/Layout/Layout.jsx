@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import NavBar from "../../../Components/Feed/NavBar";
 import gsap from "gsap";
-import { __GET_USER__ } from "../../../Redux/user/userAction";
 
 const Layout = () => {
   const navbarRef = useRef();

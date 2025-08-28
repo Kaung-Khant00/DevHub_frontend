@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import PostCard from "./PostCard";
 import { useDispatch, useSelector } from "react-redux";
-import { __FETCH_POSTS__ } from "../../Redux/post/postAction";
+import { fetchPosts } from "../../Redux/post/postSlice";
 
 const PostContainer = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const PostContainer = () => {
       return;
     isFetching.current = true;
     dispatch(
-      __FETCH_POSTS__(
+      fetchPosts(
         pagination.perPage,
         pagination.page,
         pagination.category,
@@ -26,7 +26,7 @@ const PostContainer = () => {
     if (isFetching.current) return;
     isFetching.current = true;
     dispatch(
-      __FETCH_POSTS__(
+      fetchPosts(
         pagination.perPage,
         pagination.page,
         pagination.category,
@@ -55,12 +55,20 @@ const PostContainer = () => {
               <div className="skeleton h-32 w-full"></div>
             </div>
           ) : (
-            <div
-              onClick={loadMorePosts}
-              className="text-lg text-primary hover:underline mt-3 mb-10"
-            >
-              Show More
-            </div>
+            <>
+              {pagination.currentPage < pagination.lastPage ? (
+                <button
+                  onClick={loadMorePosts}
+                  className="btn btn-primary mt-2"
+                >
+                  Show more
+                </button>
+              ) : (
+                <div className="m-3 my-8 font-bold">
+                  -- -- -- No more posts ! -- -- --{" "}
+                </div>
+              )}
+            </>
           )}
         </>
       )}

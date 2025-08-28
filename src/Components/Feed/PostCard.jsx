@@ -6,7 +6,7 @@ import {
   FaRegHeart,
   FaShareAlt,
 } from "react-icons/fa";
-import { PiShareFat, PiShareFatBold } from "react-icons/pi";
+import { PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "./ImageWIthSkeleton";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useSelector } from "react-redux";
@@ -15,10 +15,15 @@ import { useNavigate } from "react-router-dom";
 function PostCard({ post }) {
   const { user, content, title, code, image, created_at_formatted } = post;
   const navigate = useNavigate();
-  const { data } = useSelector((state) => state.user.user);
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const { user: authUser } = useSelector((state) => state.user);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
+  const [expand, setExpand] = useState(false);
+  const LIMIT = 50;
+  const isLong = content.length > LIMIT;
+  const displayText = expand
+    ? content
+    : content.substring(0, LIMIT) + (isLong ? "..." : "");
 
   const handleEditPost = () => {
     navigate(`/post/edit/${post.id}`);
@@ -38,14 +43,7 @@ function PostCard({ post }) {
           <div className="flex items-center gap-3">
             <div className="avatar">
               <div className="w-12 rounded-full ring ring-base-100 ring-offset-base-100">
-                <img
-                  src={
-                    user?.profile_url
-                      ? `${backendURL}/storage/images/${user.profile_url}`
-                      : backendURL + "/defaultImages/profileImage.jpg"
-                  }
-                  alt={user.name}
-                />
+                <img src={user?.profile_image_url} alt={user.name} />
               </div>
             </div>
             <div>
@@ -69,7 +67,7 @@ function PostCard({ post }) {
               <li>
                 <a>Unfollow User</a>
               </li> */}
-              {user.id === data?.id && (
+              {user.id === authUser?.id && (
                 <li onClick={handleEditPost}>
                   <a>Edit Post</a>
                 </li>
@@ -82,7 +80,7 @@ function PostCard({ post }) {
                 <a>Share</a>
               </li>
 
-              {user.id === data?.id ? (
+              {user.id === authUser?.id ? (
                 <li>
                   <a className="text-red-600 hover:bg-red-500 hover:text-white">
                     Delete this post
@@ -101,7 +99,17 @@ function PostCard({ post }) {
 
         {/* Body */}
         <h2 className="text-lg font-bold mt-2">{title}</h2>
-        <p className="text-base-content/80 leading-relaxed">{content}</p>
+        <p className="text-base-content/90 text-[18px] leading-relaxed">
+          {displayText}
+          {isLong && (
+            <span
+              className="cursor-pointer text-primary text-[17px] ms-3"
+              onClick={() => setExpand(!expand)}
+            >
+              {expand ? "Show less" : "Show more"}
+            </span>
+          )}
+        </p>
 
         {code && (
           <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">

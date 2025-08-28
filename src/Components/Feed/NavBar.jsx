@@ -1,17 +1,16 @@
 import { IoMdNotifications } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { __LOGOUT__ } from "../../Redux/user/userAction";
+import { logoutUser } from "../../Redux/user/userSlice";
 
 const NavBar = () => {
-  const { logoutLoading } = useSelector((state) => state.user);
-  const { user } = useSelector((state) => state.user);
+  const { logoutLoading, user, loading } = useSelector((state) => state.user);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   function handleLogout() {
-    dispatch(__LOGOUT__());
+    dispatch(logoutUser());
   }
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -87,13 +86,13 @@ const NavBar = () => {
             role="button"
             className="btn btn-ghost btn-circle avatar"
           >
-            {user.loading ? (
+            {loading ? (
               <div className="skeleton w-10 rounded-full"></div>
             ) : (
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src={user.user?.profile_url}
+                  src={user?.profile_image_url}
                 />
               </div>
             )}

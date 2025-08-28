@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { __SET_TOKEN__ } from "../../Redux/user/userAction";
+import { setToken } from "../../Redux/user/userSlice";
 
 const OAuthCallBack = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const OAuthCallBack = () => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (token) {
-      dispatch(__SET_TOKEN__(token));
+      dispatch(setToken(token));
       localStorage.setItem("token", token);
       navigate("/feed");
     }

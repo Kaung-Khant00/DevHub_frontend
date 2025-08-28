@@ -1,5 +1,4 @@
 import axios from "axios";
-import { store } from "../Redux/store";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL + "/api",
@@ -29,7 +28,6 @@ axiosInstance.interceptors.response.use(
       !url.includes("/register")
     ) {
       localStorage.removeItem("token");
-      store.dispatch({ type: "LOGOUT_SUCCESS" });
       window.location.href = "/auth/login";
     } else {
       console.error("API error:", error);

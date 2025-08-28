@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { __CREATE_POST__ } from "../../../Redux/post/postAction";
+import { createPost } from "../../../Redux/post/postSlice";
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -127,6 +127,7 @@ export default function CreatePost() {
 
   async function publish() {
     const form = {
+      title,
       content,
       image: imageFile,
       file: attachedFile,
@@ -134,7 +135,7 @@ export default function CreatePost() {
       codeLang,
       tags,
     };
-    dispatch(__CREATE_POST__(form));
+    dispatch(createPost(form));
   }
 
   return (
@@ -350,7 +351,7 @@ export default function CreatePost() {
                     </label>
                     <input
                       type="file"
-                      accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
+                      accept="image/png, image/jpeg, image/jpg, image/webp"
                       ref={imageInputRef}
                       onChange={(e) => onImageSelect(e)}
                       className="hidden"
@@ -411,11 +412,10 @@ export default function CreatePost() {
                       type="file"
                       ref={fileInputRef}
                       accept=".html,.css,.scss,.sass,.js,.ts,.jsx,.tsx,.vue,
-          .php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
-          .json,.xml,.yml,.yaml,.sql,.csv,.env,
-          .md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
-          .jpg,.jpeg,.png,.gif,.webp,.svg,
-          .zip,.rar,.7z,.tar,.gz"
+.php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
+.json,.xml,.yml,.yaml,.sql,.csv,.env,
+.md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
+.zip,.rar,.7z,.tar,.gz"
                       onChange={(e) => onFileSelect(e)}
                       className="hidden"
                     />

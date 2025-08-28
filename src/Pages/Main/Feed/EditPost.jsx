@@ -11,11 +11,8 @@ import {
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import {
-  __EDIT_POST__,
-  __FETCH_SPECIFIC_POST__,
-} from "../../../Redux/post/postAction";
 import { RiEditFill } from "react-icons/ri";
+import { editPost, fetchSpecificPost } from "../../../Redux/post/postSlice";
 
 export default function EditPost() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -51,7 +48,7 @@ export default function EditPost() {
   const codeRef = useRef();
 
   useEffect(() => {
-    dispatch(__FETCH_SPECIFIC_POST__(id, setPost));
+    dispatch(fetchSpecificPost(id, setPost));
   }, [dispatch, id]);
   useEffect(() => {
     if (data) {
@@ -115,7 +112,7 @@ export default function EditPost() {
       isDeleteFile: deletingPrevious.file,
       user_id: data.user.id,
     };
-    dispatch(__EDIT_POST__(post.id, form));
+    dispatch(editPost({ id: post.id, form }));
   }
 
   return (
@@ -433,11 +430,10 @@ export default function EditPost() {
                         type="file"
                         ref={fileInputRef}
                         accept=".html,.css,.scss,.sass,.js,.ts,.jsx,.tsx,.vue,
-          .php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
-          .json,.xml,.yml,.yaml,.sql,.csv,.env,
-          .md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
-          .jpg,.jpeg,.png,.gif,.webp,.svg,
-          .zip,.rar,.7z,.tar,.gz"
+.php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
+.json,.xml,.yml,.yaml,.sql,.csv,.env,
+.md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
+.zip,.rar,.7z,.tar,.gz"
                         onChange={(e) => onFileSelect(e)}
                         className="hidden"
                       />

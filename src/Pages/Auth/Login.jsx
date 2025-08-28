@@ -5,9 +5,9 @@ import { TbLock } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { FaGithub } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { __LOGIN__ } from "../../Redux/user/userAction";
 import FormInput from "../../Components/Common/FormInput.jsx";
 import { api } from "../../Services/axios_instance.js";
+import { loginUser } from "../../Redux/user/userSlice.js";
 
 const Login = () => {
   const { loginError } = useSelector((state) => state.user);
@@ -34,7 +34,7 @@ const Login = () => {
   };
   function handleSubmit(e) {
     e.preventDefault();
-    dispatch(__LOGIN__(form));
+    dispatch(loginUser(form));
   }
 
   return (

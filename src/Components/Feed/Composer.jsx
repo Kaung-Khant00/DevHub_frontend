@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 function Composer() {
-  const { user } = useSelector((state) => state.user);
+  const { loading, user } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   return (
@@ -14,12 +14,12 @@ function Composer() {
           <div className="avatar">
             <Link to="/profile">
               <div className="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                {user.loading ? (
+                {loading ? (
                   <div className="skeleton w-10 h-10 rounded-full"></div>
                 ) : (
                   <img
                     alt="Tailwind CSS Navbar component"
-                    src={user.user?.profile_url}
+                    src={user?.profile_image_url}
                     className="w-10 h-10 rounded-full"
                   />
                 )}

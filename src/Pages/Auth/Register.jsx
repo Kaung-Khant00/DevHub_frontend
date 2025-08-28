@@ -6,8 +6,8 @@ import { TbLock, TbLockCheck } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import FormInput from "../../Components/Common/FormInput";
 import { useDispatch, useSelector } from "react-redux";
-import { __REGISTER__ } from "../../Redux/user/userAction";
 import { api } from "../../Services/axios_instance";
+import { registerUser } from "../../Redux/user/userSlice";
 
 const Register = () => {
   const { registerError } = useSelector((state) => state.user);
@@ -39,7 +39,7 @@ const Register = () => {
   function handleSubmit(e) {
     e.preventDefault();
     if (form.isAgree) {
-      dispatch(__REGISTER__(form));
+      dispatch(registerUser(form));
     } else {
       alert("Please agree to the terms and conditions.");
     }

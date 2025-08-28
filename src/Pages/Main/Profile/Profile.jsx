@@ -17,7 +17,7 @@ import {
   FaChevronDown,
   FaCheckCircle,
 } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 /**
@@ -110,7 +110,7 @@ export default function DeveloperProfilePage({
   stats = { posts: 24, followers: 1200, following: 180, groups: 6 },
   isOwnProfile = true,
 }) {
-  const { profile, user } = useSelector((state) => state.user.user);
+  const { profile, user } = useSelector((state) => state.user);
   const skills = useSkillChips(profile?.skill);
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("latest");
@@ -127,7 +127,7 @@ export default function DeveloperProfilePage({
                 <div className="avatar">
                   <div className="w-24 md:w-28 rounded-full ring ring-base-100 ring-offset-4 ring-offset-base-100 shadow-2xl">
                     <img
-                      src={user.profile_url}
+                      src={user.profile_image_url}
                       alt={`${user.name || "User"} avatar`}
                     />
                   </div>
@@ -208,10 +208,10 @@ export default function DeveloperProfilePage({
 
                 {/* Stats */}
                 <div className="mt-4 stats stats-vertical md:stats-horizontal shadow bg-base-100">
-                  <Stat value={stats?.posts} label="Posts" />
-                  <Stat value={stats?.followers} label="Followers" />
-                  <Stat value={stats?.following} label="Following" />
-                  <Stat value={stats?.groups} label="Joined Groups" />
+                  <Stat value={user?.posts_count} label="Posts" />
+                  <Stat value={user?.followers_count} label="Followers" />
+                  <Stat value={user?.followings_count} label="Following" />
+                  <Stat value={user?.groups_count} label="Joined Groups" />
                 </div>
 
                 {/* Quick links */}

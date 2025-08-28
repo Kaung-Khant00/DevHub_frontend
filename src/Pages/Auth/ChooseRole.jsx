@@ -21,14 +21,14 @@ export default function ChooseRole() {
       console.error("Error setting role:", error);
     }
   }
-  const { data } = useSelector((state) => state.user.user);
+  const { user } = useSelector((state) => state.user);
   useEffect(() => {
-    if (data?.role) {
+    if (user?.role) {
       window.location.href = "/feed";
     } else {
       toast.info("Please set your role to continue");
     }
-  }, [data]);
+  }, [user]);
 
   return (
     <div className="flex items-center justify-center min-h-screen -mt-[50px]">

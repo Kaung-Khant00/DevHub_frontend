@@ -1,6 +1,9 @@
 import { FaFire, FaPlus } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 function CreatorSnapshot() {
+  const { user } = useSelector((state) => state.user);
+
   return (
     <div className="card shadow-xl bg-gradient-to-br from-base-100 to-base-300 border border-base-300">
       <div className="card-body p-5">
@@ -8,20 +11,16 @@ function CreatorSnapshot() {
         <div className="flex items-center gap-3">
           <div className="avatar">
             <div className="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-              <img src="https://i.pravatar.cc/100?img=17" alt="me" />
+              <img src={user?.profile_image_url} alt="me" />
             </div>
           </div>
           <div>
-            <div className="font-bold text-lg leading-tight">You</div>
+            <div className="font-bold text-lg leading-tight">{user?.name}</div>
             <div className="text-sm text-base-content/60">
               Full-stack tinkerer
             </div>
             <div className="mt-2 flex gap-2 flex-wrap">
               <span className="badge badge-primary badge-outline">React</span>
-              <span className="badge badge-secondary badge-outline">
-                Laravel
-              </span>
-              <span className="badge badge-accent badge-outline">Tailwind</span>
             </div>
           </div>
         </div>

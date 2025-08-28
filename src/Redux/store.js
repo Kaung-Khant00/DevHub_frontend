@@ -1,16 +1,13 @@
-import { createStore, applyMiddleware, combineReducers, compose } from "redux";
-import { thunk } from "redux-thunk";
-import { userReducer } from "./user/userReducer";
-import { postReducer } from "./post/postReducer";
+import { configureStore } from "@reduxjs/toolkit";
+import userSlice from "./user/userSlice";
+import postSlice from "./post/postSlice";
 
-const rootReducer = combineReducers({
-  user: userReducer,
-  post: postReducer,
+const store = configureStore({
+  reducer: {
+    user: userSlice,
+    post: postSlice,
+  },
+  devTools: import.meta.env.VITE_ENV !== "production",
 });
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-export const store = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(thunk))
-);
+export default store;

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
-import { __GET_USER__ } from "../../Redux/user/userAction";
+import { fetchUser } from "../../Redux/user/userSlice";
 
 const Secure = () => {
   const { token } = useSelector((state) => state.user);
@@ -11,7 +11,7 @@ const Secure = () => {
     if (!token) {
       navigate("/auth/login");
     }
-    dispatch(__GET_USER__());
+    dispatch(fetchUser());
   }, [token, navigate, dispatch]);
   return <Outlet />;
 };
