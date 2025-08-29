@@ -1,20 +1,18 @@
 import { useState } from "react";
-import {
-  FaCode,
-  FaHeart,
-  FaRegCommentDots,
-  FaRegHeart,
-  FaShareAlt,
-} from "react-icons/fa";
+import { FaCode, FaHeart, FaRegCommentDots, FaRegHeart } from "react-icons/fa";
 import { PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "./ImageWIthSkeleton";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { deletePost } from "../../Redux/post/postSlice";
 
 function PostCard({ post }) {
-  const { user, content, title, code, image, created_at_formatted } = post;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, content, title, code, code_lang, image, created_at_formatted } =
+    post;
   const { user: authUser } = useSelector((state) => state.user);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
@@ -33,6 +31,9 @@ function PostCard({ post }) {
     setLiked((s) => !s);
     setLikes((v) => v + (liked ? -1 : 1));
   };
+  function handlePostDelete() {
+    dispatch(deletePost(post.id));
+  }
 
   return (
     <div className="my-2 card bg-base-100 border border-base-300 shadow-md w-full max-w-[650px] shrink-0">
@@ -43,11 +44,11 @@ function PostCard({ post }) {
           <div className="flex items-center gap-3">
             <div className="avatar">
               <div className="w-12 rounded-full ring ring-base-100 ring-offset-base-100">
-                <img src={user?.profile_image_url} alt={user.name} />
+                <img src={user?.profile_image_url} alt={user?.name} />
               </div>
             </div>
             <div>
-              <div className="font-semibold">{user.name}</div>
+              <div className="font-semibold">{user?.name}</div>
               <div className="text-sm text-base-content/60">
                 Posted in {created_at_formatted}
               </div>
@@ -67,7 +68,7 @@ function PostCard({ post }) {
               <li>
                 <a>Unfollow User</a>
               </li> */}
-              {user.id === authUser?.id && (
+              {user?.id === authUser?.id && (
                 <li onClick={handleEditPost}>
                   <a>Edit Post</a>
                 </li>
@@ -79,12 +80,14 @@ function PostCard({ post }) {
               <li>
                 <a>Share</a>
               </li>
-
-              {user.id === authUser?.id ? (
+              {user?.id === authUser?.id ? (
                 <li>
-                  <a className="text-red-600 hover:bg-red-500 hover:text-white">
+                  <div
+                    onClick={handlePostDelete}
+                    className="text-red-600 hover:bg-red-500 hover:text-white"
+                  >
                     Delete this post
-                  </a>
+                  </div>
                 </li>
               ) : (
                 <li>
@@ -99,7 +102,7 @@ function PostCard({ post }) {
 
         {/* Body */}
         <h2 className="text-lg font-bold mt-2">{title}</h2>
-        <p className="text-base-content/90 text-[18px] leading-relaxed">
+        <p className="text-base-content/90 text-base leading-relaxed">
           {displayText}
           {isLong && (
             <span
@@ -115,10 +118,11 @@ function PostCard({ post }) {
           <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
             <input type="checkbox" />
             <div className="collapse-title text-sm font-medium flex items-center gap-2">
-              <FaCode /> View code snippet
+              <FaCode /> View code{" "}
+              <span className="font-extrabold ">{code_lang}</span> snippet
             </div>
             <div className="collapse-content">
-              <pre className="bg-base-300/60 p-3 rounded-lg overflow-x-auto text-sm">
+              <pre className="bg-base-content p-3 rounded-lg overflow-x-auto text-sm text-base-100">
                 <code>{code}</code>
               </pre>
             </div>

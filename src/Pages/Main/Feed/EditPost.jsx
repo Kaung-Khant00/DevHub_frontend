@@ -15,7 +15,6 @@ import { RiEditFill } from "react-icons/ri";
 import { editPost, fetchSpecificPost } from "../../../Redux/post/postSlice";
 
 export default function EditPost() {
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const { id } = useParams();
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -54,7 +53,7 @@ export default function EditPost() {
     if (data) {
       setPost(data);
       if (data.image) {
-        setImagePreview(`${backendURL}/storage/${data?.image}`);
+        setImagePreview(data?.image_url);
       }
       setTags(data.tags);
     }
@@ -99,7 +98,7 @@ export default function EditPost() {
     setTags((s) => s.filter((_, i) => i !== index));
   }
 
-  async function handleEdit() {
+  function handleEdit() {
     const form = {
       title: post.title,
       content: post.content,
@@ -112,7 +111,8 @@ export default function EditPost() {
       isDeleteFile: deletingPrevious.file,
       user_id: data.user.id,
     };
-    dispatch(editPost({ id: post.id, form }));
+    console.log(form);
+    dispatch(editPost({ id: post.id, form, navigate }));
   }
 
   return (
@@ -161,8 +161,8 @@ export default function EditPost() {
                 <div>
                   <input
                     type="text"
-                    className="input input-bordered w-full mb-3 font-semibold text-lg"
-                    placeholder="title your post"
+                    className="input input-bordered w-full mb-3 font-bold text-lg"
+                    placeholder="Title your post"
                     value={post?.title || ""}
                     onChange={(e) =>
                       setPost({ ...post, title: e.target.value })
@@ -327,21 +327,38 @@ export default function EditPost() {
                       </label>
                       {post?.image && (
                         <div className="flex-1">
-                          <button
-                            className="btn btn-sm btn-error mb-2 w-full text-white"
-                            onClick={() => {
-                              setDeletingPrevious((pre) => ({
-                                ...pre,
-                                image: true,
-                              }));
-                              setImageFile(null);
-                              setImagePreview(null);
-                            }}
-                          >
-                            Remove image
-                          </button>
+                          {imageFile || deletingPrevious.image ? (
+                            <button
+                              onClick={() => {
+                                setDeletingPrevious((pre) => ({
+                                  ...pre,
+                                  image: false,
+                                }));
+                                setImageFile(null);
+                                setImagePreview(data?.image_url);
+                              }}
+                              className="btn btn-sm btn-error mb-2 w-full text-white"
+                            >
+                              Undo
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-sm btn-error mb-2 w-full text-white"
+                              onClick={() => {
+                                setDeletingPrevious((pre) => ({
+                                  ...pre,
+                                  image: true,
+                                }));
+                                setImageFile(null);
+                                setImagePreview(null);
+                              }}
+                            >
+                              Remove image
+                            </button>
+                          )}
                         </div>
                       )}
+
                       <input
                         type="file"
                         accept="image/png, image/jpeg, image/jpg, image/webp, image/git"
@@ -473,20 +490,21 @@ export default function EditPost() {
                 </p>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {tags.map((t, i) => (
-                    <div
-                      key={i}
-                      className="badge badge-outline py-2 px-2 flex items-center gap-2"
-                    >
-                      <span className="text-sm">{t}</span>
-                      <button
-                        onClick={() => removeTag(i)}
-                        className="btn btn-ghost btn-xs"
+                  {tags &&
+                    tags.map((t, i) => (
+                      <div
+                        key={i}
+                        className="badge badge-outline py-2 px-2 flex items-center gap-2"
                       >
-                        <FaTimes />
-                      </button>
-                    </div>
-                  ))}
+                        <span className="text-sm">{t}</span>
+                        <button
+                          onClick={() => removeTag(i)}
+                          className="btn btn-ghost btn-xs"
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ))}
 
                   <input
                     value={tagInput}
@@ -509,18 +527,18 @@ export default function EditPost() {
 
             <section className=" bg-base-100 border border-base-300 shadow-sm rounded-lg">
               <div className="card-body p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-5">
                   <button
                     className="btn btn-ghost"
                     onClick={() => {
                       setImageFile(null);
-                      setImagePreview(null);
+                      setImagePreview(post?.image_url);
                       setAttachedFile(null);
-                      setPost({ id: post.id });
-                      setTags([]);
+                      setPost(data);
+                      setTags(data?.tags);
                     }}
                   >
-                    <FaTrashAlt /> Clear All
+                    <FaTrashAlt /> Reset All
                   </button>
                   <button
                     className="btn btn-primary"

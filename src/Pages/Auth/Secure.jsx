@@ -1,18 +1,27 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import { fetchUser } from "../../Redux/user/userSlice";
 
 const Secure = () => {
-  const { token } = useSelector((state) => state.user);
+  const { token, user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!token) {
       navigate("/auth/login");
     }
-    dispatch(fetchUser());
-  }, [token, navigate, dispatch]);
+    if (!user) {
+      dispatch(fetchUser());
+    }
+  }, [token, navigate, dispatch, user]);
+  if (!user)
+    return (
+      <div className=" min-h-screen w-full flex justify-center items-center">
+        <div className="text-primary text-3xl font-bold pe-1">Logging in</div>
+        <span className="loading loading-dots loading-lg text-primary mt-2"></span>
+      </div>
+    );
   return <Outlet />;
 };
 

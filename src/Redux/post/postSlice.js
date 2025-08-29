@@ -5,13 +5,13 @@ import { api } from "../../Services/axios_instance";
 
 export const createPost = createAsyncThunk(
   "posts/createPost",
-  async (form, { rejectWithValue }) => {
+  async (form, navigate, { rejectWithValue }) => {
     try {
       const response = await api.post("/posts", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post created successfully!");
-      window.location.href = "/feed";
+      navigate("/feed");
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.errors || err.message);
@@ -61,16 +61,32 @@ export const fetchSpecificPost = createAsyncThunk(
 
 export const editPost = createAsyncThunk(
   "posts/editPost",
-  async ({ id, form }, { rejectWithValue }) => {
+  async ({ id, form, navigate }, { rejectWithValue }) => {
     console.log(form);
     try {
       const response = await api.post(`/posts/edit/${id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post updated successfully!");
-      window.location.href = "/feed";
-      return response.data.data;
+      navigate("/feed");
+      console.log(response);
+      return response.data.post;
     } catch (err) {
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/posts/${id}`);
+      console.log(response);
+      toast.success(response.data.message);
+      return response.data;
+    } catch (err) {
+      console.log(err);
+      toast.error("You can't delete others posts!");
       return rejectWithValue(err.response?.data?.errors || err.message);
     }
   }
@@ -96,6 +112,10 @@ const initialState = {
   edit: {
     data: null,
     loading: false,
+    error: null,
+  },
+  delete: {
+    loading: null,
     error: null,
   },
   error: null,
@@ -176,9 +196,27 @@ const postSlice = createSlice({
       .addCase(editPost.fulfilled, (state, action) => {
         state.edit.loading = false;
         state.edit.error = null;
-        state.edit.data = action.payload;
+        state.posts = [
+          action.payload,
+          ...state.posts.filter((post) => post.id !== action.payload.id),
+        ];
       })
       .addCase(editPost.rejected, (state, action) => {
+        state.edit.loading = false;
+        state.edit.error = action.payload;
+      })
+      .addCase(deletePost.pending, (state) => {
+        state.edit.loading = true;
+        state.edit.error = null;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.edit.loading = false;
+        state.edit.error = null;
+        state.posts = state.posts.filter(
+          (post) => post.id !== action.payload.id
+        );
+      })
+      .addCase(deletePost.rejected, (state, action) => {
         state.edit.loading = false;
         state.edit.error = action.payload;
       });

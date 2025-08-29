@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import NavBar from "../../../Components/Feed/NavBar";
 import gsap from "gsap";
+import Secure from "../../Auth/Secure";
 
 const Layout = () => {
   const navbarRef = useRef();
