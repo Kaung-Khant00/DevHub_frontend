@@ -37,7 +37,7 @@ function CreatorSnapshot() {
           </div>
           <div className="stat bg-base-100 rounded-box">
             <div className="stat-title">Posts</div>
-            <div className="stat-value text-xl">210</div>
+            <div className="stat-value text-xl">{user?.posts_count}</div>
           </div>
         </div>
 

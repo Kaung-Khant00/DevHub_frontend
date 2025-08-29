@@ -15,10 +15,10 @@ const Secure = () => {
       dispatch(fetchUser());
     }
   }, [token, navigate, dispatch, user]);
-  if (!user)
+  if (!token)
     return (
       <div className=" min-h-screen w-full flex justify-center items-center">
-        <div className="text-primary text-3xl font-bold pe-1">Logging in</div>
+        <div className="text-primary text-3xl font-bold pe-1">LOADING</div>
         <span className="loading loading-dots loading-lg text-primary mt-2"></span>
       </div>
     );

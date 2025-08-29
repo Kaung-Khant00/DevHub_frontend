@@ -90,7 +90,7 @@ export const fetchUser = createAsyncThunk(
         window.location.href = "/select/role";
       }
       return response.data;
-    } catch (error) {
+    } catch {
       return rejectWithValue("Failed to load user");
     }
   }
@@ -106,7 +106,7 @@ export const fetchUserProfile = createAsyncThunk(
     try {
       const response = await api.get("/profile");
       return response.data.profile;
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong!");
       return rejectWithValue("Failed to load profile");
     }
@@ -191,12 +191,56 @@ export const removeProfileImage = createAsyncThunk(
 
 /*
 |------------------------------------------------------------------------
+| GET USER POSTS
+|------------------------------------------------------------------------
+*/
+export const fetchUserPosts = createAsyncThunk(
+  "user/fetchUserPosts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/profile/posts");
+      console.log(response);
+      return response.data.posts;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue("Failed to load user posts");
+    }
+  }
+);
+
+/*
+|------------------------------------------------------------------------
+| SEARCH POST AND ORDER POST IN PROFILE
+|------------------------------------------------------------------------
+*/
+export const filterSortPosts = createAsyncThunk(
+  "user/fetchUserPosts",
+  async ({ searchQuery, sortBy }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/profile/posts/search", {
+        searchQuery,
+        sortBy,
+      });
+      console.log(response);
+      return response.data.posts;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue("Failed to load user posts");
+    }
+  }
+);
+/*
+|------------------------------------------------------------------------
 | INITIAL STATE
 |------------------------------------------------------------------------
 */
 const initialState = {
   user: null,
   profile: null,
+  userPosts: {
+    data: null,
+    loading: null,
+  },
   token: localStorage.getItem("token") || null,
   deleteLoading: false,
   loading: false,
@@ -304,6 +348,16 @@ const userSlice = createSlice({
       })
       .addCase(removeProfileImage.rejected, (state) => {
         state.deleteLoading = false;
+      })
+      .addCase(fetchUserPosts.fulfilled, (state, action) => {
+        state.userPosts.loading = false;
+        state.userPosts.data = action.payload;
+      })
+      .addCase(fetchUserPosts.pending, (state) => {
+        state.userPosts.loading = true;
+      })
+      .addCase(fetchUserPosts.rejected, (state) => {
+        state.userPosts.loading = false;
       });
   },
 });

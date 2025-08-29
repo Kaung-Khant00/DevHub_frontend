@@ -5,15 +5,17 @@ import { api } from "../../Services/axios_instance";
 
 export const createPost = createAsyncThunk(
   "posts/createPost",
-  async (form, navigate, { rejectWithValue }) => {
+  async ({ form, navigate }, { rejectWithValue }) => {
     try {
       const response = await api.post("/posts", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log(response);
       toast.success("Post created successfully!");
       navigate("/feed");
       return response.data;
     } catch (err) {
+      console.log(err);
       return rejectWithValue(err.response?.data?.errors || err.message);
     }
   }

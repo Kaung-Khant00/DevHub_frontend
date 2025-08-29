@@ -36,6 +36,7 @@ export default function CreatePost() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [attachedFile, setAttachedFile] = useState(null);
+  const [fileInfo, setFileInfo] = useState({ name: "", size: "", type: "" });
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [code, setCode] = useState("");
@@ -97,6 +98,11 @@ export default function CreatePost() {
   function onFileSelect(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+    setFileInfo({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    });
     setAttachedFile(file);
   }
 
@@ -131,15 +137,17 @@ export default function CreatePost() {
       content,
       image: imageFile,
       file: attachedFile,
+      fileInfo,
       code,
       codeLang,
       tags,
     };
-    dispatch(createPost(form));
+    console.log("PUBLISHING");
+    dispatch(createPost({ form, navigate }));
   }
 
   return (
-    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-6xl mx-auto">
       <header className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
           <button
@@ -159,9 +167,9 @@ export default function CreatePost() {
           </button>
         </div>
       </header>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="w-full flex gap-6">
         {/* LEFT: main column */}
-        <div className="space-y-5">
+        <div className="flex-3 space-y-5">
           {/* Content Card */}
           <section
             className={`collapse ${
@@ -225,16 +233,14 @@ export default function CreatePost() {
 
           {/* Code Card */}
           <section
-            className={`collapse ${
-              isOpen("code") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
+            className={`bg-base-100 border border-base-300 shadow-sm rounded-lg`}
           >
             <input
               type="checkbox"
               className="hidden"
               defaultChecked={isOpen("code")}
             />
-            <div className="card-body p-4">
+            <div className=" p-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-md font-semibold flex items-center gap-2">
                   <FaCode /> Code Snippet
@@ -287,9 +293,9 @@ export default function CreatePost() {
         </div>
 
         {/* RIGHT: sidebar (balanced width) */}
-        <aside className="space-y-5">
+        <aside className="flex-2 space-y-5">
           {/* Media (Image + Attachment grouped) */}
-          <section className="bg-base-100 border border-base-300 shadow-sm rounded-lg">
+          <section className="bg-base-100 border border-base-300 shadow-sm rounded-lg pb-4">
             <div className="card-body p-4 grid grid-cols-1 gap-4">
               <div>
                 <h3 className="text-md font-semibold">Image</h3>
@@ -364,8 +370,20 @@ export default function CreatePost() {
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-md font-semibold">Attachment</h3>
+              <div className="mt-2">
+                <div className="flex justify-between">
+                  <h3 className="text-md font-semibold">Attachment</h3>
+                  <input
+                    type="text"
+                    className="input input-sm max-w-40"
+                    disabled={!attachedFile}
+                    value={fileInfo?.name}
+                    onChange={(e) =>
+                      setFileInfo((pre) => ({ ...pre, name: e.target.value }))
+                    }
+                    placeholder="Enter File Name"
+                  />
+                </div>
                 <p className="text-sm text-base-content/60 mb-2 md:hidden">
                   Attach a file (docs, zip, pdf). Max 10MB in this demo.
                 </p>
@@ -408,26 +426,20 @@ export default function CreatePost() {
                     >
                       <FaFileAlt className="mr-2 text-primary" /> Upload File
                     </label>
+                    {attachedFile && (
+                      <button
+                        className="btn btn-error text-white btn-sm flex-1"
+                        onClick={() => setAttachedFile(null)}
+                      >
+                        Remove File
+                      </button>
+                    )}
                     <input
                       type="file"
                       ref={fileInputRef}
-                      accept=".html,.css,.scss,.sass,.js,.ts,.jsx,.tsx,.vue,
-.php,.py,.java,.c,.cpp,.h,.cs,.go,.rb,.sh,
-.json,.xml,.yml,.yaml,.sql,.csv,.env,
-.md,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,
-.zip,.rar,.7z,.tar,.gz"
                       onChange={(e) => onFileSelect(e)}
                       className="hidden"
                     />
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => setAttachedFile(null)}
-                    >
-                      Remove
-                    </button>
                   </div>
 
                   {error?.file && (

@@ -1,18 +1,33 @@
 import { useState } from "react";
-import { FaCode, FaHeart, FaRegCommentDots, FaRegHeart } from "react-icons/fa";
+import {
+  FaCode,
+  FaFile,
+  FaHeart,
+  FaRegCommentDots,
+  FaRegHeart,
+} from "react-icons/fa";
 import { PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "./ImageWIthSkeleton";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { deletePost } from "../../Redux/post/postSlice";
+import { api } from "../../Services/axios_instance";
 
 function PostCard({ post }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, content, title, code, code_lang, image, created_at_formatted } =
-    post;
+  const {
+    user,
+    file,
+    content,
+    title,
+    code,
+    code_lang,
+    image,
+    created_at_formatted,
+  } = post;
   const { user: authUser } = useSelector((state) => state.user);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
@@ -33,6 +48,24 @@ function PostCard({ post }) {
   };
   function handlePostDelete() {
     dispatch(deletePost(post.id));
+  }
+  async function handleFileDownload(path) {
+    try {
+      const response = await api.post(`/posts/download`, {
+        path,
+      });
+      console.log(response);
+      /*  I still understand what happen when I use Blob but I understand the rest of the code */
+      const url = URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "image.jpg");
+      document.body.appendChild(link);
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -115,14 +148,14 @@ function PostCard({ post }) {
         </p>
 
         {code && (
-          <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
+          <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3 ">
             <input type="checkbox" />
             <div className="collapse-title text-sm font-medium flex items-center gap-2">
               <FaCode /> View code{" "}
               <span className="font-extrabold ">{code_lang}</span> snippet
             </div>
             <div className="collapse-content">
-              <pre className="bg-base-content p-3 rounded-lg overflow-x-auto text-sm text-base-100">
+              <pre className="max-w-full bg-base-content p-3 rounded-lg overflow-x-auto text-sm text-base-300 whitespace-pre-wrap break-words">
                 <code>{code}</code>
               </pre>
             </div>
@@ -137,6 +170,53 @@ function PostCard({ post }) {
             />
           </div>
         )}
+
+        {/*
+          Downloadable file (uploaded by another developer).
+          Placed after media and before action buttons so it's prominent and accessible.
+          Expects a `file` object like: { url, name, size }.
+        */}
+        {file && (
+          <div className="mt-3 flex justify-between btn btn-outline w-full rounded-lg border-base-300 hover:border-base-400">
+            <div className=" justify-start gap-3 p-3 flex items-center">
+              <FaFile />
+              <div className="">
+                <div className="font-medium">{file.name}</div>
+              </div>
+              <div className="text-xs text-base-content/60">
+                {file.size ? (
+                  <>
+                    {file.size < 1024
+                      ? `${file.size} Bytes`
+                      : file.size < 1024 * 1024
+                      ? `${(file.size / 1024).toFixed(1)} KB`
+                      : `${(file.size / 1024 / 1024).toFixed(1)} MB`}
+                  </>
+                ) : (
+                  "Download file"
+                )}
+              </div>
+            </div>
+            <div
+              onClick={() => {
+                handleFileDownload(file.path);
+              }}
+              className="text-primary hover:underline"
+            >
+              Download File
+            </div>
+            {/*  <a
+              href={file.file_url}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Click here   download
+            </a> */}
+          </div>
+        )}
+
         <div className="mt-4 grid grid-cols-3 gap-3">
           <button
             onClick={toggleLike}
