@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   FaEnvelope,
   FaPhone,
@@ -46,7 +46,7 @@ function useSkillChips(skillString) {
 function Stat({ value, label }) {
   return (
     <div className="stat text-center">
-      <div className="stat-value md:text-3xl font-extrabold font-inter">
+      <div className="stat-value md:text-3xl font-extrabold">
         {value ?? "—"}
       </div>
       <div className="stat-title">{label}</div>
@@ -54,20 +54,16 @@ function Stat({ value, label }) {
   );
 }
 
-export default function DeveloperProfilePage({
-  stats = { posts: 24, followers: 1200, following: 180, groups: 6 },
-  isOwnProfile = true,
-}) {
+export default function DeveloperProfilePage({ isOwnProfile = true }) {
   const { profile, user } = useSelector((state) => state.user);
   const skills = useSkillChips(profile?.skill);
-  const [sortBy, setSortBy] = useState("latest");
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (user) {
       dispatch(fetchUserPosts());
     }
-  }, [user]);
+  }, [dispatch, user]);
   return (
     <>
       {user && profile && (

@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPost } from "../../../Redux/post/postSlice";
+import { CiFileOn } from "react-icons/ci";
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -373,16 +374,19 @@ export default function CreatePost() {
               <div className="mt-2">
                 <div className="flex justify-between">
                   <h3 className="text-md font-semibold">Attachment</h3>
-                  <input
-                    type="text"
-                    className="input input-sm max-w-40"
-                    disabled={!attachedFile}
-                    value={fileInfo?.name}
-                    onChange={(e) =>
-                      setFileInfo((pre) => ({ ...pre, name: e.target.value }))
-                    }
-                    placeholder="Enter File Name"
-                  />
+                  <label className="input input-sm max-w-50">
+                    <CiFileOn />
+                    <input
+                      type="text"
+                      className="grow"
+                      disabled={!attachedFile}
+                      value={fileInfo?.name}
+                      onChange={(e) =>
+                        setFileInfo((pre) => ({ ...pre, name: e.target.value }))
+                      }
+                      placeholder="Enter File Name"
+                    />
+                  </label>
                 </div>
                 <p className="text-sm text-base-content/60 mb-2 md:hidden">
                   Attach a file (docs, zip, pdf). Max 10MB in this demo.

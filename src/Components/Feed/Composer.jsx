@@ -13,7 +13,7 @@ function Composer() {
           {/* Avatar */}
           <div className="avatar">
             <Link to="/profile">
-              <div className="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+              <div className="w-10 h-10 rounded-full ">
                 {loading ? (
                   <div className="skeleton w-10 h-10 rounded-full"></div>
                 ) : (

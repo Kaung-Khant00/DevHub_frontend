@@ -3,6 +3,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { api } from "../../Services/axios_instance";
 
+/*
+|------------------------------------------------------------------------
+| CREATE POST
+|------------------------------------------------------------------------
+*/
 export const createPost = createAsyncThunk(
   "posts/createPost",
   async ({ form, navigate }, { rejectWithValue }) => {
@@ -21,15 +26,25 @@ export const createPost = createAsyncThunk(
   }
 );
 
+/*
+|------------------------------------------------------------------------
+| FETCH POSTS
+|------------------------------------------------------------------------
+*/
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (
-    { perPage = 10, page = 1, category = "newest", isFetchingRef = null } = {},
+    {
+      perPage = 10,
+      page = 1,
+      sortBy = "created_at,desc",
+      isFetchingRef = null,
+    } = {},
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.get(`/posts/${category}`, {
-        params: { perPage, page },
+      const response = await api.get(`/posts`, {
+        params: { perPage, page, sortBy },
       });
       console.log(response);
 
@@ -48,6 +63,11 @@ export const fetchPosts = createAsyncThunk(
   }
 );
 
+/*
+|------------------------------------------------------------------------
+| FETCH SPECIFIC POST
+|------------------------------------------------------------------------
+*/
 export const fetchSpecificPost = createAsyncThunk(
   "posts/fetchSpecificPost",
   async (id, { rejectWithValue }) => {
@@ -61,6 +81,11 @@ export const fetchSpecificPost = createAsyncThunk(
   }
 );
 
+/*
+|------------------------------------------------------------------------
+| EDIT POST
+|------------------------------------------------------------------------
+*/
 export const editPost = createAsyncThunk(
   "posts/editPost",
   async ({ id, form, navigate }, { rejectWithValue }) => {
@@ -78,6 +103,12 @@ export const editPost = createAsyncThunk(
     }
   }
 );
+
+/*
+|------------------------------------------------------------------------
+| DELETE POST
+|------------------------------------------------------------------------
+*/
 export const deletePost = createAsyncThunk(
   "posts/deletePost",
   async (id, { rejectWithValue }) => {
@@ -94,13 +125,33 @@ export const deletePost = createAsyncThunk(
   }
 );
 
+/*
+|------------------------------------------------------------------------
+| LIKE POST
+|------------------------------------------------------------------------
+*/
+export const likePost = createAsyncThunk(
+  "posts/likePost",
+  async (likeData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/posts/like", likeData);
+      console.log(response);
+      return response.data.post;
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong!");
+      return rejectWithValue();
+    }
+  }
+);
+
 const initialState = {
   posts: [],
   pagination: {
     perPage: 2,
     page: 1,
     lastPage: null,
-    category: "newest",
+    sortBy: "created_at,desc",
     nextPageURL: null,
   },
   create: {
@@ -113,6 +164,10 @@ const initialState = {
   },
   edit: {
     data: null,
+    loading: false,
+    error: null,
+  },
+  like: {
     loading: false,
     error: null,
   },
@@ -221,6 +276,24 @@ const postSlice = createSlice({
       .addCase(deletePost.rejected, (state, action) => {
         state.edit.loading = false;
         state.edit.error = action.payload;
+      })
+      .addCase(likePost.pending, (state) => {
+        state.like.loading = true;
+        state.like.error = null;
+      })
+      .addCase(likePost.fulfilled, (state, action) => {
+        const updatedPost = action.payload;
+        const idx = state.posts.findIndex((post) => post.id === updatedPost.id);
+        if (idx !== -1) {
+          state.posts[idx] = { ...state.posts[idx], ...updatedPost };
+        }
+        state.posts = [...state.posts];
+        state.like.loading = false;
+        state.like.error = null;
+      })
+      .addCase(likePost.rejected, (state, action) => {
+        state.like.loading = false;
+        state.like.error = action.payload;
       });
   },
 });

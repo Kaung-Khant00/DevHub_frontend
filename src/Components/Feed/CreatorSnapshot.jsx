@@ -10,7 +10,7 @@ function CreatorSnapshot() {
         {/* Profile Header */}
         <div className="flex items-center gap-3">
           <div className="avatar">
-            <div className="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            <div className="w-16 rounded-full">
               <img src={user?.profile_image_url} alt="me" />
             </div>
           </div>

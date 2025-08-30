@@ -16,7 +16,7 @@ const PostContainer = () => {
       fetchPosts(
         pagination.perPage,
         pagination.page,
-        pagination.category,
+        pagination.sortBy,
         isFetching
       )
     );
@@ -29,7 +29,7 @@ const PostContainer = () => {
       fetchPosts(
         pagination.perPage,
         pagination.page,
-        pagination.category,
+        pagination.sortBy,
         isFetching
       )
     );

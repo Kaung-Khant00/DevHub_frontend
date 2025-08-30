@@ -11,7 +11,7 @@ const GuestLayout = () => {
     }
   }, [navigate, token]);
   return (
-    <div className="bg-gray-50 font-inter">
+    <div className="bg-gray-50">
       <Outlet />
     </div>
   );

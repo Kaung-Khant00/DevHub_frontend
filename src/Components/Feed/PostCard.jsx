@@ -11,7 +11,7 @@ import ImageWIthSkeleton from "./ImageWIthSkeleton";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deletePost } from "../../Redux/post/postSlice";
+import { deletePost, likePost } from "../../Redux/post/postSlice";
 import { api } from "../../Services/axios_instance";
 
 function PostCard({ post }) {
@@ -29,9 +29,10 @@ function PostCard({ post }) {
     created_at_formatted,
   } = post;
   const { user: authUser } = useSelector((state) => state.user);
-  const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState(0);
   const [expand, setExpand] = useState(false);
+  /*  I am making for better UX so the like button response immediately after I click the like  */
+  /*  And the data request will send to the backend site  */
+  const [liked, setLiked] = useState(post?.liked || false);
   const LIMIT = 50;
   const isLong = content.length > LIMIT;
   const displayText = expand
@@ -42,10 +43,11 @@ function PostCard({ post }) {
     navigate(`/post/edit/${post.id}`);
   };
 
-  const toggleLike = () => {
-    setLiked((s) => !s);
-    setLikes((v) => v + (liked ? -1 : 1));
-  };
+  function handleLikePost() {
+    setLiked((pre) => !pre);
+    dispatch(likePost({ post_id: post.id, user_id: authUser.id }));
+  }
+
   function handlePostDelete() {
     dispatch(deletePost(post.id));
   }
@@ -70,7 +72,7 @@ function PostCard({ post }) {
 
   return (
     <div className="my-2 card bg-base-100 border border-base-300 shadow-md w-full max-w-[650px] shrink-0">
-      <div className="card-body p-5">
+      <div className="flex flex-col gap-2 p-5">
         {/* Header */}
         <div className="flex justify-between">
           {/*  Image Container */}
@@ -134,35 +136,37 @@ function PostCard({ post }) {
         </div>
 
         {/* Body */}
-        <h2 className="text-lg font-bold mt-2">{title}</h2>
-        <p className="text-base-content/90 text-base leading-relaxed">
-          {displayText}
-          {isLong && (
-            <span
-              className="cursor-pointer text-primary text-[17px] ms-3"
-              onClick={() => setExpand(!expand)}
-            >
-              {expand ? "Show less" : "Show more"}
-            </span>
-          )}
-        </p>
+        <div>
+          <h2 className="text-lg font-bold mt-2">{title}</h2>
+          <p className="text-base-content/90 text-base leading-relaxed">
+            {displayText}
+            {isLong && (
+              <span
+                className="cursor-pointer text-primary text-[17px] ms-3"
+                onClick={() => setExpand(!expand)}
+              >
+                {expand ? "Show less" : "Show more"}
+              </span>
+            )}
+          </p>
+        </div>
 
         {code && (
-          <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3 ">
+          <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-1 ">
             <input type="checkbox" />
             <div className="collapse-title text-sm font-medium flex items-center gap-2">
               <FaCode /> View code{" "}
               <span className="font-extrabold ">{code_lang}</span> snippet
             </div>
             <div className="collapse-content">
-              <pre className="max-w-full bg-base-content p-3 rounded-lg overflow-x-auto text-sm text-base-300 whitespace-pre-wrap break-words">
+              <pre className="max-w-full bg-base-content p-2 rounded-lg overflow-x-auto text-sm text-base-300 whitespace-pre-wrap break-words">
                 <code>{code}</code>
               </pre>
             </div>
           </div>
         )}
         {image && (
-          <div className="mt-3 lg:px-1">
+          <div className="mt-1 lg:px-1">
             <ImageWIthSkeleton
               src={image}
               alt={title}
@@ -177,7 +181,7 @@ function PostCard({ post }) {
           Expects a `file` object like: { url, name, size }.
         */}
         {file && (
-          <div className="mt-3 flex justify-between btn btn-outline w-full rounded-lg border-base-300 hover:border-base-400">
+          <div className="mt-1 flex justify-between btn btn-outline w-full rounded-lg border-base-300 hover:border-base-400">
             <div className=" justify-start gap-3 p-3 flex items-center">
               <FaFile />
               <div className="">
@@ -217,14 +221,13 @@ function PostCard({ post }) {
           </div>
         )}
 
-        <div className="mt-4 grid grid-cols-3 gap-3">
+        <div className=" grid grid-cols-3 gap-3">
           <button
-            onClick={toggleLike}
-            className={`btn ${
-              liked ? "btn-error text-error-content" : "btn-ghost"
-            }`}
+            onClick={handleLikePost}
+            className={`btn ${liked ? "text-primary" : "btn-ghost"}`}
           >
-            {liked ? <FaHeart size={20} /> : <FaRegHeart size={20} />} {likes}
+            {liked ? <FaHeart size={20} /> : <FaRegHeart size={20} />}{" "}
+            {post?.liked_users_count}
           </button>
           <button className="btn  btn-ghost">
             <FaRegCommentDots size={20} /> 10
