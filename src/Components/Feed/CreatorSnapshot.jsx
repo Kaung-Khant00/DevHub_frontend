@@ -5,8 +5,8 @@ function CreatorSnapshot() {
   const { user } = useSelector((state) => state.user);
 
   return (
-    <div className="card shadow-xl bg-gradient-to-br from-base-100 to-base-300 border border-base-300">
-      <div className="card-body p-5">
+    <div className="min-w-[350px] cardBox">
+      <div className="p-5">
         {/* Profile Header */}
         <div className="flex items-center gap-3">
           <div className="avatar">
@@ -26,7 +26,7 @@ function CreatorSnapshot() {
         </div>
 
         {/* Stats */}
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="mt-4 grid grid-cols-3 gap-1">
           <div className="stat bg-base-100 rounded-box">
             <div className="stat-title">Reputation</div>
             <div className="stat-value text-xl">981</div>

@@ -10,7 +10,7 @@ import { PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "./ImageWIthSkeleton";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deletePost, likePost } from "../../Redux/post/postSlice";
 import { api } from "../../Services/axios_instance";
 
@@ -26,6 +26,7 @@ function PostCard({ post }) {
     code,
     code_lang,
     image,
+    image_url,
     created_at_formatted,
   } = post;
   const { user: authUser } = useSelector((state) => state.user);
@@ -61,7 +62,7 @@ function PostCard({ post }) {
       const url = URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "image.jpg");
+      link.setAttribute("download", file?.name);
       document.body.appendChild(link);
       link.click();
       URL.revokeObjectURL(url);
@@ -168,7 +169,7 @@ function PostCard({ post }) {
         {image && (
           <div className="mt-1 lg:px-1">
             <ImageWIthSkeleton
-              src={image}
+              src={image_url}
               alt={title}
               className="lg:max-h-[350px] max-h-[300px] w-full object-center object-cover rounded-lg"
             />
@@ -221,19 +222,26 @@ function PostCard({ post }) {
           </div>
         )}
 
-        <div className=" grid grid-cols-3 gap-3">
+        <div className="mt-3 flex items-center gap-2">
           <button
             onClick={handleLikePost}
-            className={`btn ${liked ? "text-primary" : "btn-ghost"}`}
+            className={`flex items-center gap-2 text-sm ${
+              liked ? "text-primary" : "text-base-content/80"
+            }`}
           >
-            {liked ? <FaHeart size={20} /> : <FaRegHeart size={20} />}{" "}
-            {post?.liked_users_count}
+            {liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
+            <span>{post?.liked_users_count ?? 0}</span>
           </button>
-          <button className="btn  btn-ghost">
-            <FaRegCommentDots size={20} /> 10
-          </button>
-          <button className="btn btn-ghost">
-            <PiShareFatBold size={20} />
+
+          <Link
+            to={`/post/${post?.id}/comments`}
+            className="flex items-center gap-1 text-sm text-base-content/80"
+          >
+            <FaRegCommentDots size={16} /> <span>Comments</span>
+          </Link>
+
+          <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80">
+            <PiShareFatBold /> <span>Share</span>
           </button>
         </div>
       </div>

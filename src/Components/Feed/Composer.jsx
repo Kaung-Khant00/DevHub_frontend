@@ -7,8 +7,8 @@ function Composer() {
   const navigate = useNavigate();
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-md hover:shadow-lg transition mt-2">
-      <div className="card-body p-4">
+    <div className="cardBox">
+      <div className=" p-4">
         <div className="flex gap-3 items-center">
           {/* Avatar */}
           <div className="avatar">

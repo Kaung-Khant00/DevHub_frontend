@@ -144,6 +144,59 @@ export const likePost = createAsyncThunk(
     }
   }
 );
+export const likeDetailPost = createAsyncThunk(
+  "posts/likeDetailPost",
+  async (likeData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/posts/like", likeData);
+      console.log(response);
+      return response.data.post;
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong!");
+      return rejectWithValue();
+    }
+  }
+);
+
+/*
+|------------------------------------------------------------------------
+| FETCH DETAIL POST INCLUDING COMMENTS
+|------------------------------------------------------------------------
+*/
+export const fetchDetailPost = createAsyncThunk(
+  "posts/fetchDetailPost",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/posts/${id}/detail`);
+      console.log(response);
+      return response.data.post;
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong!");
+      return rejectWithValue();
+    }
+  }
+);
+/*
+|------------------------------------------------------------------------
+| COMMENT POST
+|------------------------------------------------------------------------
+*/
+// export const commentPost = createAsyncThunk(
+//   "posts/commentPost",
+//   async (commentData, { rejectWithValue }) => {
+//     try {
+//       const response = await api.post("/posts/comment", commentData);
+//       console.log(response);
+//       return response.data.post;
+//     } catch (err) {
+//       console.log(err);
+//       toast.error("Something went wrong!");
+//       return rejectWithValue();
+//     }
+//   }
+// );
 
 const initialState = {
   posts: [],
@@ -170,6 +223,11 @@ const initialState = {
   like: {
     loading: false,
     error: null,
+  },
+  detail: {
+    likeLoading: false,
+    data: null,
+    loading: false,
   },
   delete: {
     loading: null,
@@ -294,6 +352,26 @@ const postSlice = createSlice({
       .addCase(likePost.rejected, (state, action) => {
         state.like.loading = false;
         state.like.error = action.payload;
+      })
+      .addCase(likeDetailPost.fulfilled, (state, action) => {
+        state.detail.data = { ...state.detail.data, ...action.payload };
+        state.detail.likeLoading = false;
+      })
+      .addCase(likeDetailPost.pending, (state) => {
+        state.detail.likeLoading = true;
+      })
+      .addCase(likeDetailPost.rejected, (state) => {
+        state.detail.likeLoading = false;
+      })
+      .addCase(fetchDetailPost.fulfilled, (state, action) => {
+        state.detail.data = action.payload;
+        state.detail.loading = false;
+      })
+      .addCase(fetchDetailPost.pending, (state) => {
+        state.detail.loading = true;
+      })
+      .addCase(fetchDetailPost.rejected, (state) => {
+        state.detail.loading = false;
       });
   },
 });
