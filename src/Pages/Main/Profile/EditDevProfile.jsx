@@ -4,12 +4,9 @@ import {
   FaTimes,
   FaTrash,
   FaPlus,
-  FaPhone,
-  FaLink,
   FaGithub,
   FaLinkedin,
   FaGlobe,
-  FaUser,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -70,15 +67,14 @@ export default function DeveloperProfileEdit() {
     dispatch(editProfile({ ...userData, ...profile, skills }));
   }
 
-  async function handleDelete() {
-    if (typeof onDelete !== "function") return setShowDeleteConfirm(false);
+  /*   async function handleDelete() {
     try {
     } catch (err) {
       console.error(err);
     } finally {
       setShowDeleteConfirm(false);
     }
-  }
+  } */
 
   return (
     <div className="min-h-screen bg-base-100 p-4 md:p-8">

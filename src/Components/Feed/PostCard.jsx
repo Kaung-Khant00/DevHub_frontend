@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { deletePost, likePost } from "../../Redux/post/postSlice";
 import { api } from "../../Services/axios_instance";
+import Spinner from "../Common/Spinner";
 
 function PostCard({ post }) {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function PostCard({ post }) {
     created_at_formatted,
   } = post;
   const { user: authUser } = useSelector((state) => state.user);
+  const likeLoading = useSelector((state) => state.post.like.loading);
   const [expand, setExpand] = useState(false);
   /*  I am making for better UX so the like button response immediately after I click the like  */
   /*  And the data request will send to the backend site  */
@@ -229,7 +231,11 @@ function PostCard({ post }) {
               liked ? "text-primary" : "text-base-content/80"
             }`}
           >
-            {liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
+            {likeLoading ? (
+              <Spinner size="sm" />
+            ) : (
+              <>{liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}</>
+            )}
             <span>{post?.liked_users_count ?? 0}</span>
           </button>
 

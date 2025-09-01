@@ -1,5 +1,10 @@
 // postSlice.js
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  isPending,
+  isRejected,
+} from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { api } from "../../Services/axios_instance";
 
@@ -53,7 +58,7 @@ export const fetchPosts = createAsyncThunk(
       return rejectWithValue(err.response?.data?.errors || err.message);
     } finally {
       try {
-        if (isFetchingRef.current) {
+        if (isFetchingRef) {
           isFetchingRef.current = false;
         }
       } catch (e) {
@@ -91,7 +96,7 @@ export const editPost = createAsyncThunk(
   async ({ id, form, navigate }, { rejectWithValue }) => {
     console.log(form);
     try {
-      const response = await api.post(`/posts/edit/${id}`, form, {
+      const response = await api.patch(`/posts/edit/${id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post updated successfully!");
@@ -161,7 +166,7 @@ export const likeDetailPost = createAsyncThunk(
 
 /*
 |------------------------------------------------------------------------
-| FETCH DETAIL POST INCLUDING COMMENTS
+| FETCH DETAIL POST
 |------------------------------------------------------------------------
 */
 export const fetchDetailPost = createAsyncThunk(
@@ -178,25 +183,88 @@ export const fetchDetailPost = createAsyncThunk(
     }
   }
 );
+
 /*
 |------------------------------------------------------------------------
 | COMMENT POST
 |------------------------------------------------------------------------
 */
-// export const commentPost = createAsyncThunk(
-//   "posts/commentPost",
-//   async (commentData, { rejectWithValue }) => {
-//     try {
-//       const response = await api.post("/posts/comment", commentData);
-//       console.log(response);
-//       return response.data.post;
-//     } catch (err) {
-//       console.log(err);
-//       toast.error("Something went wrong!");
-//       return rejectWithValue();
-//     }
-//   }
-// );
+export const fetchComments = createAsyncThunk(
+  "posts/fetchComments",
+  async ({ pagination, id }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/posts/${id}/comments`, {
+        params: pagination,
+      });
+      console.log(response);
+      return response.data.comments;
+    } catch (err) {
+      toast.error("Unexpected Error happened while loading Post!");
+      console.log(err);
+      rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+
+/*
+|------------------------------------------------------------------------
+| FETCH COMMENTS OF THE POST
+|------------------------------------------------------------------------
+*/
+export const commentPost = createAsyncThunk(
+  "posts/commentPost",
+  async (commentData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/posts/comment", commentData);
+      console.log(response);
+      return response.data.comment;
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong!");
+      return rejectWithValue();
+    }
+  }
+);
+
+/*
+|------------------------------------------------------------------------
+| UPDATE COMMENT
+|------------------------------------------------------------------------
+*/
+export const updateComment = createAsyncThunk(
+  "posts/updateComment",
+  async ({ comment, id }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/posts/${id}/comment`, { comment });
+      console.log(response);
+      return response.data.comment;
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong!");
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+/*
+|------------------------------------------------------------------------
+| DELETE COMMENT
+|------------------------------------------------------------------------
+*/
+export const deleteComment = createAsyncThunk(
+  "posts/deleteComment",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/posts/${id}/comment`);
+      console.log(response);
+      toast.success("Comment deleted successfully!");
+      return response.data;
+    } catch (err) {
+      console.log(err);
+      toast.error("Couldn't delete comment!");
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
 
 const initialState = {
   posts: [],
@@ -206,6 +274,23 @@ const initialState = {
     lastPage: null,
     sortBy: "created_at,desc",
     nextPageURL: null,
+  },
+  comments: {
+    loading: false,
+    error: null,
+    data: [],
+    pagination: {
+      perPage: 40,
+      page: 1,
+      lastPage: null,
+      nextPageURL: null,
+      sortBy: "created_at,desc",
+    },
+  },
+  comment: {
+    createLoading: false,
+    updateLoading: false,
+    deleteLoading: false,
   },
   create: {
     loading: false,
@@ -248,11 +333,8 @@ const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // CREATE POST
     builder
-      .addCase(createPost.pending, (state) => {
-        state.create.loading = true;
-        state.create.error = null;
-      })
       .addCase(createPost.fulfilled, (state) => {
         state.create.loading = false;
         state.create.error = null;
@@ -263,34 +345,21 @@ const postSlice = createSlice({
       });
 
     // FETCH POSTS
-    builder
-      .addCase(fetchPosts.pending, (state) => {
-        state.fetch.loading = true;
-        state.fetch.error = null;
-      })
-      .addCase(fetchPosts.fulfilled, (state, action) => {
-        state.fetch.loading = false;
-        state.fetch.error = null;
-        state.posts = [...state.posts, ...action.payload.data.data];
-        state.pagination = {
-          perPage: action.payload.data.per_page,
-          page: action.payload.data.current_page + 1,
-          nextPageURL: action.payload.data.next_page_url,
-          lastPage: action.payload.data.last_page,
-          category: action.payload.data.category,
-        };
-      })
-      .addCase(fetchPosts.rejected, (state, action) => {
-        state.fetch.loading = false;
-        state.fetch.error = action.payload;
-      });
+    builder.addCase(fetchPosts.fulfilled, (state, action) => {
+      state.fetch.loading = false;
+      state.fetch.error = null;
+      state.posts = [...state.posts, ...action.payload.data.data];
+      state.pagination = {
+        perPage: action.payload.data.per_page,
+        page: action.payload.data.current_page + 1,
+        nextPageURL: action.payload.data.next_page_url,
+        lastPage: action.payload.data.last_page,
+        category: action.payload.data.category,
+      };
+    });
 
     // FETCH SPECIFIC POST
     builder
-      .addCase(fetchSpecificPost.pending, (state) => {
-        state.edit.loading = true;
-        state.edit.error = null;
-      })
       .addCase(fetchSpecificPost.fulfilled, (state, action) => {
         state.edit.loading = false;
         state.edit.error = null;
@@ -304,10 +373,6 @@ const postSlice = createSlice({
 
     // EDIT POST
     builder
-      .addCase(editPost.pending, (state) => {
-        state.edit.loading = true;
-        state.edit.error = null;
-      })
       .addCase(editPost.fulfilled, (state, action) => {
         state.edit.loading = false;
         state.edit.error = null;
@@ -319,11 +384,10 @@ const postSlice = createSlice({
       .addCase(editPost.rejected, (state, action) => {
         state.edit.loading = false;
         state.edit.error = action.payload;
-      })
-      .addCase(deletePost.pending, (state) => {
-        state.edit.loading = true;
-        state.edit.error = null;
-      })
+      });
+
+    // DELETE POST
+    builder
       .addCase(deletePost.fulfilled, (state, action) => {
         state.edit.loading = false;
         state.edit.error = null;
@@ -334,25 +398,26 @@ const postSlice = createSlice({
       .addCase(deletePost.rejected, (state, action) => {
         state.edit.loading = false;
         state.edit.error = action.payload;
-      })
-      .addCase(likePost.pending, (state) => {
-        state.like.loading = true;
-        state.like.error = null;
-      })
+      });
+
+    // LIKE POST (Feed)
+    builder
       .addCase(likePost.fulfilled, (state, action) => {
         const updatedPost = action.payload;
         const idx = state.posts.findIndex((post) => post.id === updatedPost.id);
         if (idx !== -1) {
           state.posts[idx] = { ...state.posts[idx], ...updatedPost };
         }
-        state.posts = [...state.posts];
         state.like.loading = false;
         state.like.error = null;
       })
       .addCase(likePost.rejected, (state, action) => {
         state.like.loading = false;
         state.like.error = action.payload;
-      })
+      });
+
+    // LIKE POST (Detail)
+    builder
       .addCase(likeDetailPost.fulfilled, (state, action) => {
         state.detail.data = { ...state.detail.data, ...action.payload };
         state.detail.likeLoading = false;
@@ -362,7 +427,10 @@ const postSlice = createSlice({
       })
       .addCase(likeDetailPost.rejected, (state) => {
         state.detail.likeLoading = false;
-      })
+      });
+
+    // FETCH DETAIL POST
+    builder
       .addCase(fetchDetailPost.fulfilled, (state, action) => {
         state.detail.data = action.payload;
         state.detail.loading = false;
@@ -373,6 +441,108 @@ const postSlice = createSlice({
       .addCase(fetchDetailPost.rejected, (state) => {
         state.detail.loading = false;
       });
+
+    //FETCH COMMENTS
+    builder.addCase(fetchComments.fulfilled, (state, action) => {
+      state.comments.loading = false;
+      state.comments.error = null;
+      state.comments.data = [...state.comments.data, ...action.payload.data];
+      state.comments.pagination = {
+        perPage: action.payload.per_page,
+        page: action.payload.current_page + 1,
+        lastPage: action.payload.last_page,
+        nextPageURL: action.payload.next_page_url,
+      };
+    });
+
+    //UPDATE COMMENT
+    builder.addCase(updateComment.fulfilled, (state, action) => {
+      state.comment.updateLoading = false;
+      state.comments.data = [
+        action.payload,
+        ...state.comments.data.filter(
+          (comment) => comment.id !== action.payload.id
+        ),
+      ];
+    });
+    builder.addCase(commentPost.fulfilled, (state, action) => {
+      state.comment.createLoading = false;
+      state.detail.data.comments_count += 1;
+      state.comments.data = [action.payload, ...state.comments.data];
+    });
+    builder.addCase(deleteComment.fulfilled, (state, action) => {
+      state.comment.deleteLoading = false;
+      state.detail.data.comments_count -= 1;
+      state.comments.data = state.comments.data.filter(
+        (comment) => comment.id !== action.payload.id
+      );
+    });
+    builder
+      .addMatcher(
+        isPending(
+          createPost,
+          fetchPosts,
+          fetchSpecificPost,
+          editPost,
+          deletePost,
+          likePost,
+          fetchComments,
+          updateComment,
+          commentPost,
+          deleteComment
+        ),
+        (state, action) => {
+          const type = action.type.split("/")[1];
+          if (type.includes("create")) state.create.loading = true;
+          if (type.includes("fetchPosts")) state.fetch.loading = true;
+          if (
+            type.includes("fetchSpecific") ||
+            type.includes("edit") ||
+            type.includes("delete")
+          )
+            state.edit.loading = true;
+          if (type.includes("likePost")) state.like.loading = true;
+          if (type.includes("fetchComments")) state.comments.loading = true;
+          if (type.includes("updateComment"))
+            state.comment.updateLoading = true;
+          if (type.includes("commentPost")) state.comment.createLoading = true;
+          if (type.includes("deleteComment"))
+            state.comment.deleteLoading = true;
+        }
+      )
+      .addMatcher(
+        isRejected(
+          createPost,
+          fetchPosts,
+          fetchSpecificPost,
+          editPost,
+          deletePost,
+          likePost,
+          updateComment,
+          commentPost,
+          deletePost
+        ),
+        (state, action) => {
+          const type = action.type.split("/")[1];
+          if (type.includes("create")) state.create.error = action.payload;
+          if (type.includes("fetchPosts")) state.fetch.error = action.payload;
+          if (
+            type.includes("fetchSpecific") ||
+            type.includes("edit") ||
+            type.includes("delete")
+          )
+            state.edit.error = action.payload;
+          if (type.includes("likePost")) state.like.error = action.payload;
+          if (type.includes("fetchComments"))
+            state.comments.error = action.payload;
+          if (type.includes("updateComment"))
+            state.comment.updateError = action.payload;
+          if (type.includes("commentPost"))
+            state.comment.createError = action.payload;
+          if (type.includes("deletePost"))
+            state.comment.deleteError = action.payload;
+        }
+      );
   },
 });
 
