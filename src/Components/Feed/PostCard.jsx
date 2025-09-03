@@ -8,12 +8,13 @@ import {
 } from "react-icons/fa";
 import { PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "./ImageWIthSkeleton";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { deletePost, likePost } from "../../Redux/post/postSlice";
 import { api } from "../../Services/axios_instance";
 import Spinner from "../Common/Spinner";
+import PostCardAction from "./PostCardAction";
+import { followUser } from "../../Redux/post/postSlice";
 
 function PostCard({ post }) {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function PostCard({ post }) {
     title,
     code,
     code_lang,
+    followed,
     image,
     image_url,
     created_at_formatted,
@@ -42,17 +44,20 @@ function PostCard({ post }) {
     ? content
     : content.substring(0, LIMIT) + (isLong ? "..." : "");
 
-  const handleEditPost = () => {
+  const EditPostApi = () => {
     navigate(`/post/edit/${post.id}`);
   };
 
-  function handleLikePost() {
+  function CreateLikeApi() {
     setLiked((pre) => !pre);
     dispatch(likePost({ post_id: post.id, user_id: authUser.id }));
   }
 
-  function handlePostDelete() {
+  function DeletePostApi() {
     dispatch(deletePost(post.id));
+  }
+  function FollowUserApi() {
+    dispatch(followUser(user.id));
   }
   async function handleFileDownload(path) {
     try {
@@ -92,50 +97,14 @@ function PostCard({ post }) {
               </div>
             </div>
           </div>
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-circle m-1">
-              <BsThreeDotsVertical size={20} />
-            </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm"
-            >
-              {/* <li>
-                <a>Save Post</a>
-              </li> 
-              <li>
-                <a>Unfollow User</a>
-              </li> */}
-              {user?.id === authUser?.id && (
-                <li onClick={handleEditPost}>
-                  <a>Edit Post</a>
-                </li>
-              )}
-
-              <li>
-                <a>Copy Link</a>
-              </li>
-              <li>
-                <a>Share</a>
-              </li>
-              {user?.id === authUser?.id ? (
-                <li>
-                  <div
-                    onClick={handlePostDelete}
-                    className="text-red-600 hover:bg-red-500 hover:text-white"
-                  >
-                    Delete this post
-                  </div>
-                </li>
-              ) : (
-                <li>
-                  <a className="text-red-600 hover:bg-red-500 hover:text-white">
-                    Report
-                  </a>
-                </li>
-              )}
-            </ul>
-          </div>
+          <PostCardAction
+            authUser={authUser}
+            DeletePostApi={DeletePostApi}
+            EditPostApi={EditPostApi}
+            FollowUserApi={FollowUserApi}
+            user={user}
+            followed={followed}
+          />
         </div>
 
         {/* Body */}
@@ -226,7 +195,7 @@ function PostCard({ post }) {
 
         <div className="mt-3 flex items-center gap-2">
           <button
-            onClick={handleLikePost}
+            onClick={CreateLikeApi}
             className={`flex items-center gap-2 text-sm ${
               liked ? "text-primary" : "text-base-content/80"
             }`}

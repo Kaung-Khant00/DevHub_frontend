@@ -10,6 +10,8 @@ const ProfilePosts = () => {
           <span className="loading loading-ring loading-xl"></span>
         </div>
       )}
+      {/* FIXME: I have to fix the post liking cuz it is not the same as liking post in postCard*/}
+
       {userPosts.data && userPosts.data.length > 0 && (
         <>
           {userPosts.data.map((post) => (

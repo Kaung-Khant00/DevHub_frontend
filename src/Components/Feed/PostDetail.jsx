@@ -131,51 +131,57 @@ export default function DetailPostPage({ detail }) {
             </p>
 
             {/* Code block */}
-            <div className="mt-2 collapse collapse-open border border-base-200 bg-base-200/60 rounded-lg">
-              <div className="collapse-title text-sm font-medium flex items-center gap-2">
-                <FaCode /> Code snippet{" "}
-                <span className="ml-2 font-mono text-xs text-base-content/60">
-                  ({detail.data?.code_lang})
-                </span>
-              </div>
-              <div className="collapse-content p-0">
-                <pre className="max-w-full bg-base-100 p-4 rounded-b-lg overflow-auto text-sm font-mono whitespace-pre-wrap break-words">
-                  <code>{detail.data?.code}</code>
-                </pre>
-              </div>
-            </div>
-
-            {/* Image */}
-            <div>
-              <ImageWIthSkeleton
-                src={detail.data?.image_url}
-                alt={detail.data?.title}
-                className="w-full rounded-lg object-cover max-h-[420px]"
-              />
-            </div>
-
-            {/* File panel */}
-            <div className="mt-2 flex items-center justify-between btn btn-ghost border border-base-300 rounded-lg p-3">
-              <div className="flex items-center gap-3">
-                <FaFile />
-                <div>
-                  <div className="font-medium">{detail.data?.file.name}</div>
-                  <div className="text-xs text-base-content/60">
-                    {formatSize(detail.data?.file.size)}
-                  </div>
+            {detail.data?.code && (
+              <div className="mt-2 collapse collapse-open border border-base-200 bg-base-200/60 rounded-lg">
+                <div className="collapse-title text-sm font-medium flex items-center gap-2">
+                  <FaCode /> Code snippet{" "}
+                  <span className="ml-2 font-mono text-xs text-base-content/60">
+                    ({detail.data?.code_lang})
+                  </span>
+                </div>
+                <div className="collapse-content p-0">
+                  <pre className="max-w-full bg-base-100 p-4 rounded-b-lg overflow-auto text-sm font-mono whitespace-pre-wrap break-words">
+                    <code>{detail.data?.code}</code>
+                  </pre>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  className="btn btn-outline btn-sm gap-2"
-                  onClick={() => {
-                    handleFileDownload(detail.data?.file.path);
-                  }}
-                >
-                  <FaDownload /> Download
-                </button>
+            )}
+
+            {/* Image */}
+            {detail.data?.image && (
+              <div>
+                <ImageWIthSkeleton
+                  src={detail.data?.image_url}
+                  alt={detail.data?.title}
+                  className="w-full rounded-lg object-cover max-h-[420px]"
+                />
               </div>
-            </div>
+            )}
+
+            {/* File panel */}
+            {detail.data?.file && (
+              <div className="mt-2 flex items-center justify-between btn btn-ghost border border-base-300 rounded-lg p-3">
+                <div className="flex items-center gap-3">
+                  <FaFile />
+                  <div>
+                    <div className="font-medium">{detail.data?.file.name}</div>
+                    <div className="text-xs text-base-content/60">
+                      {formatSize(detail.data?.file.size)}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    className="btn btn-outline btn-sm gap-2"
+                    onClick={() => {
+                      handleFileDownload(detail.data?.file.path);
+                    }}
+                  >
+                    <FaDownload /> Download
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         </article>
       )}

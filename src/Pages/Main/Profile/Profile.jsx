@@ -18,8 +18,8 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserPosts } from "../../../Redux/user/userSlice";
-import { Link } from "react-router-dom";
+import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
+import { Link, useNavigate } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "./ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
@@ -58,12 +58,12 @@ export default function DeveloperProfilePage({ isOwnProfile = true }) {
   const { profile, user } = useSelector((state) => state.user);
   const skills = useSkillChips(profile?.skill);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      dispatch(fetchUserPosts());
-    }
-  }, [dispatch, user]);
+    dispatch(fetchUserPosts());
+    dispatch(fetchUser());
+  }, []);
   return (
     <>
       {user && profile && (
@@ -72,7 +72,7 @@ export default function DeveloperProfilePage({ isOwnProfile = true }) {
           <div className="relative">
             <div className="h-30 w-full bg-gradient-to-r from-primary/30 via-secondary/30 to-accent/30 rounded-b-2xl" />
             <div className="max-w-6xl mx-auto px-4">
-              <div className="absolute -bottom-12 md:-bottom-14">
+              <div className="absolute -bottom-12 md:-bottom-14 max-sm:inset-x-0 flex sm:block justify-center">
                 <div className="avatar">
                   <div className="w-24 md:w-28 rounded-full ring ring-base-100 ring-offset-4 ring-offset-base-100 shadow-2xl">
                     <img
@@ -86,7 +86,14 @@ export default function DeveloperProfilePage({ isOwnProfile = true }) {
           </div>
 
           {/* Header */}
-          <div className="max-w-6xl mx-auto px-4 pt-16 md:pt-20">
+          <div className="relative max-w-6xl mx-auto px-4 pt-16 md:pt-20">
+            <button
+              className="btn btn-outline btn-primary btn-sm absolute top-5 sm:right-0 "
+              onClick={() => navigate(-1)}
+              aria-label="Back"
+            >
+              Back
+            </button>
             <div className="card bg-base-100 shadow-sm border border-base-200 rounded-2xl">
               <div className="card-body p-4 md:p-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -111,6 +118,7 @@ export default function DeveloperProfilePage({ isOwnProfile = true }) {
                           {profile.address}
                         </span>
                       )}
+
                       <span className="opacity-60">•</span>
                       <span className="opacity-70">
                         Joined{" "}
@@ -180,29 +188,6 @@ export default function DeveloperProfilePage({ isOwnProfile = true }) {
               <ProfilePosts />
             </main>
           </div>
-
-          {/* Mobile Action Bar */}
-          {isOwnProfile && (
-            <div className="lg:hidden fixed bottom-4 left-0 right-0 flex justify-center">
-              <div className="btn-group shadow-xl rounded-2xl">
-                <a
-                  href="/profile/edit"
-                  className="btn btn-primary btn-sm gap-2"
-                >
-                  <FaEdit size={16} /> Edit
-                </a>
-                <a href="/groups/joined" className="btn btn-sm">
-                  <FaFolder size={16} /> Joined Groups
-                </a>
-                <a href="/followers" className="btn btn-sm">
-                  <FaUsers size={16} /> Followers
-                </a>
-                <a href="/notifications" className="btn btn-sm">
-                  <FaBell size={16} /> Notification
-                </a>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </>

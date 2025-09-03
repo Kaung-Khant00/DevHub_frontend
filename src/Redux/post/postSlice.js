@@ -266,6 +266,25 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
+/*
+|------------------------------------------------------------------------
+| FOLLOW USER
+|------------------------------------------------------------------------
+*/
+export const followUser = createAsyncThunk(
+  "posts/followUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/users/${userId}/follow`);
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue("Failed to follow user");
+    }
+  }
+);
+
 const initialState = {
   posts: [],
   pagination: {
@@ -318,7 +337,10 @@ const initialState = {
     loading: null,
     error: null,
   },
-  error: null,
+  follow: {
+    loading: false,
+    error: null,
+  },
 };
 
 const postSlice = createSlice({
@@ -477,6 +499,19 @@ const postSlice = createSlice({
         (comment) => comment.id !== action.payload.id
       );
     });
+
+    // FOLLOW USER
+    builder.addCase(followUser.fulfilled, (state, action) => {
+      state.follow.loading = false;
+      state.posts = [
+        ...state.posts.map((post) => {
+          if (post.user_id == action.payload.id) {
+            return { ...post, followed: action.payload.followed };
+          }
+          return post;
+        }),
+      ];
+    });
     builder
       .addMatcher(
         isPending(
@@ -489,11 +524,12 @@ const postSlice = createSlice({
           fetchComments,
           updateComment,
           commentPost,
-          deleteComment
+          deleteComment,
+          followUser
         ),
         (state, action) => {
           const type = action.type.split("/")[1];
-          if (type.includes("create")) state.create.loading = true;
+          if (type.includes("createPost")) state.create.loading = true;
           if (type.includes("fetchPosts")) state.fetch.loading = true;
           if (
             type.includes("fetchSpecific") ||
@@ -508,6 +544,7 @@ const postSlice = createSlice({
           if (type.includes("commentPost")) state.comment.createLoading = true;
           if (type.includes("deleteComment"))
             state.comment.deleteLoading = true;
+          if (type.includes("followUser")) state.follow.loading = true;
         }
       )
       .addMatcher(
@@ -520,27 +557,57 @@ const postSlice = createSlice({
           likePost,
           updateComment,
           commentPost,
-          deletePost
+          deleteComment,
+          followUser
         ),
         (state, action) => {
           const type = action.type.split("/")[1];
-          if (type.includes("create")) state.create.error = action.payload;
-          if (type.includes("fetchPosts")) state.fetch.error = action.payload;
+
+          if (type.includes("createPost")) {
+            state.create.loading = false;
+            state.create.error = action.payload;
+          }
+
+          if (type.includes("fetchPosts")) {
+            state.fetch.loading = false;
+            state.fetch.error = action.payload;
+          }
+
           if (
             type.includes("fetchSpecific") ||
             type.includes("edit") ||
             type.includes("delete")
-          )
+          ) {
+            state.edit.loading = false;
             state.edit.error = action.payload;
-          if (type.includes("likePost")) state.like.error = action.payload;
-          if (type.includes("fetchComments"))
+          }
+
+          if (type.includes("likePost")) {
+            state.like.loading = false;
+            state.like.error = action.payload;
+          }
+
+          if (type.includes("fetchComments")) {
+            state.comments.loading = false;
             state.comments.error = action.payload;
-          if (type.includes("updateComment"))
-            state.comment.updateError = action.payload;
-          if (type.includes("commentPost"))
-            state.comment.createError = action.payload;
-          if (type.includes("deletePost"))
-            state.comment.deleteError = action.payload;
+          }
+
+          if (type.includes("updateComment")) {
+            state.comment.updateLoading = false;
+          }
+
+          if (type.includes("commentPost")) {
+            state.comment.createLoading = false;
+          }
+
+          if (type.includes("deleteComment")) {
+            state.comment.deleteLoading = false;
+          }
+
+          if (type.includes("followUser")) {
+            state.follow.loading = false;
+            state.follow.error = action.payload;
+          }
         }
       );
   },

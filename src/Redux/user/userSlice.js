@@ -229,6 +229,7 @@ export const filterSortPosts = createAsyncThunk(
     }
   }
 );
+
 /*
 |------------------------------------------------------------------------
 | INITIAL STATE

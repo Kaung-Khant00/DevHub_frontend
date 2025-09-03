@@ -9,8 +9,7 @@ const PostContainer = () => {
   const isFetching = useRef(false);
 
   function loadMorePosts() {
-    if (isFetching.current || pagination.currentPage >= pagination.lastPage)
-      return;
+    if (isFetching.current || pagination.page >= pagination.lastPage) return;
     isFetching.current = true;
     dispatch(
       fetchPosts(
@@ -23,7 +22,7 @@ const PostContainer = () => {
   }
 
   useEffect(() => {
-    if (isFetching.current) return;
+    if (isFetching.current || pagination.page !== 1) return;
     isFetching.current = true;
     dispatch(
       fetchPosts(

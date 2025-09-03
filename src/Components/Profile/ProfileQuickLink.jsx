@@ -1,36 +1,99 @@
-import { FaBell, FaFolder, FaUsers } from "react-icons/fa";
+import React from "react";
+import { FaUsers, FaFolder, FaBell } from "react-icons/fa";
 
-const ProfileQuickLink = () => {
+/**
+ * QuickLinks
+ * A compact, professional quick-links row built with Tailwind CSS + daisyUI.
+ * - Uses daisyUI's indicator + badge for primary color unread dots/numbers.
+ * - Responsive: stacks on mobile, horizontal on md+.
+ * - Props: followersCount, groupsCount, notificationsUnread
+ *
+ * Usage example:
+ * <QuickLinks followersCount={124} groupsCount={8} notificationsUnread={3} />
+ *
+ * Requirements: Tailwind CSS + daisyUI in your project.
+ */
+
+const QuickLinks = ({
+  followersCount = 0,
+  groupsCount = 0,
+  notificationsUnread = 0,
+}) => {
+  const fmt = (n) => {
+    if (!n) return "";
+    if (n > 99) return "99+";
+    return String(n);
+  };
+
+  const items = [
+    {
+      key: "followers",
+      href: "/followers",
+      icon: <FaUsers className="text-lg" aria-hidden />,
+      title: "Followers",
+      label: fmt(followersCount),
+      showLabelInSubtitle: true,
+    },
+    {
+      key: "groups",
+      href: "/groups/joined",
+      icon: <FaFolder className="text-lg" aria-hidden />,
+      title: "Joined Groups",
+      label: fmt(groupsCount),
+      showLabelInSubtitle: true,
+    },
+    {
+      key: "notifications",
+      href: "/notifications",
+      icon: <FaBell className="text-lg" aria-hidden />,
+      title: "Notifications",
+      label: fmt(notificationsUnread),
+      unread: notificationsUnread > 0,
+    },
+  ];
+
   return (
-    <div className="mt-4 flex w-full bg-white rounded shadow-sm">
-      <div className="tabs flex-col md:flex-row tabs-boxed w-full">
-        <a
-          className="btn tab flex-1 font-bold hover:bg-primary/20"
-          href="/followers"
-        >
-          <div className="flex-none w-11 h-11 rounded-xl text-primary flex items-center justify-center text-lg">
-            <FaUsers />
-          </div>{" "}
-          <span className="text-primary">Followers</span>
-        </a>
-        <a
-          className="tab flex-1 btn font-bold text-primary hover:bg-primary/20"
-          href="/groups/joined"
-        >
-          <div className="flex-none w-11 h-11 rounded-xl text-primary flex items-center justify-center text-lg">
-            <FaFolder />
-          </div>{" "}
-          <span className="text-primary">Joined Groups</span>
-        </a>
-        <a className="tab flex-1 btn hover:bg-primary/20" href="/notifications">
-          <div className="flex-none w-11 h-11 rounded-xl text-primary flex items-center justify-center text-lg">
-            <FaBell />
-          </div>
-          <span className="text-primary"> Notifications</span>
-        </a>
+    <nav aria-label="Quick links" className="mt-4 w-full">
+      <div className="bg-white rounded-2xl shadow-sm p-2">
+        <div className="flex flex-col md:flex-row gap-2">
+          {items.map((it) => (
+            <a
+              key={it.key}
+              href={it.href}
+              aria-label={it.title}
+              className="flex items-center gap-4 flex-1 p-3 rounded-lg hover:bg-primary/10 focus:bg-primary/10 transition-transform duration-150 transform focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              {/* icon + optional unread badge using daisyUI indicator */}
+              <div className="indicator flex-none relative">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-lg font-semibold">
+                  {it.icon}
+                </div>
+
+                {/* Unread badge: uses daisyUI badge + indicator-item for positioning */}
+                {it.unread && (
+                  <span className="indicator-item -top-1 -right-1 badge badge-primary badge-sm">
+                    {it.label}
+                  </span>
+                )}
+              </div>
+
+              {/* text */}
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-sm text-base-content leading-tight">
+                  {it.title}
+                </div>
+                {it.showLabelInSubtitle && (
+                  <div className="text-xs text-muted mt-1">
+                    {it.label || "0"} total
+                  </div>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default ProfileQuickLink;
+export default QuickLinks;
