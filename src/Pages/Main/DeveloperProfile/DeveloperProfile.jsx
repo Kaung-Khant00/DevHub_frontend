@@ -7,12 +7,13 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
+import { fetchDeveloperProfile } from "../../../Redux/user/userSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
-import ProfileAbout from "./ProfileAbout";
+import ProfileAbout from "../Profile/ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
 import ProfilePosts from "../../../Components/Profile/ProfilePosts";
+import { HiOutlineUserAdd } from "react-icons/hi";
 
 function Stat({ value, label }) {
   return (
@@ -27,9 +28,12 @@ function Stat({ value, label }) {
 
 export default function DeveloperProfilePage() {
   const { id } = useParams();
-  const { profile, user } = useSelector((state) => state.user);
-  const userPosts = useSelector((state) => state.user.userPosts);
-  const skills = useSelector((state) => state.user.profile?.skills);
+  const { profile, user, posts } = useSelector(
+    (state) => state.user.viewedProfileUser
+  );
+  const skills = useSelector(
+    (state) => state.user.viewedProfileUser.profile?.skills
+  );
   const [userId, setUserId] = useState();
   useEffect(() => {
     setUserId(id);
@@ -38,8 +42,7 @@ export default function DeveloperProfilePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(fetchUserPosts());
-    dispatch(fetchUser());
+    dispatch(fetchDeveloperProfile(id));
   }, []);
   return (
     <>
@@ -109,7 +112,7 @@ export default function DeveloperProfilePage() {
                       to="/profile/edit"
                       className="btn btn-primary btn-sm gap-2"
                     >
-                      <FaEdit size={16} /> Edit profile
+                      <HiOutlineUserAdd size={16} /> Follow
                     </Link>
                     <button className="btn btn-outline btn-sm gap-2">
                       <FaShareAlt size={16} /> Share
@@ -149,8 +152,6 @@ export default function DeveloperProfilePage() {
                     <Stat value={user?.groups_count} label="Joined Groups" />
                   </div>
                 </div>
-
-                <ProfileQuickLink />
               </div>
             </div>
           </div>
@@ -161,8 +162,8 @@ export default function DeveloperProfilePage() {
 
             {/* Posts */}
             <main className="lg:col-span-2">
-              <ProfilePostSearch postsLength={userPosts?.length} />
-              <ProfilePosts posts={userPosts} />
+              <ProfilePostSearch postsLength={posts?.length} />
+              <ProfilePosts posts={posts} />
             </main>
           </div>
         </div>

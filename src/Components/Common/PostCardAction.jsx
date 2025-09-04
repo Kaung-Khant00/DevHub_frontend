@@ -1,4 +1,3 @@
-import React from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaLink } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";

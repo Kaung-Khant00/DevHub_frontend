@@ -23,7 +23,7 @@ const ProfileAbout = ({ profile, skills, user }) => {
 
           <div className="divider my-4" />
           <h3 className="font-medium">Skills</h3>
-          {skills.length ? (
+          {skills?.length ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {skills.map((s, i) => (
                 <div key={i} className="badge badge-outline">

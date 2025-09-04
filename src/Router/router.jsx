@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import GuestLayout from "../Pages/Auth/GuestLayout";
 import Login from "../Pages/Auth/Login";
 import Register from "../Pages/Auth/Register";
@@ -13,6 +13,7 @@ import Secure from "../Pages/Auth/Secure";
 import Profile from "../Pages/Main/Profile/Profile";
 import EditDevProfile from "../Pages/Main/Profile/EditDevProfile";
 import ProfileLayout from "../Pages/Main/Profile/ProfileLayout";
+import DeveloperProfilePage from "../Pages/Main/DeveloperProfile/DeveloperProfile";
 
 const router = createBrowserRouter([
   {
@@ -49,8 +50,12 @@ const router = createBrowserRouter([
             element: <ProfileLayout />,
             children: [
               {
-                index: true,
+                path: "",
                 element: <Profile />,
+              },
+              {
+                path: ":id",
+                element: <DeveloperProfilePage />,
               },
               {
                 path: "edit",

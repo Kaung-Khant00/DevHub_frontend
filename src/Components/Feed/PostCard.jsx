@@ -7,16 +7,16 @@ import {
   FaRegHeart,
 } from "react-icons/fa";
 import { PiShareFatBold } from "react-icons/pi";
-import ImageWIthSkeleton from "./ImageWIthSkeleton";
+import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { deletePost, likePost } from "../../Redux/post/postSlice";
 import { api } from "../../Services/axios_instance";
 import Spinner from "../Common/Spinner";
-import PostCardAction from "./PostCardAction";
+import PostCardAction from "../Common/PostCardAction";
 import { followUser } from "../../Redux/post/postSlice";
 
-function PostCard({ post }) {
+function PostCard({ post, isInProfile = false }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -50,7 +50,12 @@ function PostCard({ post }) {
 
   function CreateLikeApi() {
     setLiked((pre) => !pre);
-    dispatch(likePost({ post_id: post.id, user_id: authUser.id }));
+    dispatch(
+      likePost({
+        likeData: { post_id: post.id, user_id: authUser.id },
+        isInProfile,
+      })
+    );
   }
 
   function DeletePostApi() {
@@ -85,11 +90,11 @@ function PostCard({ post }) {
         <div className="flex justify-between">
           {/*  Image Container */}
           <div className="flex items-center gap-3">
-            <div className="avatar">
+            <Link to={`/profile/${user?.id}`} className="avatar">
               <div className="w-12 rounded-full ring ring-base-100 ring-offset-base-100">
                 <img src={user?.profile_image_url} alt={user?.name} />
               </div>
-            </div>
+            </Link>
             <div>
               <div className="font-semibold">{user?.name}</div>
               <div className="text-sm text-base-content/60">

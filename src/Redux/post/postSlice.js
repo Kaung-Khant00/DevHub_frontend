@@ -7,6 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { api } from "../../Services/axios_instance";
+import { updateProfilePostLike } from "../user/userSlice";
 
 /*
 |------------------------------------------------------------------------
@@ -137,11 +138,16 @@ export const deletePost = createAsyncThunk(
 */
 export const likePost = createAsyncThunk(
   "posts/likePost",
-  async (likeData, { rejectWithValue }) => {
+  async ({ likeData, isInProfile = false }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.post("/posts/like", likeData);
       console.log(response);
-      return response.data.post;
+      response.data.profileLike = isInProfile;
+      console.log(isInProfile);
+      if (isInProfile) {
+        dispatch(updateProfilePostLike(response.data.post));
+      }
+      return response.data;
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong!");
@@ -425,7 +431,7 @@ const postSlice = createSlice({
     // LIKE POST (Feed)
     builder
       .addCase(likePost.fulfilled, (state, action) => {
-        const updatedPost = action.payload;
+        const updatedPost = action.payload.post;
         const idx = state.posts.findIndex((post) => post.id === updatedPost.id);
         if (idx !== -1) {
           state.posts[idx] = { ...state.posts[idx], ...updatedPost };

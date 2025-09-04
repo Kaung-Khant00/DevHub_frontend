@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const ImageWIthSkeleton = ({ src, alt, className }) => {
   const [loaded, setLoaded] = useState(false);

@@ -5,7 +5,7 @@ import { fetchDetailPost } from "../../Redux/post/postSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../Services/axios_instance";
-import ImageWIthSkeleton from "./ImageWIthSkeleton";
+import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
 
 export default function DetailPostPage({ detail }) {
   const [expand, setExpand] = useState(false);
