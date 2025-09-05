@@ -7,7 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { api } from "../../Services/axios_instance";
-import { updateProfilePostLike } from "../user/userSlice";
+import { followProfileUser, updateProfilePostLike } from "../user/userSlice";
 
 /*
 |------------------------------------------------------------------------
@@ -138,14 +138,15 @@ export const deletePost = createAsyncThunk(
 */
 export const likePost = createAsyncThunk(
   "posts/likePost",
-  async ({ likeData, isInProfile = false }, { rejectWithValue, dispatch }) => {
+  async ({ likeData, isInProfile = null }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.post("/posts/like", likeData);
-      console.log(response);
       response.data.profileLike = isInProfile;
       console.log(isInProfile);
       if (isInProfile) {
-        dispatch(updateProfilePostLike(response.data.post));
+        dispatch(
+          updateProfilePostLike({ post: response.data.post, type: isInProfile })
+        );
       }
       return response.data;
     } catch (err) {
@@ -279,9 +280,12 @@ export const deleteComment = createAsyncThunk(
 */
 export const followUser = createAsyncThunk(
   "posts/followUser",
-  async (userId, { rejectWithValue }) => {
+  async ({ userId, isInProfile = false }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get(`/users/${userId}/follow`);
+      if (isInProfile) {
+        dispatch(followProfileUser());
+      }
       console.log(response);
       return response.data;
     } catch (error) {

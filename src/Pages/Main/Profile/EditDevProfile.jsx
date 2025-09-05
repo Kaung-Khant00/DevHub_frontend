@@ -390,7 +390,7 @@ export default function DeveloperProfileEdit() {
               </button>
               <button
                 className={`btn btn-error ${loading ? "loading" : ""}`}
-                onClick={handleDelete}
+                // onClick={handleDelete}
               >
                 Yes, delete
               </button>

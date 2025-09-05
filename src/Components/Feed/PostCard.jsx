@@ -50,19 +50,29 @@ function PostCard({ post, isInProfile = false }) {
 
   function CreateLikeApi() {
     setLiked((pre) => !pre);
-    dispatch(
-      likePost({
-        likeData: { post_id: post.id, user_id: authUser.id },
-        isInProfile,
-      })
-    );
+    if (isInProfile) {
+      dispatch(
+        likePost({
+          likeData: { post_id: post.id, user_id: authUser.id },
+          isInProfile: user.id === authUser.id ? "myProfile" : "othersProfile",
+        })
+      );
+    } else {
+      dispatch(
+        likePost({
+          likeData: { post_id: post.id, user_id: authUser.id },
+        })
+      );
+    }
   }
 
   function DeletePostApi() {
     dispatch(deletePost(post.id));
   }
   function FollowUserApi() {
-    dispatch(followUser(user.id));
+    if (user.id) {
+      dispatch(followUser({ userId: user.id }));
+    }
   }
   async function handleFileDownload(path) {
     try {

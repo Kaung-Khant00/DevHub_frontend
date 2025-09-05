@@ -14,6 +14,8 @@ import ProfileAbout from "../Profile/ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
 import ProfilePosts from "../../../Components/Profile/ProfilePosts";
 import { HiOutlineUserAdd } from "react-icons/hi";
+import { HiOutlineUserMinus } from "react-icons/hi2";
+import { followUser } from "../../../Redux/post/postSlice";
 
 function Stat({ value, label }) {
   return (
@@ -34,7 +36,7 @@ export default function DeveloperProfilePage() {
   const skills = useSelector(
     (state) => state.user.viewedProfileUser.profile?.skills
   );
-  const [userId, setUserId] = useState();
+  const [userId, setUserId] = useState(null);
   useEffect(() => {
     setUserId(id);
   }, [id]);
@@ -44,6 +46,12 @@ export default function DeveloperProfilePage() {
   useEffect(() => {
     dispatch(fetchDeveloperProfile(id));
   }, []);
+
+  function makeFollowUserApi() {
+    if (userId) {
+      dispatch(followUser({ userId, isInProfile: true }));
+    }
+  }
   return (
     <>
       {user && profile && (
@@ -108,13 +116,26 @@ export default function DeveloperProfilePage() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                      to="/profile/edit"
-                      className="btn btn-primary btn-sm gap-2"
+                    <button
+                      onClick={makeFollowUserApi}
+                      className={`btn ${
+                        user.isFollower && user.isFollowing
+                          ? "btn-error text-white"
+                          : "btn-primary"
+                      } gap-2`}
                     >
-                      <HiOutlineUserAdd size={16} /> Follow
-                    </Link>
-                    <button className="btn btn-outline btn-sm gap-2">
+                      {user.isFollowing && user.isFollower ? (
+                        <HiOutlineUserMinus size={16} />
+                      ) : (
+                        <HiOutlineUserAdd size={16} />
+                      )}{" "}
+                      {user.isFollowing && user.isFollower
+                        ? "Unfriend"
+                        : user?.isFollowing
+                        ? "Following"
+                        : "Follow Back"}
+                    </button>
+                    <button className="btn btn-outline gap-2">
                       <FaShareAlt size={16} /> Share
                     </button>
                     <div className="dropdown dropdown-end">

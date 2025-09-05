@@ -285,13 +285,31 @@ const userSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
     },
-    updateProfilePostLike: (state, action) => {
-      state.userPosts.data = state.userPosts.data?.map((post) => {
-        if (post.id === action.payload.id) {
-          return { ...post, ...action.payload };
-        }
-        return post;
-      });
+    updateProfilePostLike: (state, { payload }) => {
+      console.log(payload);
+      if (payload.type === "myProfile") {
+        state.userPosts.data = state.userPosts.data?.map((post) => {
+          if (post.id === payload.post.id) {
+            return { ...post, ...payload.post };
+          }
+          return post;
+        });
+      } else if (payload.type === "othersProfile") {
+        state.viewedProfileUser.posts = state.viewedProfileUser.posts?.map(
+          (post) => {
+            if (post.id === payload.post.id) {
+              return { ...post, ...payload.post };
+            }
+            return post;
+          }
+        );
+      }
+    },
+    followProfileUser: (state) => {
+      const isFollowing = state.viewedProfileUser.user.isFollowing;
+      state.viewedProfileUser.user.isFollowing =
+        !state.viewedProfileUser.user.isFollowing;
+      state.viewedProfileUser.user.followers_count += isFollowing ? -1 : 1;
     },
   },
   extraReducers: (builder) => {
@@ -500,5 +518,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setToken, updateProfilePostLike } = userSlice.actions;
+export const { setToken, updateProfilePostLike, followProfileUser } =
+  userSlice.actions;
 export default userSlice.reducer;
