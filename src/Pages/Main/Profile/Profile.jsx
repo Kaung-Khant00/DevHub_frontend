@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "./ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
@@ -26,14 +26,9 @@ function Stat({ value, label }) {
 }
 
 export default function DeveloperProfilePage() {
-  const { id } = useParams();
   const { profile, user } = useSelector((state) => state.user);
-  const userPosts = useSelector((state) => state.user.userPosts);
+  const userPosts = useSelector((state) => state.user.userPosts?.data);
   const skills = useSelector((state) => state.user.profile?.skills);
-  const [userId, setUserId] = useState();
-  useEffect(() => {
-    setUserId(id);
-  }, [id]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -66,7 +61,7 @@ export default function DeveloperProfilePage() {
           <div className="relative max-w-6xl mx-auto px-4 pt-16 md:pt-20">
             <button
               className="btn btn-outline btn-primary btn-sm absolute top-5 sm:right-0 "
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/feed")}
               aria-label="Back"
             >
               Back

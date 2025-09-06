@@ -100,7 +100,12 @@ function PostCard({ post, isInProfile = false }) {
         <div className="flex justify-between">
           {/*  Image Container */}
           <div className="flex items-center gap-3">
-            <Link to={`/profile/${user?.id}`} className="avatar">
+            <Link
+              to={
+                user?.id === authUser?.id ? `/profile` : `/profile/${user?.id}`
+              }
+              className="avatar"
+            >
               <div className="w-12 rounded-full ring ring-base-100 ring-offset-base-100">
                 <img src={user?.profile_image_url} alt={user?.name} />
               </div>
@@ -211,7 +216,7 @@ function PostCard({ post, isInProfile = false }) {
         <div className="mt-3 flex items-center gap-2">
           <button
             onClick={CreateLikeApi}
-            className={`flex items-center gap-2 text-sm ${
+            className={`flex items-center gap-2 text-sm cursor-pointer ${
               liked ? "text-primary" : "text-base-content/80"
             }`}
           >
@@ -225,12 +230,12 @@ function PostCard({ post, isInProfile = false }) {
 
           <Link
             to={`/post/${post?.id}/comments`}
-            className="flex items-center gap-1 text-sm text-base-content/80"
+            className="flex items-center gap-1 text-sm text-base-content/80 "
           >
             <FaRegCommentDots size={16} /> <span>Comments</span>
           </Link>
 
-          <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80">
+          <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80 cursor-pointer">
             <PiShareFatBold /> <span>Share</span>
           </button>
         </div>

@@ -7,8 +7,15 @@ import {
 } from "react-icons/fa";
 import FollowButton from "./FollowButton";
 import { BsGraphUpArrow } from "react-icons/bs";
+import { useDispatch } from "react-redux";
+import { followUser } from "../../Redux/post/postSlice";
 
 const PostQuickAction = ({ detail, user }) => {
+  const dispatch = useDispatch();
+
+  function followUserApi() {
+    dispatch(followUser({ userId: user.id }));
+  }
   return (
     <aside className="lg:col-span-1 space-y-6">
       {/* Quick Actions card */}
@@ -72,7 +79,10 @@ const PostQuickAction = ({ detail, user }) => {
             </button>
           ) : (
             <>
-              <FollowButton />
+              <FollowButton
+                followUserApi={followUserApi}
+                followed={detail.data?.followed}
+              />
 
               <button
                 type="button"

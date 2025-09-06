@@ -2,7 +2,8 @@ import { FaFire, FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
 function CreatorSnapshot() {
-  const { user } = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
+  const skills = useSelector((state) => state.user.profile?.skills);
 
   return (
     <div className="min-w-[350px] cardBox">
@@ -17,10 +18,14 @@ function CreatorSnapshot() {
           <div>
             <div className="font-bold text-lg leading-tight">{user?.name}</div>
             <div className="text-sm text-base-content/60">
-              Full-stack tinkerer
+              {user?.main_career}
             </div>
             <div className="mt-2 flex gap-2 flex-wrap">
-              <span className="badge badge-primary badge-outline">React</span>
+              {skills?.map((skill) => (
+                <span className="badge badge-primary badge-outline">
+                  {skill}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -28,12 +33,12 @@ function CreatorSnapshot() {
         {/* Stats */}
         <div className="mt-4 grid grid-cols-3 gap-1">
           <div className="stat bg-base-100 rounded-box">
-            <div className="stat-title">Reputation</div>
+            <div className="stat-title">Likes</div>
             <div className="stat-value text-xl">981</div>
           </div>
           <div className="stat bg-base-100 rounded-box">
             <div className="stat-title">Followers</div>
-            <div className="stat-value text-xl">4.2k</div>
+            <div className="stat-value text-xl">{user?.followers_count}</div>
           </div>
           <div className="stat bg-base-100 rounded-box">
             <div className="stat-title">Posts</div>

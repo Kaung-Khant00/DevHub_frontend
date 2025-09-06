@@ -122,7 +122,6 @@ export const editProfile = createAsyncThunk(
   "user/editProfile",
   async (formData, { rejectWithValue }) => {
     try {
-      console.log("EDITNG", formData);
       const response = await api.post(
         `/profile/developer/edit/${formData.id}`,
         formData

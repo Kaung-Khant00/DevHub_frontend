@@ -108,6 +108,11 @@ const NavBar = () => {
               </Link>
             </li>
             <li>
+              <Link to={"profile/edit"} className="justify-between btn-purple">
+                Edit Profile
+              </Link>
+            </li>
+            <li>
               <a className="btn-purple">Setting</a>
             </li>
             <li onClick={handleLogout}>

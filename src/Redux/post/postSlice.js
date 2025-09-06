@@ -138,11 +138,10 @@ export const deletePost = createAsyncThunk(
 */
 export const likePost = createAsyncThunk(
   "posts/likePost",
-  async ({ likeData, isInProfile = null }, { rejectWithValue, dispatch }) => {
+  async ({ likeData, isInProfile = false }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.post("/posts/like", likeData);
-      response.data.profileLike = isInProfile;
-      console.log(isInProfile);
+      console.log(response);
       if (isInProfile) {
         dispatch(
           updateProfilePostLike({ post: response.data.post, type: isInProfile })
@@ -436,10 +435,14 @@ const postSlice = createSlice({
     builder
       .addCase(likePost.fulfilled, (state, action) => {
         const updatedPost = action.payload.post;
-        const idx = state.posts.findIndex((post) => post.id === updatedPost.id);
-        if (idx !== -1) {
-          state.posts[idx] = { ...state.posts[idx], ...updatedPost };
-        }
+        state.posts = state.posts.map((post) => {
+          console.log(post.id);
+          if (post.id === updatedPost.id) {
+            console.log(post.id, "MATCHED");
+            return { ...post, ...updatedPost };
+          }
+          return post;
+        });
         state.like.loading = false;
         state.like.error = null;
       })
@@ -451,6 +454,12 @@ const postSlice = createSlice({
     // LIKE POST (Detail)
     builder
       .addCase(likeDetailPost.fulfilled, (state, action) => {
+        state.posts = state.posts.map((post) => {
+          if (post.id === action.payload.id) {
+            return { ...post, ...action.payload };
+          }
+          return post;
+        });
         state.detail.data = { ...state.detail.data, ...action.payload };
         state.detail.likeLoading = false;
       })
@@ -478,7 +487,11 @@ const postSlice = createSlice({
     builder.addCase(fetchComments.fulfilled, (state, action) => {
       state.comments.loading = false;
       state.comments.error = null;
-      state.comments.data = [...state.comments.data, ...action.payload.data];
+      if (action.payload.current_page === 1) {
+        state.comments.data = action.payload.data;
+      } else {
+        state.comments.data = [...state.comments.data, ...action.payload.data];
+      }
       state.comments.pagination = {
         perPage: action.payload.per_page,
         page: action.payload.current_page + 1,

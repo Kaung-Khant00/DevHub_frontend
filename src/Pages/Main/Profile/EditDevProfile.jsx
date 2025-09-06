@@ -26,7 +26,7 @@ export default function DeveloperProfileEdit() {
 
   const [userData, setUserData] = useState({});
   const [profile, setProfile] = useState({});
-  const [skills, setSkills] = useState(() => parseSkills());
+  const [skills, setSkills] = useState(null);
   const [newSkill, setNewSkill] = useState("");
 
   useEffect(() => {
@@ -40,16 +40,8 @@ export default function DeveloperProfileEdit() {
     }
   }, [authProfile]);
   useEffect(() => {
-    setSkills(parseSkills(profile.skill));
-  }, [profile.skill]);
-
-  function parseSkills(skillString) {
-    if (!skillString) return [];
-    return skillString
-      .split(/[,|;]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }
+    setSkills(profile.skills);
+  }, [profile.skills]);
 
   function handleAddSkillFromInput() {
     const s = newSkill.trim();
@@ -312,7 +304,7 @@ export default function DeveloperProfileEdit() {
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {skills.length ? (
+                {skills?.length ? (
                   skills.map((s, i) => (
                     <span
                       key={i}
