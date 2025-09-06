@@ -38,7 +38,7 @@ function PostCard({ post, isInProfile = false }) {
   /*  I am making for better UX so the like button response immediately after I click the like  */
   /*  And the data request will send to the backend site  */
   const [liked, setLiked] = useState(post?.liked || false);
-  const LIMIT = 50;
+  const LIMIT = 150;
   const isLong = content.length > LIMIT;
   const displayText = expand
     ? content

@@ -14,8 +14,23 @@ import Profile from "../Pages/Main/Profile/Profile";
 import EditDevProfile from "../Pages/Main/Profile/EditDevProfile";
 import ProfileLayout from "../Pages/Main/Profile/ProfileLayout";
 import DeveloperProfilePage from "../Pages/Main/DeveloperProfile/DeveloperProfile";
+import GroupsPage from "../Pages/Group/Group";
+import Admin from "../Pages/Admin/Admin";
+import UsersAdminPage from "../Pages/Admin/UsersAdminPage";
+import GroupLayout from "../Pages/Group/GroupLayout";
+import CreateGroup from "../Pages/Group/CreateGroup";
 
 const router = createBrowserRouter([
+  {
+    path: "/admin",
+    element: <Admin />,
+    children: [
+      {
+        path: "users",
+        element: <UsersAdminPage />,
+      },
+    ],
+  },
   {
     path: "/",
     element: <Layout />,
@@ -60,6 +75,20 @@ const router = createBrowserRouter([
               {
                 path: "edit",
                 element: <EditDevProfile />,
+              },
+            ],
+          },
+          {
+            path: "group",
+            element: <GroupLayout />,
+            children: [
+              {
+                index: true,
+                element: <GroupsPage />,
+              },
+              {
+                path: "create",
+                element: <CreateGroup />,
               },
             ],
           },

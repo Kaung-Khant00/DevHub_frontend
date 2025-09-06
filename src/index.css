@@ -17,6 +17,9 @@
   .cardBox {
     @apply bg-base-100 my-2 rounded shadow-sm;
   }
+  .dragover {
+    @apply border-2 border-dashed border-primary;
+  }
 }
 @layer base {
   body {

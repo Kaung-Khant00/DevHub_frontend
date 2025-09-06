@@ -366,7 +366,8 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     // CREATE POST
     builder
-      .addCase(createPost.fulfilled, (state) => {
+      .addCase(createPost.fulfilled, (state, { post }) => {
+        state.posts = [post, ...state.posts];
         state.create.loading = false;
         state.create.error = null;
       })
