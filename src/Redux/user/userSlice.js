@@ -8,135 +8,115 @@ import { isRejected } from "@reduxjs/toolkit";
 | REGISTER USER
 |------------------------------------------------------------------------
 */
-export const registerUser = createAsyncThunk(
-  "user/register",
-  async (form, { rejectWithValue }) => {
-    try {
-      const response = await api.post("/register", {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        password_confirmation: form.confirmPassword,
-        role: form.role,
-      });
+export const registerUser = createAsyncThunk("user/register", async (form, { rejectWithValue }) => {
+  try {
+    const response = await api.post("/register", {
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      password_confirmation: form.confirmPassword,
+      role: form.role,
+    });
 
-      toast.success("Registration successful!");
-      localStorage.setItem("token", response.data.token);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.errors || { form: "Something went wrong" }
-      );
-    }
+    toast.success("Registration successful!");
+    localStorage.setItem("token", response.data.token);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.errors || { form: "Something went wrong" });
   }
-);
+});
 
 /*
 |------------------------------------------------------------------------
 | LOGIN USER
 |------------------------------------------------------------------------
 */
-export const loginUser = createAsyncThunk(
-  "user/login",
-  async (form, { rejectWithValue }) => {
-    try {
-      const response = await api.post("/login", {
-        email: form.email,
-        password: form.password,
-      });
-
-      toast.success("Login successful!");
-      localStorage.setItem("token", response.data.token);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.errors || { form: "Invalid credentials" }
-      );
+export const loginUser = createAsyncThunk("user/login", async (formData, { rejectWithValue }) => {
+  try {
+    console.log(formData);
+    const response = await api.post("/login", formData);
+    toast.success("Login successful!");
+    if (response.data.role === "ADMIN" || response.data.role === "SUPER_ADMIN") {
+      /*  I redirect the user to admin dashboard with window I don't know why but I feel like it is more secure */
+      /*  cuz it will wipe out all the user , post data from redux */
+      localStorage.setItem("role", "admin");
+      window.location.href = "/admin";
+    } else {
+      localStorage.setItem("role", "user");
     }
+    localStorage.setItem("token", response.data.token);
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.errors || error.response?.data?.message);
   }
-);
+});
 
 /*
 |------------------------------------------------------------------------
 | LOGOUT USER
 |------------------------------------------------------------------------
 */
-export const logoutUser = createAsyncThunk(
-  "user/logout",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.post("/logout");
-      localStorage.removeItem("token");
-      toast.success(response.data?.message || "Logged out successfully");
-      window.location.href = "/auth/login";
-      return true;
-    } catch (error) {
-      toast.error("Logout failed");
-      return rejectWithValue(error.response?.data || "Logout failed");
-    }
+export const logoutUser = createAsyncThunk("user/logout", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.post("/logout");
+    localStorage.clear();
+    toast.success(response.data?.message || "Logged out successfully");
+    window.location.href = "/auth/login";
+    return true;
+  } catch (error) {
+    toast.error("Logout failed");
+    return rejectWithValue(error.response?.data || "Logout failed");
   }
-);
+});
 
 /*
 |------------------------------------------------------------------------
 | FETCH USER
 |------------------------------------------------------------------------
 */
-export const fetchUser = createAsyncThunk(
-  "user/fetchUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get("/user");
-      if (!response.data.role) {
-        window.location.href = "/select/role";
-      }
-      return response.data;
-    } catch {
-      return rejectWithValue("Failed to load user");
+export const fetchUser = createAsyncThunk("user/fetchUser", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/user");
+    console.log("USER FETCHING");
+    if (!response.data.role) {
+      window.location.href = "/select/role";
     }
+    return response.data;
+  } catch {
+    return rejectWithValue("Failed to load user");
   }
-);
+});
 /*
 |------------------------------------------------------------------------
 | FETCH USER PROFILE
 |------------------------------------------------------------------------
 */
-export const fetchUserProfile = createAsyncThunk(
-  "user/fetchProfile",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get("/profile");
-      return response.data.profile;
-    } catch {
-      toast.error("Something went wrong!");
-      return rejectWithValue("Failed to load profile");
-    }
+export const fetchUserProfile = createAsyncThunk("user/fetchProfile", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/profile");
+    return response.data.profile;
+  } catch {
+    toast.error("Something went wrong!");
+    return rejectWithValue("Failed to load profile");
   }
-);
+});
 /*
 |------------------------------------------------------------------------
 | EDIT PROFILE
 |------------------------------------------------------------------------
 */
-export const editProfile = createAsyncThunk(
-  "user/editProfile",
-  async (formData, { rejectWithValue }) => {
-    try {
-      const response = await api.post(
-        `/profile/developer/edit/${formData.id}`,
-        formData
-      );
-      toast.success("Profile updated successfully");
-      window.location.href = "/profile";
-      return response.data.profile;
-    } catch (error) {
-      toast.error("Something went wrong!");
-      return rejectWithValue(
-        error.response?.data?.errors || "Failed to edit profile"
-      );
-    }
+export const editProfile = createAsyncThunk("user/editProfile", async (formData, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/profile/developer/edit/${formData.id}`, formData);
+    toast.success("Profile updated successfully");
+    window.location.href = "/profile";
+    return response.data.profile;
+  } catch (error) {
+    toast.error("Something went wrong!");
+    return rejectWithValue(error.response?.data?.errors || "Failed to edit profile");
   }
-);
+});
 
 /*
 |------------------------------------------------------------------------
@@ -158,9 +138,7 @@ export const editProfileImage = createAsyncThunk(
       return response.data;
     } catch (error) {
       toast.error("Image upload failed");
-      return rejectWithValue(
-        error.response?.data?.errors || "Image upload failed"
-      );
+      return rejectWithValue(error.response?.data?.errors || "Image upload failed");
     } finally {
       setOpen(false);
     }
@@ -171,42 +149,36 @@ export const editProfileImage = createAsyncThunk(
 | REMOVE PROFILE IMAGE
 |------------------------------------------------------------------------
 */
-export const removeProfileImage = createAsyncThunk(
-  "user/removeProfileImage",
-  async (setOpen, { rejectWithValue }) => {
-    try {
-      const response = await api.delete("/profile/developer/image");
-      toast.success("Profile image removed successfully");
-      console.log(response);
-      return response.data.profile;
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong!");
-      return rejectWithValue();
-    } finally {
-      setOpen(false);
-    }
+export const removeProfileImage = createAsyncThunk("user/removeProfileImage", async (setOpen, { rejectWithValue }) => {
+  try {
+    const response = await api.delete("/profile/developer/image");
+    toast.success("Profile image removed successfully");
+    console.log(response);
+    return response.data.profile;
+  } catch (error) {
+    console.log(error);
+    toast.error("Something went wrong!");
+    return rejectWithValue();
+  } finally {
+    setOpen(false);
   }
-);
+});
 
 /*
 |------------------------------------------------------------------------
 | GET USER POSTS
 |------------------------------------------------------------------------
 */
-export const fetchUserPosts = createAsyncThunk(
-  "user/fetchUserPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get("/profile/posts");
-      console.log(response);
-      return response.data.posts;
-    } catch (error) {
-      console.log(error);
-      return rejectWithValue("Failed to load user posts");
-    }
+export const fetchUserPosts = createAsyncThunk("user/fetchUserPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/profile/posts");
+    console.log(response);
+    return response.data.posts;
+  } catch (error) {
+    console.log(error);
+    return rejectWithValue("Failed to load user posts");
   }
-);
+});
 
 /*
 |------------------------------------------------------------------------
@@ -294,20 +266,17 @@ const userSlice = createSlice({
           return post;
         });
       } else if (payload.type === "othersProfile") {
-        state.viewedProfileUser.posts = state.viewedProfileUser.posts?.map(
-          (post) => {
-            if (post.id === payload.post.id) {
-              return { ...post, ...payload.post };
-            }
-            return post;
+        state.viewedProfileUser.posts = state.viewedProfileUser.posts?.map((post) => {
+          if (post.id === payload.post.id) {
+            return { ...post, ...payload.post };
           }
-        );
+          return post;
+        });
       }
     },
     followProfileUser: (state) => {
       const isFollowing = state.viewedProfileUser.user.isFollowing;
-      state.viewedProfileUser.user.isFollowing =
-        !state.viewedProfileUser.user.isFollowing;
+      state.viewedProfileUser.user.isFollowing = !state.viewedProfileUser.user.isFollowing;
       state.viewedProfileUser.user.followers_count += isFollowing ? -1 : 1;
     },
   },
@@ -325,6 +294,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.loginError = null;
     });
 
     builder.addCase(logoutUser.fulfilled, (state) => {
@@ -517,6 +487,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setToken, updateProfilePostLike, followProfileUser } =
-  userSlice.actions;
+export const { setToken, updateProfilePostLike, followProfileUser } = userSlice.actions;
 export default userSlice.reducer;

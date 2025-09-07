@@ -1,4 +1,8 @@
+import { useSelector } from "react-redux";
+
 const NavBar = ({ setShowSideBar, showSideBar }) => {
+  const { data } = useSelector((state) => state.admin.user.user);
+
   return (
     <div className=" flex justify-between bg-info-content">
       <label className={` z-1 flex p-1 ps-3 w-60 justify-start swap swap-rotate text-white bg-info-content`}>
@@ -29,12 +33,12 @@ const NavBar = ({ setShowSideBar, showSideBar }) => {
       </label>
       <div className="flex items-center gap-3 text-white">
         <div className="flex flex-col">
-          <h2 className="font-bold ">Kaung Khant</h2>
-          <div className="text-gray-400 text-sm">test@gmail.com</div>
+          <h2 className="font-bold ">{data?.name}</h2>
+          <div className="text-gray-400 text-sm">{data?.email}</div>
         </div>
         <div className="avatar">
           <div className="w-12 rounded-full">
-            <img src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp" />
+            <img src={data?.profile_image_url} />
           </div>
         </div>
       </div>

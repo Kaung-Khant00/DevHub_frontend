@@ -52,15 +52,13 @@ const Login = () => {
           <div className="flex justify-center gap-4">
             <div
               onClick={handleGoogleLogin}
-              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center"
-            >
+              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center">
               <FcGoogle size={25} />
               <span className="text-gray-600">Login with Google</span>
             </div>
             <div
               onClick={handleGitHubLogin}
-              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center"
-            >
+              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center">
               <FaGithub size={25} />
               <span className="text-gray-600">Login with Github</span>
             </div>
@@ -70,15 +68,14 @@ const Login = () => {
             <div className="text-center text-gray-600">or Login with</div>
             <div className="flex-1 bg-gray-300 h-[1px]"></div>
           </div>
-          {loginError?.form && (
-            <div className="text-red-500 text-sm mb-2">{loginError.form}</div>
-          )}
+          {loginError?.form && <div className="text-red-500 text-sm mb-2">{loginError.form}</div>}
           {/*
           |--------------------------------------------------------------------------
           | SIMPLE LOGIN FORM
           |--------------------------------------------------------------------------
           */}
           <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+            {loginError?.form && <div className="text-red-500 text-sm mb-2">{loginError.form}</div>}
             <FormInput
               type="email"
               placeholder="Email"
@@ -86,11 +83,7 @@ const Login = () => {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               Icon={MdOutlineAlternateEmail}
             />
-            {loginError?.email && (
-              <div className="text-red-500 text-sm mb-2">
-                {loginError.email}
-              </div>
-            )}
+            {loginError?.email && <div className="text-red-500 text-sm mb-2">{loginError.email}</div>}
 
             <FormInput
               type="password"
@@ -100,24 +93,14 @@ const Login = () => {
               Icon={TbLock}
               isPasswordInput={true}
             />
-            {loginError?.password && (
-              <div className="text-red-500 text-sm mb-2">
-                {loginError.password}
-              </div>
-            )}
-            <button
-              type="submit"
-              className="w-full btn-primary text-white py-2 rounded-lg btn transition mt-3"
-            >
+            {loginError?.password && <div className="text-red-500 text-sm mb-2">{loginError.password}</div>}
+            <button type="submit" className="w-full btn-primary text-white py-2 rounded-lg btn transition mt-3">
               Login
             </button>
 
             <p className="text-sm text-center mt-2 text-gray-600">
               Already have an account?{" "}
-              <Link
-                to="/auth/register"
-                className="text-primary hover:underline"
-              >
+              <Link to="/auth/register" className="text-primary hover:underline">
                 Signup here
               </Link>
             </p>

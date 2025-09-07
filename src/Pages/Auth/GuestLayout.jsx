@@ -7,7 +7,11 @@ const GuestLayout = () => {
   const navigate = useNavigate();
   useEffect(() => {
     if (token) {
-      navigate("/feed");
+      if (localStorage.getItem("role") === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/feed");
+      }
     }
   }, [navigate, token]);
   return (

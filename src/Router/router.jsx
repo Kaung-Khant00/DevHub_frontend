@@ -17,20 +17,12 @@ import DeveloperProfilePage from "../Pages/Main/DeveloperProfile/DeveloperProfil
 import GroupsPage from "../Pages/Group/Group";
 import Admin from "../Pages/Admin/Admin";
 import UsersAdminPage from "../Pages/Admin/UsersAdminPage";
+import GroupCreationRequestPage from "../Pages/Admin/GroupCreationRequestPage";
 import GroupLayout from "../Pages/Group/GroupLayout";
 import CreateGroup from "../Pages/Group/CreateGroup";
+import SecureAdmin from "../Pages/Auth/SecureAdmin";
 
 const router = createBrowserRouter([
-  {
-    path: "/admin",
-    element: <Admin />,
-    children: [
-      {
-        path: "users",
-        element: <UsersAdminPage />,
-      },
-    ],
-  },
   {
     path: "/",
     element: <Layout />,
@@ -97,6 +89,26 @@ const router = createBrowserRouter([
       {
         path: "select/role",
         element: <ChooseRole />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <SecureAdmin />,
+    children: [
+      {
+        path: "",
+        element: <Admin />,
+        children: [
+          {
+            path: "users",
+            element: <UsersAdminPage />,
+          },
+          {
+            path: "group_creation_requests",
+            element: <GroupCreationRequestPage />,
+          },
+        ],
       },
     ],
   },

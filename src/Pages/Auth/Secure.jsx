@@ -11,11 +11,13 @@ const Secure = () => {
     if (!token) {
       navigate("/auth/login");
     }
-    if (!user) {
+    if (user?.role === "admin" || user?.role === "super_admin" || localStorage.getItem("role") === "admin") {
+      navigate("/admin");
+    } else {
       dispatch(fetchUser());
       dispatch(fetchUserProfile());
     }
-  }, [token, navigate, dispatch, user]);
+  }, [token, navigate, dispatch]);
   if (!token)
     return (
       <div className=" min-h-screen w-full flex justify-center items-center">

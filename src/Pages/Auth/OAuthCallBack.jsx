@@ -12,6 +12,7 @@ const OAuthCallBack = () => {
     if (token) {
       dispatch(setToken(token));
       localStorage.setItem("token", token);
+      localStorage.setItem("role", "user");
       navigate("/feed");
     }
   };
@@ -19,9 +20,7 @@ const OAuthCallBack = () => {
     handleOauth();
   }, []);
   return (
-    <div className="font-bold text-primary text-center w-full flex min-h-screen items-center ">
-      Finishing Login...
-    </div>
+    <div className="font-bold text-primary text-center w-full flex min-h-screen items-center ">Finishing Login...</div>
   );
 };
 

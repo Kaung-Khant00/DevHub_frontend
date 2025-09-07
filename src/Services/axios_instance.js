@@ -22,11 +22,7 @@ axiosInstance.interceptors.response.use(
     const url = error.config?.url;
     console.log(error);
 
-    if (
-      status === 401 &&
-      !url.includes("/login") &&
-      !url.includes("/register")
-    ) {
+    if (status === 401 && !url.includes("/login") && !url.includes("/register")) {
       localStorage.removeItem("token");
       window.location.href = "/auth/login";
     } else {

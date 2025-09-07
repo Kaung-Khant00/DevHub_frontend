@@ -9,16 +9,24 @@ import {
   HiOutlineUser,
   HiOutlineLogout,
 } from "react-icons/hi";
+import { MdLibraryAdd } from "react-icons/md";
 import { RiAdminLine } from "react-icons/ri";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../../Redux/user/userSlice";
+import { Link } from "react-router-dom";
 
 const SideBar = ({ showSideBar }) => {
+  const dispatch = useDispatch();
+  function handleLogout() {
+    dispatch(logoutUser());
+  }
   return (
     <div className={`relative transition-all duration-300 ease-in-out ${showSideBar ? "w-[65px]" : "w-60"}`}>
       <aside
         className={`absolute pt-3 h-full bg-info-content transition-all duration-300 ease-in-out overflow-hidden ${
           !showSideBar ? "w-0" : "w-[65px]"
         }`}>
-        <ul className="menu text-white flex flex-col gap-3 items-center">
+        <ul className="menu text-white flex flex-col gap-2 items-center">
           {/* Dashboard */}
           <li>
             <a href="/admin/dashboard" className="flex justify-center p-2 rounded-md hover:bg-info">
@@ -33,9 +41,9 @@ const SideBar = ({ showSideBar }) => {
             </a>
           </li>
           <li>
-            <a href="/admin/users" className="flex justify-center p-2 rounded-md hover:bg-info">
+            <Link to="/admin/users" className="flex justify-center p-2 rounded-md hover:bg-info">
               <HiOutlineUsers className="text-2xl" />
-            </a>
+            </Link>
           </li>
           <li>
             <a href="/admin/posts" className="flex justify-center p-2 rounded-md hover:bg-info">
@@ -51,6 +59,11 @@ const SideBar = ({ showSideBar }) => {
             <a href="/admin/groups" className="flex justify-center p-2 rounded-md hover:bg-info">
               <HiOutlineCollection className="text-2xl" />
             </a>
+          </li>
+          <li>
+            <Link to="/admin/group_creation_requests" className="flex justify-center p-2 rounded-md hover:bg-info">
+              <MdLibraryAdd className="text-2xl" />
+            </Link>
           </li>
           <li>
             <a href="/admin/reports" className="flex justify-center p-2 rounded-md hover:bg-info">
@@ -70,18 +83,18 @@ const SideBar = ({ showSideBar }) => {
             </a>
           </li>
           <li>
-            <a href="/logout" className="flex justify-center p-2 rounded-md hover:bg-info">
+            <div onClick={handleLogout} className="flex justify-center p-2 rounded-md hover:bg-info">
               <HiOutlineLogout className="text-2xl" />
-            </a>
+            </div>
           </li>
         </ul>
       </aside>
       {/*  side bar components and links goes here :)  */}
       <aside
-        className={`bg-info-content min-h-screen transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`absolute h-full bg-info-content transition-all duration-300 ease-in-out overflow-hidden ${
           showSideBar ? "w-0" : "w-60"
         }`}>
-        <ul className="menu py-0 px-4 text-white w-full">
+        <ul className="menu py-0 px-4 text-white w-full ">
           <li className="pt-8">
             <a href="/admin/dashboard" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
               <HiOutlineHome className="text-xl" />
@@ -99,10 +112,10 @@ const SideBar = ({ showSideBar }) => {
           </li>
 
           <li>
-            <a href="/admin/users" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <Link to="/admin/users" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
               <HiOutlineUsers className="text-xl" />
               <span>Users</span>
-            </a>
+            </Link>
           </li>
           <li>
             <a href="/admin/posts" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
@@ -121,6 +134,14 @@ const SideBar = ({ showSideBar }) => {
               <HiOutlineCollection className="text-xl" />
               <span>Groups</span>
             </a>
+          </li>
+          <li>
+            <Link
+              to="/admin/group_creation_requests"
+              className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+              <MdLibraryAdd className="text-xl" />
+              <span>Groups Requests</span>
+            </Link>
           </li>
           <li>
             <a href="/admin/reports" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
@@ -144,10 +165,10 @@ const SideBar = ({ showSideBar }) => {
             </a>
           </li>
           <li>
-            <a href="/logout" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <div onClick={handleLogout} className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
               <HiOutlineLogout className="text-xl" />
               <span>Logout</span>
-            </a>
+            </div>
           </li>
         </ul>
       </aside>
