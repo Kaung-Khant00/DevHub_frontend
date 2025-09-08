@@ -21,6 +21,7 @@ import GroupCreationRequestPage from "../Pages/Admin/GroupCreationRequestPage";
 import GroupLayout from "../Pages/Group/GroupLayout";
 import CreateGroup from "../Pages/Group/CreateGroup";
 import SecureAdmin from "../Pages/Auth/SecureAdmin";
+import NotificationPage from "../Pages/Notification/NotificationPage";
 
 const router = createBrowserRouter([
   {
@@ -81,6 +82,15 @@ const router = createBrowserRouter([
               {
                 path: "create",
                 element: <CreateGroup />,
+              },
+            ],
+          },
+          {
+            path: "notification",
+            children: [
+              {
+                index: true,
+                element: <NotificationPage />,
               },
             ],
           },

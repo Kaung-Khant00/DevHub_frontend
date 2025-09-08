@@ -6,15 +6,15 @@ import { IoMdCheckmark } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 
 const GroupCreationRequestRole = ({ group }) => {
-  const [allowLoading, setAllowLoading] = useState(false);
+  const [approveLoading, setApproveLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
   const dispatch = useDispatch();
   const approveGroupRequestApi = async () => {
-    setAllowLoading(true);
+    setApproveLoading(true);
     try {
       await dispatch(approveGroupRequest(group.id)).unwrap();
     } finally {
-      setAllowLoading(false);
+      setApproveLoading(false);
     }
   };
   const rejectGroupRequestApi = async () => {
@@ -72,9 +72,9 @@ const GroupCreationRequestRole = ({ group }) => {
       <td className="flex justify-center gap-2">
         {group.status === "pending" && (
           <>
-            <div className="tooltip tooltip-success " data-tip="Allow the group">
+            <div className="tooltip tooltip-success " data-tip="Approve the group">
               <button onClick={approveGroupRequestApi} className="btn btn-square btn-success btn-soft hover:text-white">
-                {allowLoading ? <Spinner /> : <IoMdCheckmark size={20} />}
+                {approveLoading ? <Spinner /> : <IoMdCheckmark size={20} />}
               </button>
             </div>
             <div className="tooltip tooltip-error " data-tip="Deny the group">

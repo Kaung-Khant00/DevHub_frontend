@@ -1,12 +1,13 @@
 import { IoMdNotifications } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logoutUser } from "../../Redux/user/userSlice";
 
 const NavBar = () => {
   const { logoutLoading, user, loading } = useSelector((state) => state.user);
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   function handleLogout() {
     dispatch(logoutUser());
@@ -64,7 +65,11 @@ const NavBar = () => {
 
       <div className="navbar-end">
         <div className="mx-3 flex gap-3">
-          <button className="btn-purple p-2 rounded-full duration-200">
+          <button
+            onClick={() => {
+              navigate("notification");
+            }}
+            className="btn-purple p-2 rounded-full duration-200">
             <IoMdNotifications size={20} />
           </button>
         </div>
