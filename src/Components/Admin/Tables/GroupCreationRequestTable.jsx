@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import Pagination from "../../../Pages/Admin/Pagination";
-import { fetchGroupRequest } from "../../../Redux/admin/admin.groupRequest";
+import { fetchAllGroupRequest, fetchGroupRequest } from "../../../Redux/admin/admin.groupRequest";
 import GroupCreationRequestRole from "../TableRoles/GroupCreationRequestRole";
+import { FaInbox } from "react-icons/fa";
 
 const GroupCreationRequestTable = () => {
   const {
@@ -16,8 +17,13 @@ const GroupCreationRequestTable = () => {
   const [page, setPage] = useState(pagination.current_page);
   const dataCountRef = useRef(null);
   useEffect(() => {
-    if (page !== pagination.current_page)
-      dispatch(fetchGroupRequest({ current_page: page, per_page: pagination.per_page, status: requestStatus }));
+    if (page !== pagination.current_page) {
+      if (requestStatus === "all") {
+        dispatch(fetchAllGroupRequest({ current_page: page, all_per_page: pagination.all_per_page }));
+      } else {
+        dispatch(fetchGroupRequest({ current_page: page, per_page: pagination.per_page, status: requestStatus }));
+      }
+    }
     dataCountRef.current = null;
   }, [dispatch, page]);
 
@@ -26,7 +32,11 @@ const GroupCreationRequestTable = () => {
     if (status === null) return setStatus(requestStatus);
     /* if the admin click the same status , I prevent from refetching  */
     if (requestStatus !== status) {
-      dispatch(fetchGroupRequest({ current_page: 1, per_page: pagination.per_page, status: requestStatus }));
+      if (requestStatus === "all") {
+        dispatch(fetchAllGroupRequest({ current_page: 1, all_per_page: pagination.all_per_page }));
+      } else {
+        dispatch(fetchGroupRequest({ current_page: 1, per_page: pagination.per_page, status: requestStatus }));
+      }
       setStatus(requestStatus);
       setPage(1);
       /*  data count is null because this is gonna be new page */
@@ -54,7 +64,10 @@ const GroupCreationRequestTable = () => {
         newPage = page !== 1 ? page - 1 : 1;
       }
       /*  it is all about refetching the same page number cuz the page is empty now  */
+      /*  fetching all group request don't need to do like that cuz they never have empty array like in allow and reject */
+      /*  cuz the pending status data have to remove when they are rejected or approved */
       /*  hope you will understand my logic :) */
+
       dispatch(fetchGroupRequest({ current_page: newPage, per_page: pagination.per_page, status: requestStatus }));
     }
   }, [data]);
@@ -71,10 +84,25 @@ const GroupCreationRequestTable = () => {
               <th>Description</th>
               <th>Requesting User</th>
               <th>Tags</th>
-              <th className="text-center">{status === "pending" ? "Action" : "Status"}</th>
+              <th className="text-center">
+                {status === "all" ? "Action/Status" : status === "pending" ? "Action" : "Status"}
+              </th>
             </tr>
           </thead>
-          <tbody>{data && data.map((group) => <GroupCreationRequestRole group={group} key={group.id} />)}</tbody>
+          <tbody>
+            {data && data.map((group) => <GroupCreationRequestRole group={group} key={group.id} />)}
+            {requestStatus === "pending" && data?.length === 0 && (
+              <tr>
+                <td colSpan={6} className="text-center text-xl font-bold py-5 text-gray-500">
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                    <FaInbox size={40} />
+                    <p className="mt-4 text-lg">No group requests found</p>
+                    <p className="text-sm">Once users request to create groups, you’ll see them here.</p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
         <div>
           <div className="mt-6 flex justify-center">

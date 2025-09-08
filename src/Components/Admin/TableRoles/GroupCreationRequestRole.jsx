@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { approveGroupRequest, rejectGroupRequest } from "../../../Redux/admin/admin.groupRequest";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Spinner from "../../Common/Spinner";
 import { IoMdCheckmark } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 
 const GroupCreationRequestRole = ({ group }) => {
-  const { status } = useSelector((state) => state.admin.groupRequest.groupRequests);
-
   const [allowLoading, setAllowLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
   const dispatch = useDispatch();
@@ -72,7 +70,7 @@ const GroupCreationRequestRole = ({ group }) => {
           ))}
       </th>
       <td className="flex justify-center gap-2">
-        {status === "pending" && (
+        {group.status === "pending" && (
           <>
             <div className="tooltip tooltip-success " data-tip="Allow the group">
               <button onClick={approveGroupRequestApi} className="btn btn-square btn-success btn-soft hover:text-white">
@@ -86,8 +84,8 @@ const GroupCreationRequestRole = ({ group }) => {
             </div>
           </>
         )}
-        {status === "approved" && <div className="badge badge-success text-white">Approved</div>}
-        {status === "rejected" && <div className="badge badge-error text-white">Rejected</div>}
+        {group.status === "approved" && <div className="badge badge-success text-white">Approved</div>}
+        {group.status === "rejected" && <div className="badge badge-error text-white">Rejected</div>}
       </td>
     </tr>
   );

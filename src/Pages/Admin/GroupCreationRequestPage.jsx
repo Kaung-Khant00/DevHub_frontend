@@ -25,10 +25,20 @@ const GroupCreationRequestPage = () => {
             type="radio"
             disabled={fetchLoading}
             onClick={() => {
-              handleStatusChange("pending");
+              handleStatusChange("all");
             }}
             name="status"
             className="tab"
+            aria-label="All"
+          />
+          <input
+            type="radio"
+            disabled={fetchLoading}
+            onClick={() => {
+              handleStatusChange("pending");
+            }}
+            name="status"
+            className="tab text-warning "
             aria-label="Pending"
             defaultChecked
           />
@@ -39,7 +49,7 @@ const GroupCreationRequestPage = () => {
               handleStatusChange("approved");
             }}
             name="status"
-            className="tab"
+            className="tab text-success"
             aria-label="Approved"
           />
           <input
@@ -49,7 +59,7 @@ const GroupCreationRequestPage = () => {
               handleStatusChange("rejected");
             }}
             name="status"
-            className="tab"
+            className="tab text-error"
             aria-label="Rejected"
           />
         </div>

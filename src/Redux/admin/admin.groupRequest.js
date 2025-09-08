@@ -4,6 +4,30 @@ import { toast } from "react-toastify";
 
 /*
 |------------------------------------------------------------------------
+| FETCH ALL GROUP REQUEST
+|------------------------------------------------------------------------
+*/
+export const fetchAllGroupRequest = createAsyncThunk(
+  "groupRequest/fetchGroupRequest",
+  async ({ current_page, all_per_page }, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/admin/group_requests/all", {
+        params: {
+          page: current_page,
+          per_page: all_per_page,
+        },
+      });
+      console.log(response);
+      return response.data.group_creation_requests;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+
+/*
+|------------------------------------------------------------------------
 | FETCH GROUP REQUESTS
 |------------------------------------------------------------------------
 */
@@ -73,6 +97,7 @@ const initialState = {
     data: null,
     pagination: {
       current_page: 1,
+      all_per_page: 3,
       last_page: 1,
       per_page: 1,
       total: null,
@@ -89,6 +114,7 @@ const groupRequestSlice = createSlice({
     changeGroupRequestStatus(state, action) {
       state.groupRequests.status = action.payload;
       state.groupRequests.pagination = {
+        ...state.groupRequests.pagination,
         current_page: 1,
         last_page: null,
         per_page: 1,
@@ -103,6 +129,7 @@ const groupRequestSlice = createSlice({
         state.groupRequests.error = null;
         state.groupRequests.data = action.payload.data;
         state.groupRequests.pagination = {
+          ...state.groupRequests.pagination,
           current_page: action.payload.current_page,
           last_page: action.payload.last_page,
           per_page: action.payload.per_page,
@@ -112,12 +139,28 @@ const groupRequestSlice = createSlice({
       .addCase(approveGroupRequest.fulfilled, (state, action) => {
         state.groupRequests.fetchLoading = false;
         state.groupRequests.error = null;
-        state.groupRequests.data = state.groupRequests.data.filter((request) => request.id !== action.payload.id);
+        if (state.groupRequests.status === "pending") {
+          state.groupRequests.data = state.groupRequests.data.filter((request) => request.id !== action.payload.id);
+        }
+        state.groupRequests.data = state.groupRequests.data.map((request) => {
+          if (request.id === action.payload.id) {
+            return action.payload;
+          }
+          return request;
+        });
       })
       .addCase(rejectGroupRequest.fulfilled, (state, action) => {
         state.groupRequests.loading = false;
         state.groupRequests.error = null;
-        state.groupRequests.data = state.groupRequests.data.filter((request) => request.id !== action.payload.id);
+        if (state.groupRequests.status === "pending") {
+          state.groupRequests.data = state.groupRequests.data.filter((request) => request.id !== action.payload.id);
+        }
+        state.groupRequests.data = state.groupRequests.data.map((request) => {
+          if (request.id === action.payload.id) {
+            return action.payload;
+          }
+          return request;
+        });
       })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
