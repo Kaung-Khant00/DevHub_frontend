@@ -23,68 +23,96 @@ const SideBar = ({ showSideBar }) => {
   return (
     <div className={`relative transition-all duration-300 ease-in-out ${showSideBar ? "w-[65px]" : "w-60"}`}>
       <aside
-        className={`absolute pt-3 h-full bg-info-content transition-all duration-300 ease-in-out overflow-hidden ${
+        className={` absolute pt-3 h-full bg-info-content transition-all duration-300 ease-in-out ${
           !showSideBar ? "w-0" : "w-[65px]"
         }`}>
         <ul className="menu text-white flex flex-col gap-2 items-center">
           {/* Dashboard */}
           <li>
-            <a href="/admin/dashboard" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineHome className="text-2xl" />
+            <a
+              href="/admin/dashboard"
+              className="bg-info flex justify-center p-2 rounded-md hover:bg-info"
+              title="Dashboard">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Dashboard">
+                <HiOutlineHome className="text-2xl" />
+              </span>
             </a>
           </li>
 
           {/* Management */}
           <li>
-            <a href="/admin/admins" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <RiAdminLine className="text-2xl" />
+            <a href="/admin/admins" className="flex justify-center p-2 rounded-md hover:bg-info" title="Admins">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Admins">
+                <RiAdminLine className="text-2xl" />
+              </span>
             </a>
           </li>
           <li>
-            <Link to="/admin/users" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineUsers className="text-2xl" />
+            <Link to="/admin/users" className="flex justify-center p-2 rounded-md hover:bg-info" title="Users">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Users">
+                <HiOutlineUsers className="text-2xl" />
+              </span>
             </Link>
           </li>
           <li>
-            <a href="/admin/posts" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineDocumentText className="text-2xl" />
+            <a href="/admin/posts" className="flex justify-center p-2 rounded-md hover:bg-info" title="Posts">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Posts">
+                <HiOutlineDocumentText className="text-2xl" />
+              </span>
             </a>
           </li>
           <li>
-            <a href="/admin/questions" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineQuestionMarkCircle className="text-2xl" />
+            <a href="/admin/questions" className="flex justify-center p-2 rounded-md hover:bg-info" title="Questions">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Questions">
+                <HiOutlineQuestionMarkCircle className="text-2xl" />
+              </span>
             </a>
           </li>
           <li>
-            <a href="/admin/groups" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineCollection className="text-2xl" />
+            <a href="/admin/groups" className="flex justify-center p-2 rounded-md hover:bg-info" title="Groups">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Groups">
+                <HiOutlineCollection className="text-2xl" />
+              </span>
             </a>
           </li>
           <li>
-            <Link to="/admin/group_creation_requests" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <MdLibraryAdd className="text-2xl" />
+            <Link
+              to="/admin/group_creation_requests"
+              className="flex justify-center p-2 rounded-md hover:bg-info"
+              title="Group Requests">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Group Requests">
+                <MdLibraryAdd className="text-2xl" />
+              </span>
             </Link>
           </li>
           <li>
-            <a href="/admin/reports" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineExclamationCircle className="text-2xl" />
+            <a href="/admin/reports" className="flex justify-center p-2 rounded-md hover:bg-info" title="Reports">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Reports">
+                <HiOutlineExclamationCircle className="text-2xl" />
+              </span>
             </a>
           </li>
 
           {/* Account */}
           <li>
-            <a href="/admin/profile" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineUser className="text-2xl" />
+            <a href="/admin/profile" className="flex justify-center p-2 rounded-md hover:bg-info" title="Profile">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Profile">
+                <HiOutlineUser className="text-2xl" />
+              </span>
             </a>
           </li>
           <li>
-            <a href="/admin/settings" className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineCog className="text-2xl" />
+            <a href="/admin/settings" className="flex justify-center p-2 rounded-md hover:bg-info" title="Settings">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Settings">
+                <HiOutlineCog className="text-2xl" />
+              </span>
             </a>
           </li>
           <li>
-            <div onClick={handleLogout} className="flex justify-center p-2 rounded-md hover:bg-info">
-              <HiOutlineLogout className="text-2xl" />
+            <div onClick={handleLogout} className="flex justify-center p-2 rounded-md hover:bg-info" title="Logout">
+              <span className="tooltip tooltip-right tooltip-info" data-tip="Logout">
+                <HiOutlineLogout className="text-2xl" />
+              </span>
             </div>
           </li>
         </ul>
@@ -96,7 +124,7 @@ const SideBar = ({ showSideBar }) => {
         }`}>
         <ul className="menu py-0 px-4 text-white w-full ">
           <li className="pt-8">
-            <a href="/admin/dashboard" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/dashboard" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineHome className="text-xl" />
               <span>Dashboard</span>
             </a>
@@ -105,46 +133,44 @@ const SideBar = ({ showSideBar }) => {
           {/* Management */}
           <li className="menu-title mt-4 text-blue-300">Management</li>
           <li>
-            <a href="/admin/admins" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/admins" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <RiAdminLine className="text-xl" />
               <span>Admins</span>
             </a>
           </li>
 
           <li>
-            <Link to="/admin/users" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <Link to="/admin/users" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineUsers className="text-xl" />
               <span>Users</span>
             </Link>
           </li>
           <li>
-            <a href="/admin/posts" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/posts" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineDocumentText className="text-xl" />
               <span>Posts</span>
             </a>
           </li>
           <li>
-            <a href="/admin/questions" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/questions" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineQuestionMarkCircle className="text-xl" />
               <span>Questions</span>
             </a>
           </li>
           <li>
-            <a href="/admin/groups" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/groups" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineCollection className="text-xl" />
               <span>Groups</span>
             </a>
           </li>
           <li>
-            <Link
-              to="/admin/group_creation_requests"
-              className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <Link to="/admin/group_creation_requests" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <MdLibraryAdd className="text-xl" />
               <span>Groups Requests</span>
             </Link>
           </li>
           <li>
-            <a href="/admin/reports" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/reports" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineExclamationCircle className="text-xl" />
               <span>Reports</span>
             </a>
@@ -153,19 +179,19 @@ const SideBar = ({ showSideBar }) => {
           {/* Account */}
           <li className="menu-title mt-4 text-blue-300">Account</li>
           <li>
-            <a href="/admin/profile" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/profile" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineUser className="text-xl" />
               <span>Profile</span>
             </a>
           </li>
           <li>
-            <a href="/admin/settings" className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <a href="/admin/settings" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineCog className="text-xl" />
               <span>Settings</span>
             </a>
           </li>
           <li>
-            <div onClick={handleLogout} className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-md">
+            <div onClick={handleLogout} className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineLogout className="text-xl" />
               <span>Logout</span>
             </div>
