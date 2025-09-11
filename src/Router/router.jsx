@@ -22,6 +22,7 @@ import GroupLayout from "../Pages/Group/GroupLayout";
 import CreateGroup from "../Pages/Group/CreateGroup";
 import SecureAdmin from "../Pages/Auth/SecureAdmin";
 import NotificationPage from "../Pages/Notification/NotificationPage";
+import NotificationDetail from "../Components/Notification/Templates/NotificationDetail";
 
 const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <NotificationPage />,
+              },
+              {
+                path: ":id",
+                element: <NotificationDetail />,
               },
             ],
           },

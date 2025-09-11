@@ -1,77 +1,39 @@
-import { useMemo, useState } from "react";
-import { FaBell } from "react-icons/fa";
-import NotificationItem from "../../Components/Notification/NotificationItem";
-import NotificationTabs from "../../Components/Notification/NotificationTabs";
-
-const SAMPLE_NOTIFICATIONS = [
-  {
-    id: 1,
-    type: "group", // group | post | system | shared
-    title: "Group Approved: Cycling Club",
-    description: "Your request to create 'Cycling Club' has been approved. You are now the group leader.",
-    data: { group_id: 42, redirect_url: "/groups/42" },
-    is_read: false,
-    created_at: "2025-09-08T08:20:00Z",
-    actor_id: 5, // admin who acted
-  },
-  {
-    id: 2,
-    type: "shared",
-    title: "New Post Shared in Tech Hub",
-    description: "A post you follow was shared in 'Tech Hub' — check it out.",
-    data: { post_id: 121, group_id: 7 },
-    is_read: false,
-    created_at: "2025-09-07T18:30:00Z",
-    actor_id: 8,
-  },
-  {
-    id: 3,
-    type: "system",
-    title: "Scheduled Maintenance",
-    description: "Planned maintenance on Sep 10, 02:00 - 04:00 UTC. Services may be temporarily unavailable.",
-    data: { ticket: "MAINT-20250910" },
-    is_read: true,
-    created_at: "2025-09-06T10:00:00Z",
-    actor_id: null,
-  },
-  {
-    id: 4,
-    type: "group",
-    title: "Group Request Denied: Study Group",
-    description: "Your request for 'Study Group' was not approved. Reason: duplicate group exists.",
-    data: { reason: "Duplicate", group_request_id: 77 },
-    is_read: false,
-    created_at: "2025-09-08T09:45:00Z",
-    actor_id: 2,
-  },
-];
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotification, removeReadNotification, setNotificationAllRead } from "../../Redux/user/notificationSlice";
+import NotificationContainer from "../../Components/Notification/Templates/NotificationContainer";
+import { api } from "../../Services/axios_instance";
 
 export default function NotificationPage() {
-  const [activeTab, setActiveTab] = useState("all"); // all | shared | group | system
-  const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
+  const notifications = useSelector((state) => state.notification.fetch.data);
+  const dispatch = useDispatch();
 
-  const filtered = useMemo(() => {
-    if (activeTab === "all") return notifications;
-    if (activeTab === "more") return notifications; // placeholder
-    return notifications.filter((n) => n.type === activeTab);
-  }, [activeTab, notifications]);
+  useEffect(() => {
+    console.log(notifications.length === 0);
+    if (notifications.length === 0) {
+      dispatch(fetchNotification());
+    }
+  }, []);
 
-  function handleToggleRead(id) {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: !n.is_read } : n)));
-  }
+  const handleMarkAllRead = async () => {
+    try {
+      const response = await api.put(`notifications/all/read`);
+      console.log(response);
+      dispatch(setNotificationAllRead());
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  function handleAction(notification) {
-    // Open or navigate - placeholder
-    alert(JSON.stringify(notification.data, null, 2));
-  }
-
-  function handleMarkAllRead() {
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-  }
-
-  function handleClearRead() {
-    setNotifications((prev) => prev.filter((n) => !n.is_read));
-  }
+  const handleClearRead = async () => {
+    try {
+      const response = await api.delete(`notifications/all/read`);
+      console.log(response);
+      dispatch(removeReadNotification());
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -92,30 +54,7 @@ export default function NotificationPage() {
           </div>
         </header>
 
-        <div className="card bg-base-100 p-4">
-          <NotificationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <div className="mt-4 space-y-3">
-            <div className="text-center py-16">
-              <FaBell className="text-5xl mx-auto text-primary/90" />
-              <h3 className="mt-6 text-lg font-semibold">You're all caught up</h3>
-              <p className="text-sm text-gray-500 mt-2">
-                No notifications in this category right now. Check back later or adjust your notification settings.
-              </p>
-            </div>
-            {filtered.map((noti) => (
-              <NotificationItem
-                key={noti.id}
-                notification={noti}
-                onToggleRead={handleToggleRead}
-                onAction={handleAction}
-              />
-            ))}
-          </div>
-        </div>
-
-        <footer className="mt-6 text-center text-sm text-gray-400">
-          Showing <strong>{filtered.length}</strong> notifications • Total <strong>{notifications.length}</strong>
-        </footer>
+        <NotificationContainer />
       </div>
     </div>
   );
