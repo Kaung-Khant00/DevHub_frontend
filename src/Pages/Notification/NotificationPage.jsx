@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNotification, removeReadNotification, setNotificationAllRead } from "../../Redux/user/notificationSlice";
-import NotificationContainer from "../../Components/Notification/Templates/NotificationContainer";
+import NotificationContainer from "../../Components/Notification/NotificationContainer";
 import { api } from "../../Services/axios_instance";
+import { Link } from "react-router-dom";
 
 export default function NotificationPage() {
   const notifications = useSelector((state) => state.notification.fetch.data);
@@ -41,7 +42,6 @@ export default function NotificationPage() {
         <header className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold">Notifications</h1>
-            <p className="text-sm text-gray-500">Manage alerts, system messages and user actions.</p>
           </div>
 
           <div className="flex gap-2 items-center">
@@ -51,6 +51,9 @@ export default function NotificationPage() {
             <button onClick={handleClearRead} className="btn btn-sm btn-ghost">
               Clear read
             </button>
+            <Link to={-1} className="btn btn-sm btn-ghost">
+              Back
+            </Link>
           </div>
         </header>
 

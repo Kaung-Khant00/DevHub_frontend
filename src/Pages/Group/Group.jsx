@@ -1,8 +1,18 @@
+import { useEffect } from "react";
 import { FaSearch, FaPlus, FaSlidersH } from "react-icons/fa";
-import GroupCard from "../../Components/Group/GroupCard";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { fetchGroupRequest } from "../../Redux/user/notificationSlice";
 
 export default function GroupsPage() {
+  const groupCreationRequests = useSelector((state) => state.notification.groupRequest.data);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (groupCreationRequests.length === 0) {
+      dispatch(fetchGroupRequest());
+    }
+  }, []);
+
   return (
     <div className="p-6 md:p-10 min-h-screen bg-base-200">
       <div className="max-w-6xl mx-auto">
@@ -17,9 +27,13 @@ export default function GroupsPage() {
             <button className="btn btn-outline btn-sm">
               <FaSlidersH className="mr-2" /> Filters
             </button>
+            <Link to={"/group/requests"} className="btn btn-primary btn-outline btn-sm">
+              Your Requests (<b>{groupCreationRequests.length || 0}</b>)
+            </Link>
             <Link to={"/group/create"} className="btn btn-primary btn-sm flex items-center">
               <FaPlus className="mr-2" /> Create Group
             </Link>
+
             <div className="dropdown dropdown-end">
               <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
                 <li>

@@ -32,12 +32,45 @@ export const fetchDetailNotification = createAsyncThunk(
   }
 );
 
+export const fetchGroupRequest = createAsyncThunk("groupRequest/fetchGroupRequest", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/notifications/group_requests");
+    console.log(response);
+    return response.data.group_creation_requests;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
+
+export const fetchGroupRequestDetail = createAsyncThunk(
+  "groupRequest/fetchGroupRequestDetail",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/notifications/${id}/group_requests`);
+      console.log(response);
+      return response.data.group_creation_request;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+
 const initialState = {
   fetch: {
     loading: false,
     data: [],
   },
   detail: {
+    data: null,
+    loading: false,
+  },
+  groupRequest: {
+    data: [],
+    loading: false,
+  },
+  groupRequestDetail: {
     data: null,
     loading: false,
   },
@@ -82,8 +115,16 @@ const notificationSlice = createSlice({
       .addCase(fetchDetailNotification.fulfilled, (state, action) => {
         state.detail.data = action.payload;
         state.fetch.loading = false;
+      })
+      .addCase(fetchGroupRequest.fulfilled, (state, action) => {
+        state.groupRequest.loading = false;
+        state.groupRequest.data = action.payload;
+      })
+      .addCase(fetchGroupRequestDetail.fulfilled, (state, action) => {
+        state.groupRequestDetail.loading = false;
+        state.groupRequestDetail.data = action.payload;
       });
-    builder.addMatcher(isRejected(fetchNotification), (state, action) => {
+    builder.addMatcher(isRejected, (state, action) => {
       const actionName = action.type.split("/")[1];
 
       switch (actionName) {
@@ -93,11 +134,17 @@ const notificationSlice = createSlice({
         case "fetchDetailNotification":
           state.detail.loading = false;
           break;
+        case "fetchGroupRequest":
+          state.groupRequest.loading = false;
+          break;
+        case "fetchGroupRequestDetail":
+          state.groupRequestDetail.loading = false;
+          break;
         default:
           break;
       }
     });
-    builder.addMatcher(isPending(fetchNotification), (state, action) => {
+    builder.addMatcher(isPending, (state, action) => {
       const actionName = action.type.split("/")[1];
       switch (actionName) {
         case "fetchNotification":
@@ -106,6 +153,12 @@ const notificationSlice = createSlice({
           break;
         case "fetchDetailNotification":
           state.detail.loading = true;
+          break;
+        case "fetchGroupRequest":
+          state.groupRequest.loading = true;
+          break;
+        case "fetchGroupRequestDetail":
+          state.groupRequestDetail.loading = true;
           break;
         default:
           break;

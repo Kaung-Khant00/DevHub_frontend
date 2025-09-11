@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isPending, isRejected } from "@reduxjs/toolkit";
 import { api } from "../../Services/axios_instance";
+import { toast } from "react-toastify";
 
 export const createGroup = createAsyncThunk("group/createGroup", async (groupData, { rejectWithValue }) => {
   try {
@@ -7,8 +8,10 @@ export const createGroup = createAsyncThunk("group/createGroup", async (groupDat
       headers: { "Content-Type": "multipart/form-data" },
     });
     console.log(response);
+    toast.success("Group created successfully!");
     return response.data.group_creation_request;
   } catch (err) {
+    toast.error("Something went wrong!");
     console.log(err);
     return rejectWithValue(err.response?.data?.errors || err.message);
   }

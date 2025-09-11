@@ -68,6 +68,8 @@ export default function CreateGroup() {
     e.preventDefault();
     try {
       dispatch(createGroup({ name, description, image: imageFile, tags })).unwrap();
+      navigate("/group");
+      clearAll();
     } catch (err) {
       console.error(err);
     }

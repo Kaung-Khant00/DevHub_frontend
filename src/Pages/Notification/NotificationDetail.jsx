@@ -3,16 +3,16 @@ import { useEffect } from "react";
 import { MdOutlineArrowBack } from "react-icons/md";
 import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import { NOTIFICATION_TYPES } from "../../../Constants/notificationType";
+import { NOTIFICATION_TYPES } from "../../Constants/notificationType";
 import { useDispatch, useSelector } from "react-redux";
-import { api } from "../../../Services/axios_instance";
+import { api } from "../../Services/axios_instance";
 import {
   clearDetailNotification,
   deleteNotification,
   fetchDetailNotification,
   setNotificationRead,
-} from "../../../Redux/user/notificationSlice";
-import Spinner from "../../Common/Spinner";
+} from "../../Redux/user/notificationSlice";
+import Spinner from "../../Components/Common/Spinner";
 import { toast } from "react-toastify";
 
 export default function NotificationDetailSimple() {

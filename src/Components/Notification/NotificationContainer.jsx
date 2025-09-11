@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import NotificationItem from "../NotificationItem";
-import Spinner from "../../Common/Spinner";
+import NotificationItem from "./NotificationItem";
+import Spinner from "../Common/Spinner";
 import { FaBell } from "react-icons/fa6";
 
 const NotificationContainer = () => {

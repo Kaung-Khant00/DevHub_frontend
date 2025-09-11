@@ -8,9 +8,7 @@ const ImageWIthSkeleton = ({ src, alt, className }) => {
       <img
         src={src}
         alt={alt}
-        className={`transition-opacity duration-300 ${
-          loaded ? "opacity-100" : "opacity-0"
-        } ${className}`}
+        className={`transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
         onLoad={() => setLoaded(true)}
       />
     </div>
