@@ -34,7 +34,7 @@ export const fetchDetailNotification = createAsyncThunk(
 
 export const fetchGroupRequest = createAsyncThunk("groupRequest/fetchGroupRequest", async (_, { rejectWithValue }) => {
   try {
-    const response = await api.get("/notifications/group_requests");
+    const response = await api.get("/group_requests");
     console.log(response);
     return response.data.group_creation_requests;
   } catch (err) {
@@ -47,9 +47,23 @@ export const fetchGroupRequestDetail = createAsyncThunk(
   "groupRequest/fetchGroupRequestDetail",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/notifications/${id}/group_requests`);
+      const response = await api.get(`/group_requests/${id}`);
       console.log(response);
       return response.data.group_creation_request;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+
+export const deleteGroupRequest = createAsyncThunk(
+  "groupRequest/deleteGroupRequest",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/group_requests/${id}`);
+      console.log(response);
+      return id;
     } catch (err) {
       console.log(err);
       return rejectWithValue(err.response?.data?.errors || err.message);
@@ -69,6 +83,7 @@ const initialState = {
   groupRequest: {
     data: [],
     loading: false,
+    deleteLoading: false,
   },
   groupRequestDetail: {
     data: null,
@@ -96,7 +111,6 @@ const notificationSlice = createSlice({
       });
     },
     deleteNotification(state, action) {
-      console.log(action.payload);
       state.fetch.data = [...state.fetch.data.filter((notification) => notification.id !== action.payload)];
     },
     clearDetailNotification(state) {
@@ -123,6 +137,10 @@ const notificationSlice = createSlice({
       .addCase(fetchGroupRequestDetail.fulfilled, (state, action) => {
         state.groupRequestDetail.loading = false;
         state.groupRequestDetail.data = action.payload;
+      })
+      .addCase(deleteGroupRequest.fulfilled, (state, action) => {
+        state.groupRequest.data = [...state.groupRequest.data.filter((request) => request.id != action.payload)];
+        state.groupRequest.deleteLoading = false;
       });
     builder.addMatcher(isRejected, (state, action) => {
       const actionName = action.type.split("/")[1];
@@ -139,6 +157,9 @@ const notificationSlice = createSlice({
           break;
         case "fetchGroupRequestDetail":
           state.groupRequestDetail.loading = false;
+          break;
+        case "deleteGroupRequest":
+          state.groupRequest.deleteLoading = false;
           break;
         default:
           break;
@@ -159,6 +180,9 @@ const notificationSlice = createSlice({
           break;
         case "fetchGroupRequestDetail":
           state.groupRequestDetail.loading = true;
+          break;
+        case "deleteGroupRequest":
+          state.groupRequest.deleteLoading = true;
           break;
         default:
           break;

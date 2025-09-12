@@ -4,6 +4,7 @@ import { fetchNotification, removeReadNotification, setNotificationAllRead } fro
 import NotificationContainer from "../../Components/Notification/NotificationContainer";
 import { api } from "../../Services/axios_instance";
 import { Link } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function NotificationPage() {
   const notifications = useSelector((state) => state.notification.fetch.data);
@@ -40,7 +41,10 @@ export default function NotificationPage() {
     <div className="p-6">
       <div className="max-w-5xl mx-auto">
         <header className="flex items-center justify-between mb-6">
-          <div>
+          <div className="flex items-center gap-1">
+            <Link to={-1} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
+              <FaArrowLeft className="w-5 h-5" />
+            </Link>
             <h1 className="text-2xl font-semibold">Notifications</h1>
           </div>
 

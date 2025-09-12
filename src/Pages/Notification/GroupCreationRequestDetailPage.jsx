@@ -2,9 +2,10 @@
 import { useEffect } from "react";
 import { FaTrash, FaArrowLeft, FaTags, FaUser, FaCalendarAlt, FaImage, FaExclamationCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import { fetchGroupRequestDetail } from "../../Redux/user/notificationSlice";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { deleteGroupRequest, fetchGroupRequestDetail } from "../../Redux/user/notificationSlice";
 import ImageWIthSkeleton from "../../Components/Common/ImageWIthSkeleton";
+import { toast } from "react-toastify";
 
 function StatusPill({ status = "pending" }) {
   if (status === "approved") {
@@ -20,6 +21,17 @@ export default function UserGroupCreationRequestDetail() {
   const { id } = useParams();
   const { data, loading } = useSelector((state) => state.notification.groupRequestDetail);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  function deleteGroupCreationRequestApi() {
+    try {
+      dispatch(deleteGroupRequest(id));
+      navigate("/group/requests");
+      toast.success("Group request deleted successfully!");
+    } catch {
+      toast.error("Something went wrong!");
+    }
+  }
 
   useEffect(() => {
     dispatch(fetchGroupRequestDetail(id));
@@ -43,7 +55,10 @@ export default function UserGroupCreationRequestDetail() {
 
           <div className="flex items-center gap-3">
             <StatusPill status={data?.status} />
-            <button className="btn btn-sm btn-error flex items-center gap-2 text-white" aria-label="Delete request">
+            <button
+              onClick={deleteGroupCreationRequestApi}
+              className="btn btn-sm btn-error flex items-center gap-2 text-white"
+              aria-label="Delete request">
               <FaTrash />
               Delete
             </button>

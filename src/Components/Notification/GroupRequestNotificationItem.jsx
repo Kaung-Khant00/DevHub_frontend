@@ -1,7 +1,24 @@
 import { FaRegImage, FaTags, FaTrash } from "react-icons/fa";
 import { StatusBadge } from "./StatusBadge";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteGroupRequest } from "../../Redux/user/notificationSlice";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import Spinner from "../Common/Spinner";
 
-const GroupRequestNotificationItem = ({ notification, handleDelete }) => {
+const GroupRequestNotificationItem = ({ notification }) => {
+  const dispatch = useDispatch();
+  const deleteLoading = useSelector((state) => state.notification.groupRequest.deleteLoading);
+
+  const deleteGroupCreationRequestApi = () => {
+    try {
+      dispatch(deleteGroupRequest(notification.id));
+      toast.success("Group request deleted successfully!");
+    } catch {
+      toast.error("Something went wrong!");
+    }
+  };
+
   return (
     <li className="flex gap-4 p-4 rounded-lg bg-white shadow-sm my-3">
       {/* image */}
@@ -30,20 +47,22 @@ const GroupRequestNotificationItem = ({ notification, handleDelete }) => {
                 <FaTags className="inline" />{" "}
                 <span>{notification?.tags?.length > 0 ? notification.tags.join(", ") : notification.tags || "—"}</span>
               </div>
-              <span className="mx-2">•</span>
+              <span className="mx-1">•</span>
               <div>{notification?.created_at}</div>
             </div>
           </div>
 
           <div className="flex-shrink-0 flex items-end gap-2">
             <button
-              onClick={() => handleDelete(notification?.id)}
+              onClick={deleteGroupCreationRequestApi}
               className={`btn btn-sm btn-error flex items-center gap-2 text-white`}>
-              <FaTrash />
-              Delete
+              {deleteLoading ? <Spinner size="sm" /> : <FaTrash />}
+              {deleteLoading ? "Deleting..." : "Delete"}
             </button>
 
-            <button className="btn btn-sm btn-ghost">View</button>
+            <Link to={`/group/requests/${notification.id}`} className="btn btn-sm btn-ghost">
+              View
+            </Link>
           </div>
         </div>
       </div>

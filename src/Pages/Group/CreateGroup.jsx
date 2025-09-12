@@ -1,6 +1,4 @@
-/*  This code is generated from AI . Credit to ChatGPT and I understand it */
-
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { FaImage, FaPaperPlane, FaTrashAlt, FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
