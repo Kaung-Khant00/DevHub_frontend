@@ -1,4 +1,4 @@
-import UserTable from "../../Components/Admin/Tables/UserTable";
+import UsersTable from "../../Components/Admin/Tables/UsersTable";
 
 const UsersAdminPage = () => {
   return (
@@ -9,7 +9,7 @@ const UsersAdminPage = () => {
         </div>
         <button className="btn btn-primary rounded-l-none">Search</button>
       </div>
-      <UserTable />
+      <UsersTable />
     </div>
   );
 };

@@ -22,7 +22,7 @@ export default function Pagination({ currentPage = 1, totalPages = 1, setPage, l
       <button
         onClick={() => go(currentPage - 1)}
         disabled={currentPage === 1 || loading}
-        className={`btn btn-sm btn-ghost ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`btn btn-ghost ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
         aria-label="Previous page">
         ‹
       </button>
@@ -43,7 +43,7 @@ export default function Pagination({ currentPage = 1, totalPages = 1, setPage, l
       <button
         onClick={() => go(currentPage + 1)}
         disabled={currentPage === totalPages || loading}
-        className={`btn btn-sm btn-ghost ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`btn btn-ghost ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
         aria-label="Next page">
         ›
       </button>

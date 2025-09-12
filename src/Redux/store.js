@@ -8,10 +8,12 @@ import notificationSlice from "./user/notificationSlice";
 /*  admin side slices */
 import adminUserSlice from "./admin/admin.user";
 import groupRequestSlice from "./admin/admin.groupRequest";
+import adminUsersSlice from "./admin/admin.users";
 
 const adminReducer = combineReducers({
   user: adminUserSlice,
   groupRequest: groupRequestSlice,
+  users: adminUsersSlice,
 });
 
 const store = configureStore({
