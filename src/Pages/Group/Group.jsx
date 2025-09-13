@@ -3,6 +3,8 @@ import { FaSearch, FaPlus, FaSlidersH } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchGroupRequest } from "../../Redux/user/notificationSlice";
+import GroupContainer from "../../Components/Group/GroupContainer";
+import { fetchGroups } from "../../Redux/group/groupSlice";
 
 export default function GroupsPage() {
   const groupCreationRequests = useSelector((state) => state.notification.groupRequest.data);
@@ -11,6 +13,9 @@ export default function GroupsPage() {
     if (groupCreationRequests.length === 0) {
       dispatch(fetchGroupRequest());
     }
+  }, []);
+  useEffect(() => {
+    dispatch(fetchGroups());
   }, []);
 
   return (
@@ -76,6 +81,7 @@ export default function GroupsPage() {
             </div>
           </div>
         </div>
+        <GroupContainer />
       </div>
     </div>
   );

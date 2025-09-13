@@ -18,13 +18,14 @@ import GroupsPage from "../Pages/Group/Group";
 import Admin from "../Pages/Admin/Admin";
 import UsersAdminPage from "../Pages/Admin/UsersAdminPage";
 import GroupCreationRequestPage from "../Pages/Admin/GroupCreationRequestPage";
-import GroupLayout from "../Pages/Group/GroupLayout";
 import CreateGroup from "../Pages/Group/CreateGroup";
 import SecureAdmin from "../Pages/Auth/SecureAdmin";
 import NotificationPage from "../Pages/Notification/NotificationPage";
 import NotificationDetail from "../Pages/Notification/NotificationDetail";
 import UserGroupCreationRequestPage from "../Pages/Notification/GroupCreationRequestPage";
 import UserGroupCreationRequestDetail from "../Pages/Notification/GroupCreationRequestDetailPage";
+import UserGroupPage from "../Pages/Group/UserGroupPage";
+import CreateGroupPost from "../Pages/Group/CreateGroupPost";
 
 const router = createBrowserRouter([
   {
@@ -76,10 +77,9 @@ const router = createBrowserRouter([
           },
           {
             path: "group",
-            element: <GroupLayout />,
             children: [
               {
-                index: true,
+                path: "",
                 element: <GroupsPage />,
               },
               {
@@ -93,6 +93,14 @@ const router = createBrowserRouter([
               {
                 path: "requests/:id",
                 element: <UserGroupCreationRequestDetail />,
+              },
+              {
+                path: ":id",
+                element: <UserGroupPage />,
+              },
+              {
+                path: ":id/post/create",
+                element: <CreateGroupPost />,
               },
             ],
           },

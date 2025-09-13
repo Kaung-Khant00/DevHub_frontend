@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  FaCode,
-  FaFile,
-  FaHeart,
-  FaRegCommentDots,
-  FaRegHeart,
-} from "react-icons/fa";
+import { FaCode, FaFile, FaHeart, FaRegCommentDots, FaRegHeart } from "react-icons/fa";
 import { PiShareFatBold } from "react-icons/pi";
 import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,18 +14,7 @@ function PostCard({ post, isInProfile = false }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const {
-    user,
-    file,
-    content,
-    title,
-    code,
-    code_lang,
-    followed,
-    image,
-    image_url,
-    created_at_formatted,
-  } = post;
+  const { user, file, content, title, code, code_lang, followed, image, image_url, created_at_formatted } = post;
   const { user: authUser } = useSelector((state) => state.user);
   const likeLoading = useSelector((state) => state.post.like.loading);
   const [expand, setExpand] = useState(false);
@@ -40,9 +23,7 @@ function PostCard({ post, isInProfile = false }) {
   const [liked, setLiked] = useState(post?.liked || false);
   const LIMIT = 150;
   const isLong = content.length > LIMIT;
-  const displayText = expand
-    ? content
-    : content.substring(0, LIMIT) + (isLong ? "..." : "");
+  const displayText = expand ? content : content.substring(0, LIMIT) + (isLong ? "..." : "");
 
   const EditPostApi = () => {
     navigate(`/post/edit/${post.id}`);
@@ -100,21 +81,14 @@ function PostCard({ post, isInProfile = false }) {
         <div className="flex justify-between">
           {/*  Image Container */}
           <div className="flex items-center gap-3">
-            <Link
-              to={
-                user?.id === authUser?.id ? `/profile` : `/profile/${user?.id}`
-              }
-              className="avatar"
-            >
+            <Link to={user?.id === authUser?.id ? `/profile` : `/profile/${user?.id}`} className="avatar">
               <div className="w-12 rounded-full ring ring-base-100 ring-offset-base-100">
                 <img src={user?.profile_image_url} alt={user?.name} />
               </div>
             </Link>
             <div>
               <div className="font-semibold">{user?.name}</div>
-              <div className="text-sm text-base-content/60">
-                Posted in {created_at_formatted}
-              </div>
+              <div className="text-sm text-base-content/60">Posted in {created_at_formatted}</div>
             </div>
           </div>
           <PostCardAction
@@ -133,10 +107,7 @@ function PostCard({ post, isInProfile = false }) {
           <p className="text-base-content/90 text-base leading-relaxed">
             {displayText}
             {isLong && (
-              <span
-                className="cursor-pointer text-primary text-[17px] ms-3"
-                onClick={() => setExpand(!expand)}
-              >
+              <span className="cursor-pointer text-primary text-[17px] ms-3" onClick={() => setExpand(!expand)}>
                 {expand ? "Show less" : "Show more"}
               </span>
             )}
@@ -147,8 +118,7 @@ function PostCard({ post, isInProfile = false }) {
           <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-1 ">
             <input type="checkbox" />
             <div className="collapse-title text-sm font-medium flex items-center gap-2">
-              <FaCode /> View code{" "}
-              <span className="font-extrabold ">{code_lang}</span> snippet
+              <FaCode /> View code <span className="font-extrabold ">{code_lang}</span> snippet
             </div>
             <div className="collapse-content">
               <pre className="max-w-full bg-base-content p-2 rounded-lg overflow-x-auto text-sm text-base-300 whitespace-pre-wrap break-words">
@@ -163,6 +133,7 @@ function PostCard({ post, isInProfile = false }) {
               src={image_url}
               alt={title}
               className="lg:max-h-[350px] max-h-[300px] w-full object-center object-cover rounded-lg"
+              skeletonClassName={"h-[300px]"}
             />
           </div>
         )}
@@ -197,8 +168,7 @@ function PostCard({ post, isInProfile = false }) {
               onClick={() => {
                 handleFileDownload(file.path);
               }}
-              className="text-primary hover:underline"
-            >
+              className="text-primary hover:underline">
               Download File
             </div>
             {/*  <a
@@ -218,20 +188,12 @@ function PostCard({ post, isInProfile = false }) {
             onClick={CreateLikeApi}
             className={`flex items-center gap-2 text-sm cursor-pointer ${
               liked ? "text-primary" : "text-base-content/80"
-            }`}
-          >
-            {likeLoading ? (
-              <Spinner size="sm" />
-            ) : (
-              <>{liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}</>
-            )}
+            }`}>
+            {likeLoading ? <Spinner size="sm" /> : <>{liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}</>}
             <span>{post?.liked_users_count ?? 0}</span>
           </button>
 
-          <Link
-            to={`/post/${post?.id}/comments`}
-            className="flex items-center gap-1 text-sm text-base-content/80 "
-          >
+          <Link to={`/post/${post?.id}/comments`} className="flex items-center gap-1 text-sm text-base-content/80 ">
             <FaRegCommentDots size={16} /> <span>Comments</span>
           </Link>
 

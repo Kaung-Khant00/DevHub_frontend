@@ -11,31 +11,17 @@ const PostContainer = () => {
   function loadMorePosts() {
     if (isFetching.current || pagination.page >= pagination.lastPage) return;
     isFetching.current = true;
-    dispatch(
-      fetchPosts(
-        pagination.perPage,
-        pagination.page,
-        pagination.sortBy,
-        isFetching
-      )
-    );
+    dispatch(fetchPosts(pagination.perPage, pagination.page, pagination.sortBy, isFetching));
   }
 
   useEffect(() => {
     if (isFetching.current || pagination.page !== 1) return;
     isFetching.current = true;
-    dispatch(
-      fetchPosts(
-        pagination.perPage,
-        pagination.page,
-        pagination.sortBy,
-        isFetching
-      )
-    );
+    dispatch(fetchPosts(pagination.perPage, pagination.page, pagination.sortBy, isFetching));
   }, []);
   return (
     <div className="flex items-center flex-col mt-2">
-      {posts && posts.map((post) => <PostCard post={post} key={post.id} />)}
+      {posts.length > 0 && posts.map((post) => <PostCard post={post} key={post.id} />)}
       {posts.length === 0 && !fetch.loading ? (
         <div className="m-3">No posts found</div>
       ) : (
@@ -54,16 +40,11 @@ const PostContainer = () => {
           ) : (
             <>
               {pagination.currentPage < pagination.lastPage ? (
-                <button
-                  onClick={loadMorePosts}
-                  className="btn btn-primary mt-2"
-                >
+                <button onClick={loadMorePosts} className="btn btn-primary mt-2">
                   Show more
                 </button>
               ) : (
-                <div className="m-3 my-8 font-bold">
-                  -- -- -- No more posts ! -- -- --{" "}
-                </div>
+                <div className="m-3 my-8 font-bold">-- -- -- No more posts ! -- -- -- </div>
               )}
             </>
           )}
