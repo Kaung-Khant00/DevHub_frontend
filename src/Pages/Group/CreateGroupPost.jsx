@@ -4,14 +4,13 @@ import React, { useRef, useState, useMemo, useEffect } from "react";
 import { FaImage, FaFileAlt, FaPaperPlane, FaTrashAlt, FaTimes, FaCode, FaArrowLeft } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import ImageWIthSkeleton from "../../Components/Common/ImageWIthSkeleton";
-import { fetchGroupDetail } from "../../Redux/group/groupSlice";
+import { createGroupPost, fetchGroupDetail } from "../../Redux/group/groupSlice";
 import CreateGroupPostSkeleton from "../SkeletonLoading/CreateGroupPostSkeleton";
 // import { createPost } from "../../../Redux/post/postSlice";
 
 export default function CreateGroupPost() {
-  const navigate = useNavigate();
   const { id } = useParams();
   const { search } = useLocation();
   const { loading, error } = useSelector((state) => state.post.create);
@@ -71,7 +70,9 @@ export default function CreateGroupPost() {
   }, [tab]);
 
   useEffect(() => {
-    dispatch(fetchGroupDetail(id));
+    if (groupData?.id != id) {
+      dispatch(fetchGroupDetail(id));
+    }
   }, []);
   // --- Handlers (kept) ---
   function onImageSelect(e) {
@@ -118,7 +119,7 @@ export default function CreateGroupPost() {
   }
 
   // Publish: inject group_id and keep original createPost dispatch
-  async function publish() {
+  async function createGroupPostApi() {
     const form = {
       title,
       content,
@@ -128,10 +129,10 @@ export default function CreateGroupPost() {
       code,
       codeLang,
       tags,
-      group_id: id ?? null, // NEW: mark the post as belonging to this group
+      group_id: id || groupData?.id,
     };
 
-    // dispatch(createPost({ form, navigate }));
+    dispatch(createGroupPost(form));
   }
 
   return (
@@ -242,19 +243,8 @@ export default function CreateGroupPost() {
 
                   {imagePreview ? (
                     <div className="mt-3 w-full">
-                      <div className="flex items-start justify-between gap-2">
-                        <img src={imagePreview} alt="preview" className="rounded max-h-36 object-cover" />
-                        <div className="flex flex-col items-end">
-                          <button
-                            className="btn btn-xs btn-ghost mb-2"
-                            onClick={() => {
-                              setImageFile(null);
-                              setImagePreview(null);
-                            }}>
-                            Remove
-                          </button>
-                          <div className="text-xs text-base-content/70">Image ready to upload</div>
-                        </div>
+                      <div className="flex justify-center gap-2">
+                        <img src={imagePreview} alt="preview" className="rounded w-80 h-40 object-cover" />
                       </div>
                     </div>
                   ) : (
@@ -267,6 +257,14 @@ export default function CreateGroupPost() {
                       onClick={() => imageInputRef.current && imageInputRef.current.click()}>
                       <FaImage className="mr-2 text-primary" /> Upload Image
                     </label>
+                    <button
+                      className="btn btn-sm btn-error btn-soft flex-1 mb-1"
+                      onClick={() => {
+                        setImageFile(null);
+                        setImagePreview(null);
+                      }}>
+                      Remove
+                    </button>
                     <input
                       type="file"
                       accept="image/png, image/jpeg, image/jpg, image/webp"
@@ -381,7 +379,7 @@ export default function CreateGroupPost() {
                     <FaTrashAlt /> Clear
                   </button>
 
-                  <button className="btn btn-primary btn-sm" onClick={() => publish()} disabled={loading}>
+                  <button className="btn btn-primary btn-sm" onClick={createGroupPostApi} disabled={loading}>
                     {loading ? (
                       <div className="flex items-center gap-2">
                         <div className="loading loading-ring loading-sm"></div>

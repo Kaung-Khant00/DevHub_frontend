@@ -1,7 +1,16 @@
 import { FaUsers } from "react-icons/fa";
 import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { joinGroup } from "../../Redux/group/groupSlice";
 
 const GroupHeader = ({ group, admin }) => {
+  const dispatch = useDispatch();
+
+  function joinGroupApi() {
+    dispatch(joinGroup(group.id));
+  }
+
   return (
     <div className="rounded-lg overflow-hidden shadow-md mb-6 bg-base-100 relative">
       <div className="relative h-44 bg-gradient-to-t from-black to-transparent ">
@@ -31,7 +40,9 @@ const GroupHeader = ({ group, admin }) => {
               <div className="mt-3 flex items-center gap-3 text-sm text-muted">
                 <div className="flex items-center gap-2">
                   <FaUsers className="mt-0.5 text-primary" />
-                  <span className="text-base-content">2 members</span>
+                  <span className="text-base-content">
+                    {group?.members_count} member{group?.members_count > 1 && "s"}
+                  </span>
                 </div>
 
                 <div className="ml-3 text-sm">
@@ -41,7 +52,9 @@ const GroupHeader = ({ group, admin }) => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button className="btn btn-outline">Join</button>
+              <button className={`btn btn-primary ${!group?.joined && "btn-soft"}`} onClick={joinGroupApi}>
+                {group?.joined ? "Joined" : "Join"}
+              </button>
               <button className="btn btn-primary">Message</button>
             </div>
           </div>
@@ -58,15 +71,14 @@ const GroupHeader = ({ group, admin }) => {
 
         {/* Compact admin bubble attached to header (smaller) */}
         <div className="absolute right-4 top-28 transform translate-y-1/2">
-          <a title={`View ${admin?.name} profile`} className="flex items-center gap-3">
+          <Link to={`/profile/${admin?.id}`} title={`View ${admin?.name} profile`} className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full ring ring-primary/30 overflow-hidden cursor-pointer">
-              <img src={admin?.profile_url} alt={admin?.name} className="w-full h-full object-cover" />
+              <ImageWIthSkeleton src={admin?.profile_url} alt={admin?.name} className="w-full h-full object-cover" />
             </div>
-            <div className="hidden sm:block text-sm invert-100">
-              <div className="font-medium">{admin?.name}</div>
-              <div className="text-xs text-muted">{admin?.role}</div>
+            <div className="hidden sm:block text-sm badge badge-primary badge-soft">
+              <div className="font-medium ">{admin?.name}</div>
             </div>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

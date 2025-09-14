@@ -40,6 +40,40 @@ export const fetchGroupDetail = createAsyncThunk("group/fetchGroupDetail", async
   }
 });
 
+export const joinGroup = createAsyncThunk("group/joinGroup", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.get(`groups/${id}/join`);
+    console.log(response);
+    if (!Object.hasOwn(response.data, "joined")) {
+      toast.error(response.data.message);
+    } else {
+      if (response.data.joined) {
+        toast.success("Group joined successfully!");
+      } else {
+        toast.success("Leaves the group successfully.");
+      }
+    }
+    return response.data;
+  } catch (err) {
+    toast.error("Unexpected Error happened while Joining the group!");
+    console.log(err);
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
+
+export const createGroupPost = createAsyncThunk("group/createGroupPost", async (data, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`groups/${data.group_id}/post`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    console.log(response);
+    return response.data.post;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
+
 const initialState = {
   fetch: {
     loading: false,
@@ -52,6 +86,10 @@ const initialState = {
   detail: {
     loading: false,
     data: null,
+  },
+  createPost: {
+    loading: false,
+    error: null,
   },
 };
 const groupSlice = createSlice({
@@ -72,6 +110,26 @@ const groupSlice = createSlice({
       .addCase(fetchGroupDetail.fulfilled, (state, action) => {
         state.detail.loading = false;
         state.detail.data = action.payload;
+      })
+      .addCase(joinGroup.fulfilled, (state, action) => {
+        state.detail.loading = false;
+        state.fetch.data = state.fetch.data.map((group) => {
+          if (group.id == action.payload.id) {
+            return {
+              ...group,
+              joined: action.payload.joined,
+              members_count: action.payload.joined ? group.members_count + 1 : group.members_count - 1,
+            };
+          } else {
+            return group;
+          }
+        });
+        if (state.detail.data) {
+          state.detail.data.joined = action.payload.joined;
+          state.detail.data.members_count = action.payload.joined
+            ? state.detail.data.members_count + 1
+            : state.detail.data.members_count - 1;
+        }
       })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];

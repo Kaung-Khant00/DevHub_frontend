@@ -1,11 +1,19 @@
+import { FaArrowLeft } from "react-icons/fa";
+import { Link, useParams } from "react-router-dom";
+
 const CreateGroupPostSkeleton = () => {
+  const { id } = useParams();
+
   return (
     <div
       className="bg-base-200 p-4 rounded-lg shadow-sm animate-pulse"
       aria-busy="true"
       aria-label="Loading create post form">
-      {/* Header skeleton */}
       <div className="flex items-center gap-3 mb-4">
+        {/* Header skeleton */}
+        <Link to={`/group/${id}`} className="btn btn-ghost btn-square mb-2" aria-label="Back" title="Back">
+          <FaArrowLeft className="w-10 h-5" />
+        </Link>
         <div className="w-12 h-12 rounded-lg overflow-hidden ring ring-primary/30 bg-base-200 skeleton" />
 
         <div className="flex-1">

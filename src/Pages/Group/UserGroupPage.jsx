@@ -14,7 +14,9 @@ export default function UserGroupPage() {
   const { data, loading } = useSelector((state) => state.group.detail);
   const { id } = useParams();
   useEffect(() => {
-    dispatch(fetchGroupDetail(id));
+    if (!data) {
+      dispatch(fetchGroupDetail(id));
+    }
   }, []);
   return (
     <div className="max-w-5xl mx-auto p-6">

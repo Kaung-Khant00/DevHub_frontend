@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from "react";
-import { FaImage, FaPaperPlane, FaTrashAlt, FaTimes } from "react-icons/fa";
+import { FaImage, FaPaperPlane, FaTrashAlt, FaTimes, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createGroup } from "../../Redux/group/groupSlice";
 
 export default function CreateGroup() {
@@ -88,15 +88,10 @@ export default function CreateGroup() {
     <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-4xl mx-auto">
       <header className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <button className="btn btn-ghost btn-sm md:hidden" onClick={() => navigate(-1)}>
-            Back
-          </button>
+          <Link to={`/group`} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
+            <FaArrowLeft className="w-5 h-5" />
+          </Link>
           <h1 className="text-xl md:text-2xl font-semibold text-primary">Create a Group</h1>
-        </div>
-        <div className="hidden md:flex items-center gap-3">
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
-            Back
-          </button>
         </div>
       </header>
 
