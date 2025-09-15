@@ -84,8 +84,8 @@ const initialState = {
     error: null,
   },
   detail: {
-    loading: false,
     data: null,
+    loading: false,
   },
   createPost: {
     loading: false,

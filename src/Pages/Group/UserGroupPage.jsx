@@ -3,7 +3,7 @@ import GroupHeader from "../../Components/Group/GroupHeader";
 import SideBar from "../../Components/Group/SideBar";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { fetchGroupDetail } from "../../Redux/group/groupSlice";
 import UserGroupSkeleton from "../SkeletonLoading/UserGroupSkeleton";
 import GroupComposer from "../../Components/Group/GroupComposer";
@@ -19,7 +19,9 @@ export default function UserGroupPage() {
   const { id } = useParams();
 
   function loadMoreGroupPosts() {
+    console.log("FETCHING POSTS");
     if (!groupPostFetchedRef.current || pagination.current_page > pagination.last_page) return;
+    console.log("FETCHING POSTS NEW");
     groupPostFetchedRef.current = true;
 
     dispatch(fetchGroupPosts({ current_page: pagination.current_page, per_page: pagination.per_page, group_id: id }));

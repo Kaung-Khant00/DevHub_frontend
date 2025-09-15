@@ -1,26 +1,26 @@
 import { useDispatch, useSelector } from "react-redux";
-import PostComment from "../../../Components/Feed/PostComment";
-import PostDetail from "../../../Components/Feed/PostDetail";
-import PostQuickAction from "../../../Components/Feed/PostQuickAction";
+import PostComment from "../../Components/Feed/PostComment";
+import PostQuickAction from "../../Components/Feed/PostQuickAction";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchComments, fetchDetailPost } from "../../../Redux/post/postSlice";
 import { useEffect } from "react";
+import { fetchGroupPostDetail } from "../../Redux/group/groupPostsSlice";
+import GroupPostDetailPage from "./GroupPostDetail";
+import GroupPostComment from "./GroupPostComment";
 
-export default function CommentPage() {
+export default function GroupCommentPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { user } = useSelector((state) => state.user);
-  const { detail, comments, comment } = useSelector((state) => state.post);
+  const { detail } = useSelector((state) => state.groupPost);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (detail.data?.id === id) return;
-    dispatch(fetchDetailPost(id));
-  }, []);
 
   useEffect(() => {
+    dispatch(fetchGroupPostDetail(id));
+  }, []);
+  /*   useEffect(() => {
     if (!detail.data?.id) return;
     dispatch(fetchComments({ pagination: comments.pagination, id: detail.data?.id }));
-  }, [dispatch, detail.data?.id]);
+  }, [dispatch, detail.data?.id]); */
 
   return (
     <div className="min-h-screen bg-base-100 py-8 w-full p-3">
@@ -33,8 +33,12 @@ export default function CommentPage() {
               Back
             </button>
           </div>
-          <PostDetail detail={detail} />
-          <PostComment postId={detail.data?.id} user={user} detail={detail} comments={comments} comment={comment} />
+          <GroupPostDetailPage detail={detail} />
+          <GroupPostComment
+            postId={detail.data?.id}
+            user={user}
+            detail={detail} /* comments={comments} comment={comment} */
+          />
         </main>
         <PostQuickAction user={user} detail={detail} />
       </div>

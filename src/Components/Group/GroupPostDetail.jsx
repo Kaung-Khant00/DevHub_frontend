@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../Services/axios_instance";
 import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
 
-export default function DetailPostPage({ detail }) {
+export default function GroupPostDetailPage({ detail }) {
   const [expand, setExpand] = useState(false);
   const navigate = useNavigate();
 

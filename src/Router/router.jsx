@@ -26,6 +26,7 @@ import UserGroupCreationRequestPage from "../Pages/Notification/GroupCreationReq
 import UserGroupCreationRequestDetail from "../Pages/Notification/GroupCreationRequestDetailPage";
 import UserGroupPage from "../Pages/Group/UserGroupPage";
 import CreateGroupPost from "../Pages/Group/CreateGroupPost";
+import GroupCommentPage from "../Components/Group/GroupComment";
 
 const router = createBrowserRouter([
   {
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
               {
                 path: ":id/post/create",
                 element: <CreateGroupPost />,
+              },
+              {
+                path: ":id/post/comments",
+                element: <GroupCommentPage />,
               },
             ],
           },

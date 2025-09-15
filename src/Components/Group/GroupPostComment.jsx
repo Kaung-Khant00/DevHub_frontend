@@ -6,9 +6,9 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import CommentCard from "./CommentCard";
+import CommentCard from "../Feed/CommentCard";
 
-const PostComment = ({ postId, user, detail, comments, comment }) => {
+const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
   const textareaRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -257,4 +257,4 @@ const PostComment = ({ postId, user, detail, comments, comment }) => {
   );
 };
 
-export default PostComment;
+export default GroupPostComment;

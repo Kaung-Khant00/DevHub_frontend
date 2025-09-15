@@ -180,7 +180,9 @@ function PostCard({ post }) {
             <span>{post?.liked_users_count ?? 0}</span>
           </button>
 
-          <Link to={`/post/${post?.id}/comments`} className="flex items-center gap-1 text-sm text-base-content/80 ">
+          <Link
+            to={`/group/${post?.id}/post/comments`}
+            className="flex items-center gap-1 text-sm text-base-content/80 ">
             <FaRegCommentDots size={16} /> <span>Comments</span>
           </Link>
 

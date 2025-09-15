@@ -21,7 +21,7 @@ const PostContainer = () => {
   }, []);
   return (
     <div className="flex items-center flex-col mt-2">
-      {posts.length > 0 && posts.map((post) => <PostCard post={post} key={post.id} />)}
+      {posts.length > 0 && posts.map((post) => <PostCard post={post} key={post?.id} />)}
       {posts.length === 0 && !fetch.loading ? (
         <div className="m-3">No posts found</div>
       ) : (

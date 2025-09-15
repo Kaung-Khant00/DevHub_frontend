@@ -29,6 +29,19 @@ export const likeGroupPost = createAsyncThunk("groupPost/likeGroupPost", async (
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
+export const fetchGroupPostDetail = createAsyncThunk(
+  "groupPost/fetchGroupPostDetail",
+  async (postId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/groups/${postId}/posts/detail`);
+      console.log("GROUP POST DETAIL", response);
+      return response.data.post;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
 
 const initialState = {
   fetch: {
@@ -40,6 +53,10 @@ const initialState = {
     last_page: 1,
     per_page: 1,
     total: null,
+  },
+  detail: {
+    data: null,
+    loading: false,
   },
   likeLoading: false,
 };
@@ -72,6 +89,10 @@ const groupPostsSlice = createSlice({
           return post;
         });
       })
+      .addCase(fetchGroupPostDetail.fulfilled, (state, action) => {
+        state.detail.loading = false;
+        state.detail.data = action.payload;
+      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
@@ -80,6 +101,9 @@ const groupPostsSlice = createSlice({
             break;
           case "likeGroupPost":
             state.likeLoading = false;
+            break;
+          case "fetchGroupPostDetail":
+            state.detail.loading = false;
             break;
           default:
             break;
@@ -93,6 +117,9 @@ const groupPostsSlice = createSlice({
             break;
           case "likeGroupPost":
             state.likeLoading = true;
+            break;
+          case "fetchGroupPostDetail":
+            state.detail.loading = true;
             break;
           default:
             break;
