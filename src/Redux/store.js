@@ -3,6 +3,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userSlice from "./user/userSlice";
 import postSlice from "./post/postSlice";
 import groupSlice from "./group/groupSlice";
+import groupPostsSlice from "./group/groupPostsSlice";
 import notificationSlice from "./user/notificationSlice";
 
 /*  admin side slices */
@@ -23,6 +24,7 @@ const store = configureStore({
     group: groupSlice,
     admin: adminReducer,
     notification: notificationSlice,
+    groupPost: groupPostsSlice,
   },
   devTools: import.meta.env.VITE_ENV !== "production",
 });

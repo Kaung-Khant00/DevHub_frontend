@@ -22,7 +22,6 @@ export default function DeveloperProfilePage() {
   const { data, loading } = useSelector((state) => state.user.userPosts);
   const skills = useSelector((state) => state.user.profile?.skills);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchUserPosts());
@@ -48,12 +47,9 @@ export default function DeveloperProfilePage() {
 
           {/* Header */}
           <div className="relative max-w-6xl mx-auto px-4 pt-16 md:pt-20">
-            <button
-              className="btn btn-outline btn-primary btn-sm absolute top-5 sm:right-0 "
-              onClick={() => navigate("/feed")}
-              aria-label="Back">
+            <Link to={-1} className="btn btn-outline btn-primary btn-sm absolute top-5 sm:right-0 " aria-label="Back">
               Back
-            </button>
+            </Link>
             <div className="card bg-base-100 shadow-sm border border-base-200 rounded-2xl">
               <div className="card-body p-4 md:p-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
