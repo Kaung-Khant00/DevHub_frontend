@@ -8,7 +8,7 @@ import { isRejected } from "@reduxjs/toolkit";
 | REGISTER USER
 |------------------------------------------------------------------------
 */
-export const registerUser = createAsyncThunk("user/register", async (form, { rejectWithValue }) => {
+export const registerUser = createAsyncThunk("user/registerUser", async (form, { rejectWithValue }) => {
   try {
     const response = await api.post("/register", {
       name: form.name,
@@ -22,7 +22,7 @@ export const registerUser = createAsyncThunk("user/register", async (form, { rej
     localStorage.setItem("token", response.data.token);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.errors || { form: "Something went wrong" });
+    return rejectWithValue(error.response?.data?.errors);
   }
 });
 
@@ -31,7 +31,7 @@ export const registerUser = createAsyncThunk("user/register", async (form, { rej
 | LOGIN USER
 |------------------------------------------------------------------------
 */
-export const loginUser = createAsyncThunk("user/login", async (formData, { rejectWithValue }) => {
+export const loginUser = createAsyncThunk("user/loginUser", async (formData, { rejectWithValue }) => {
   try {
     console.log(formData);
     const response = await api.post("/login", formData);
@@ -57,7 +57,7 @@ export const loginUser = createAsyncThunk("user/login", async (formData, { rejec
 | LOGOUT USER
 |------------------------------------------------------------------------
 */
-export const logoutUser = createAsyncThunk("user/logout", async (_, { rejectWithValue }) => {
+export const logoutUser = createAsyncThunk("user/logoutUser", async (_, { rejectWithValue }) => {
   try {
     const response = await api.post("/logout");
     localStorage.clear();
@@ -92,7 +92,7 @@ export const fetchUser = createAsyncThunk("user/fetchUser", async (_, { rejectWi
 | FETCH USER PROFILE
 |------------------------------------------------------------------------
 */
-export const fetchUserProfile = createAsyncThunk("user/fetchProfile", async (_, { rejectWithValue }) => {
+export const fetchUserProfile = createAsyncThunk("user/fetchUserProfile", async (_, { rejectWithValue }) => {
   try {
     const response = await api.get("/profile");
     return response.data.profile;
@@ -284,78 +284,53 @@ const userSlice = createSlice({
     // --------------------
     // Explicit fulfilled handlers
     // --------------------
-    builder.addCase(registerUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-    });
-
-    builder.addCase(loginUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.loginError = null;
-    });
-
-    builder.addCase(logoutUser.fulfilled, (state) => {
-      state.logoutLoading = false;
-      state.user = null;
-      state.token = null;
-    });
-
-    builder.addCase(fetchUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload;
-    });
-
-    builder.addCase(fetchUserProfile.fulfilled, (state, action) => {
-      state.loading = false;
-      state.profile = action.payload;
-    });
-
-    builder.addCase(editProfile.fulfilled, (state, action) => {
-      state.profile = action.payload;
-    });
-
-    builder.addCase(editProfileImage.fulfilled, (state, action) => {
-      state.user = action.payload.user;
-    });
-
-    builder.addCase(removeProfileImage.fulfilled, (state, action) => {
-      state.user = action.payload.user;
-      state.deleteLoading = false;
-    });
-
-    builder.addCase(fetchUserPosts.fulfilled, (state, action) => {
-      state.userPosts.loading = false;
-      state.userPosts.data = action.payload;
-    });
-
-    builder.addCase(fetchDeveloperProfile.fulfilled, (state, action) => {
-      state.viewedProfileUser.loading = false;
-      state.viewedProfileUser.profile = action.payload.profile;
-      state.viewedProfileUser.posts = action.payload.posts;
-      state.viewedProfileUser.user = action.payload.user;
-    });
-    // --------------------
-    // Global pending matcher
-    // --------------------
-    builder.addMatcher(
-      isPending(
-        registerUser,
-        loginUser,
-        logoutUser,
-        fetchUser,
-        fetchUserProfile,
-        editProfile,
-        editProfileImage,
-        removeProfileImage,
-        fetchUserPosts,
-        fetchDeveloperProfile
-      ),
-      (state, action) => {
+    builder
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.loginError = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.logoutLoading = false;
+        state.user = null;
+        state.token = null;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = action.payload;
+      })
+      .addCase(editProfile.fulfilled, (state, action) => {
+        state.profile = action.payload;
+      })
+      .addCase(editProfileImage.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+      })
+      .addCase(removeProfileImage.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.deleteLoading = false;
+      })
+      .addCase(fetchUserPosts.fulfilled, (state, action) => {
+        state.userPosts.loading = false;
+        state.userPosts.data = action.payload;
+      })
+      .addCase(fetchDeveloperProfile.fulfilled, (state, action) => {
+        state.viewedProfileUser.loading = false;
+        state.viewedProfileUser.profile = action.payload.profile;
+        state.viewedProfileUser.posts = action.payload.posts;
+        state.viewedProfileUser.user = action.payload.user;
+      })
+      .addMatcher(isPending, (state, action) => {
         const actionName = action.type.split("/")[1];
-
         switch (actionName) {
           case "registerUser":
             state.loading = true;
@@ -400,27 +375,10 @@ const userSlice = createSlice({
           default:
             break;
         }
-      }
-    );
-
-    // --------------------
-    // Global rejected matcher
-    // --------------------
-    builder.addMatcher(
-      isRejected(
-        registerUser,
-        loginUser,
-        logoutUser,
-        fetchUser,
-        fetchUserProfile,
-        editProfile,
-        editProfileImage,
-        removeProfileImage,
-        fetchUserPosts
-      ),
-      (state, action) => {
+      })
+      .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
-        const payload = action.payload ?? action.error?.message ?? null;
+        const payload = action.payload ?? null;
 
         switch (actionName) {
           case "registerUser":
@@ -476,14 +434,8 @@ const userSlice = createSlice({
             state.viewedProfileUser.user = null;
             state.error = payload;
             break;
-          default:
-            // fallback generic handler
-            state.loading = false;
-            state.error = payload;
-            break;
         }
-      }
-    );
+      });
   },
 });
 

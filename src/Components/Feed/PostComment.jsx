@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommentCard from "./CommentCard";
 
-const PostComment = ({ postId, user, detail, comments, comment }) => {
+const PostComment = ({ postId, user, detail, comment }) => {
   const textareaRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,8 +64,8 @@ const PostComment = ({ postId, user, detail, comments, comment }) => {
   // API CALL --------------------------
   // PAGINATE COMMENTS
   const FetchMoreCommentsApi = () => {
-    if (!comments?.pagination?.nextPageURL) return;
-    dispatch(fetchComments({ pagination: comments?.pagination, id: postId }));
+    if (!comment?.pagination?.nextPageURL) return;
+    dispatch(fetchComments({ pagination: comment?.pagination, id: postId }));
   };
   // LIKE THE POST
   function LikePostApi() {
@@ -132,7 +132,7 @@ const PostComment = ({ postId, user, detail, comments, comment }) => {
           <h2 className="text-lg font-semibold leading-tight">Comments</h2>
           <p className="text-sm text-base-content/60 mt-1">
             {detail?.data?.comments_count} comment
-            {(comments?.data?.length ?? 0) !== 1 ? "s" : ""}
+            {(comment?.data?.length ?? 0) !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex items-center gap-3 text-sm text-base-content/60">
@@ -218,15 +218,15 @@ const PostComment = ({ postId, user, detail, comments, comment }) => {
         </div>
       </form>
 
-      {/* comments list */}
+      {/* comment list */}
       <div className="max-h-[56vh] overflow-auto pr-2 space-y-2">
         {/* empty state */}
-        {detail?.data?.comments_count === 0 && !comments?.data?.length && !detail?.loading && (
+        {detail?.data?.comments_count === 0 && !comment?.data?.length && !detail?.loading && (
           <div className="py-4 text-center bg-base-300">No Comment Yet</div>
         )}
         {/*  LOOPING COMMENTS */}
-        {comments?.data?.length > 0 &&
-          comments?.data.map((c) => (
+        {comment?.data?.length > 0 &&
+          comment?.data.map((c) => (
             <CommentCard
               c={c}
               key={c.id}
@@ -237,18 +237,18 @@ const PostComment = ({ postId, user, detail, comments, comment }) => {
           ))}
         {/* load more */}
         <div className="pt-3 pb-6 text-center">
-          {comments?.loading || detail?.loading ? (
+          {comment?.loading || detail?.loading ? (
             <div className="flex justify-center my-3">
               <span className="loading loading-spinner loading-md"></span>
             </div>
           ) : (
             <button
               onClick={FetchMoreCommentsApi}
-              disabled={!comments?.pagination?.nextPageURL}
+              disabled={!comment?.pagination?.nextPageURL}
               className={`link link-hover link-primary text-sm ${
-                !comments?.pagination?.nextPageURL ? "opacity-50 cursor-not-allowed" : ""
+                !comment?.pagination?.nextPageURL ? "opacity-50 cursor-not-allowed" : ""
               }`}>
-              {comments?.pagination?.nextPageURL ? "See More Comments" : "No more comments"}
+              {comment?.pagination?.nextPageURL ? "See More Comments" : "No more comment"}
             </button>
           )}
         </div>

@@ -1,21 +1,28 @@
 import { useDispatch, useSelector } from "react-redux";
-import PostComment from "../../Components/Feed/PostComment";
 import PostQuickAction from "../../Components/Feed/PostQuickAction";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { fetchGroupPostDetail } from "../../Redux/group/groupPostsSlice";
+import { useEffect, useRef } from "react";
+import { fetchGroupPostComments, fetchGroupPostDetail } from "../../Redux/group/groupPostsSlice";
 import GroupPostDetailPage from "./GroupPostDetail";
 import GroupPostComment from "./GroupPostComment";
 
 export default function GroupCommentPage() {
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const { postId } = useParams();
   const { user } = useSelector((state) => state.user);
   const { detail } = useSelector((state) => state.groupPost);
+  const likeLoading = useSelector((state) => state.groupPost.likeLoading);
+  const comment = useSelector((state) => state.groupPost.comment);
+  const isCommentFetched = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(fetchGroupPostDetail(id));
+    dispatch(fetchGroupPostDetail(postId));
+  }, []);
+  useEffect(() => {
+    if (isCommentFetched.current) return;
+    isCommentFetched.current = true;
+    dispatch(fetchGroupPostComments({ pagination: comment?.pagination, postId }));
   }, []);
   /*   useEffect(() => {
     if (!detail.data?.id) return;
@@ -35,9 +42,11 @@ export default function GroupCommentPage() {
           </div>
           <GroupPostDetailPage detail={detail} />
           <GroupPostComment
+            likeLoading={likeLoading}
             postId={detail.data?.id}
             user={user}
-            detail={detail} /* comments={comments} comment={comment} */
+            detail={detail}
+            comment={comment}
           />
         </main>
         <PostQuickAction user={user} detail={detail} />

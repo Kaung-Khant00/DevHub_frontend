@@ -10,7 +10,7 @@ export default function CommentPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { user } = useSelector((state) => state.user);
-  const { detail, comments, comment } = useSelector((state) => state.post);
+  const { detail, comment } = useSelector((state) => state.post);
   const navigate = useNavigate();
   useEffect(() => {
     if (detail.data?.id === id) return;
@@ -19,7 +19,7 @@ export default function CommentPage() {
 
   useEffect(() => {
     if (!detail.data?.id) return;
-    dispatch(fetchComments({ pagination: comments.pagination, id: detail.data?.id }));
+    dispatch(fetchComments({ pagination: comment.pagination, id: detail.data?.id }));
   }, [dispatch, detail.data?.id]);
 
   return (
@@ -34,7 +34,7 @@ export default function CommentPage() {
             </button>
           </div>
           <PostDetail detail={detail} />
-          <PostComment postId={detail.data?.id} user={user} detail={detail} comments={comments} comment={comment} />
+          <PostComment postId={detail.data?.id} user={user} detail={detail} comment={comment} />
         </main>
         <PostQuickAction user={user} detail={detail} />
       </div>

@@ -10,7 +10,7 @@ import { api } from "../../Services/axios_instance";
 import { registerUser } from "../../Redux/user/userSlice";
 
 const Register = () => {
-  const { registerError } = useSelector((state) => state.user);
+  const registerError = useSelector((state) => state.user.registerError);
   const dispatch = useDispatch();
   const handleGitHubLogin = async () => {
     try {
@@ -60,15 +60,13 @@ const Register = () => {
           <div className="flex justify-center gap-4">
             <div
               onClick={handleGoogleLogin}
-              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center"
-            >
+              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center">
               <FcGoogle size={25} />
               <span className="text-gray-600">Login with Google</span>
             </div>
             <div
               onClick={handleGitHubLogin}
-              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center"
-            >
+              className="flex-1 btn-hover border border-gray-300 rounded flex btn gap-3 items-center">
               <FaGithub size={25} />
               <span className="text-gray-600">Login with Github</span>
             </div>
@@ -91,11 +89,7 @@ const Register = () => {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               Icon={FaRegUserCircle}
             />
-            {registerError?.name && (
-              <div className="text-red-500 text-sm mb-2">
-                {registerError.name}
-              </div>
-            )}
+            {registerError?.name && <div className="text-red-500 text-sm mb-2">{registerError.name}</div>}
             <FormInput
               type="email"
               placeholder="Email"
@@ -103,11 +97,7 @@ const Register = () => {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               Icon={MdOutlineAlternateEmail}
             />
-            {registerError?.email && (
-              <div className="text-red-500 text-sm mb-2">
-                {registerError.email}
-              </div>
-            )}
+            {registerError?.email && <div className="text-red-500 text-sm mb-2">{registerError.email}</div>}
             <FormInput
               type="password"
               placeholder="Password"
@@ -116,30 +106,19 @@ const Register = () => {
               Icon={TbLock}
               isPasswordInput={true}
             />
-            {registerError?.password && (
-              <div className="text-red-500 text-sm mb-2">
-                {registerError.password}
-              </div>
-            )}
+            {registerError?.password && <div className="text-red-500 text-sm mb-2">{registerError.password}</div>}
             <FormInput
               type="password"
               placeholder="Confirm Password"
               value={form.confirmPassword}
-              onChange={(e) =>
-                setForm({ ...form, confirmPassword: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
               isPasswordInput={true}
               Icon={TbLockCheck}
             />
             {registerError?.password_confirmation && (
-              <div className="text-red-500 text-sm mb-2">
-                {registerError.password_confirmation}
-              </div>
+              <div className="text-red-500 text-sm mb-2">{registerError.password_confirmation}</div>
             )}
-            <select
-              className="btn mt-2"
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-            >
+            <select className="btn mt-2" onChange={(e) => setForm({ ...form, role: e.target.value })}>
               <option disabled selected>
                 Select Role
               </option>
@@ -150,20 +129,14 @@ const Register = () => {
                 Client
               </option>
             </select>
-            {registerError?.role && (
-              <div className="text-red-500 text-sm mb-2">
-                {registerError.role}
-              </div>
-            )}
+            {registerError?.role && <div className="text-red-500 text-sm mb-2">{registerError.role}</div>}
             <div className="flex items-start mb-2 mt-3">
               <input
                 type="checkbox"
                 className="checkbox checkbox-sm text-white checked:border-primary  checked:bg-primary validator"
                 required
                 title="Required"
-                onChange={(e) =>
-                  setForm({ ...form, isAgree: e.target.checked })
-                }
+                onChange={(e) => setForm({ ...form, isAgree: e.target.checked })}
                 checked={form.isAgree}
               />
               <p className="text-sm text-gray-600 ms-2">
@@ -178,10 +151,7 @@ const Register = () => {
                 .
               </p>
             </div>
-            <button
-              type="submit"
-              className="w-full btn-primary text-white py-2 rounded-lg btn transition mt-3"
-            >
+            <button type="submit" className="w-full btn-primary text-white py-2 rounded-lg btn transition mt-3">
               Create Account
             </button>
 

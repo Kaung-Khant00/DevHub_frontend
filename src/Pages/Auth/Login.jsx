@@ -10,7 +10,7 @@ import { api } from "../../Services/axios_instance.js";
 import { loginUser } from "../../Redux/user/userSlice.js";
 
 const Login = () => {
-  const { loginError } = useSelector((state) => state.user);
+  const loginError = useSelector((state) => state.user.loginError);
   const dispatch = useDispatch();
   const [form, setForm] = useState({
     email: "",

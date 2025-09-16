@@ -5,7 +5,7 @@ export const fetchGroupPosts = createAsyncThunk(
   "admin/fetchGroupPosts",
   async ({ current_page = 1, per_page, group_id }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/groups/${group_id}/posts`, {
+      const response = await api.get(`/groups/posts/${group_id}`, {
         params: {
           page: current_page,
           per_page,
@@ -33,12 +33,42 @@ export const fetchGroupPostDetail = createAsyncThunk(
   "groupPost/fetchGroupPostDetail",
   async (postId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/groups/${postId}/posts/detail`);
+      const response = await api.get(`/groups/posts/${postId}/detail`);
       console.log("GROUP POST DETAIL", response);
       return response.data.post;
     } catch (err) {
       console.log(err);
       return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+export const createGroupPostComment = createAsyncThunk(
+  "groupPost/createGroupPostComment",
+  async ({ postId, comment }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/groups/posts/${postId}/comments`, { comment });
+      console.log(response);
+      return response.data.comment;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+export const fetchGroupPostComments = createAsyncThunk(
+  "groupPost/fetchGroupPostComments",
+  async ({ pagination, postId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`groups/posts/${postId}/comments`, {
+        params: {
+          per_page: pagination.per_page,
+          page: pagination.current_page,
+        },
+      });
+      console.log("GROUP POST COMMENTS !!!", response);
+      return response.data.comments;
+    } catch (err) {
+      console.log(err);
     }
   }
 );
@@ -57,6 +87,18 @@ const initialState = {
   detail: {
     data: null,
     loading: false,
+  },
+  comment: {
+    data: [],
+    pagination: {
+      current_page: 1,
+      last_page: 1,
+      per_page: 1,
+      total: null,
+    },
+    createLoading: false,
+    updateLoading: false,
+    deleteLoading: false,
   },
   likeLoading: false,
 };
@@ -82,16 +124,35 @@ const groupPostsSlice = createSlice({
           if (post.id === action.payload.post.id) {
             return {
               ...post,
-              is_liked: action.payload.post.is_liked,
+              liked: action.payload.liked,
               liked_users_count: action.payload.post.liked_users_count,
             };
           }
           return post;
         });
+        if (state.detail.data?.id === action.payload.post.id) {
+          state.detail.data.liked = action.payload.liked;
+          state.detail.data.liked_users_count = action.payload.post.liked_users_count;
+        }
       })
       .addCase(fetchGroupPostDetail.fulfilled, (state, action) => {
         state.detail.loading = false;
         state.detail.data = action.payload;
+      })
+      .addCase(createGroupPostComment.fulfilled, (state, action) => {
+        state.comment.createLoading = false;
+        state.comment.data = [action.payload, ...state.comment.data];
+      })
+      .addCase(fetchGroupPostComments.fulfilled, (state, action) => {
+        state.comment.data = [...state.comment.data, ...action.payload.data];
+        state.comment.loading = false;
+        state.comment.pagination = {
+          ...state.comment.pagination,
+          current_page: action.payload.current_page + 1,
+          last_page: action.payload.last_page,
+          per_page: action.payload.per_page,
+          total: action.payload.total,
+        };
       })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
@@ -104,6 +165,12 @@ const groupPostsSlice = createSlice({
             break;
           case "fetchGroupPostDetail":
             state.detail.loading = false;
+            break;
+          case "createGroupPostComment":
+            state.comment.createLoading = false;
+            break;
+          case "fetchGroupPostComments":
+            state.comment.loading = false;
             break;
           default:
             break;
@@ -120,6 +187,12 @@ const groupPostsSlice = createSlice({
             break;
           case "fetchGroupPostDetail":
             state.detail.loading = true;
+            break;
+          case "createGroupPostComment":
+            state.comment.createLoading = true;
+            break;
+          case "fetchGroupPostComments":
+            state.comment.loading = true;
             break;
           default:
             break;

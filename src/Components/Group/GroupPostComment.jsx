@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { commentPost, deleteComment, fetchComments, likeDetailPost, updateComment } from "../../Redux/post/postSlice";
+import { deleteComment, updateComment } from "../../Redux/post/postSlice";
 import { FiSend } from "react-icons/fi";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommentCard from "../Feed/CommentCard";
+import { createGroupPostComment, fetchGroupPostComments, likeGroupPost } from "../../Redux/group/groupPostsSlice";
 
-const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
+const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
   const textareaRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [liked, setLiked] = useState(detail?.data?.liked);
   const [updatingCommentId, setUpdatingCommentId] = useState(null);
+  const isLastPage = comment?.pagination?.last_page < comment?.pagination?.current_page;
 
   useEffect(() => {
     if (textareaRef.current) textareaRef.current.focus();
@@ -21,6 +23,7 @@ const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
 
   // SET LIKED
   useEffect(() => {
+    console.log("__>>", detail?.data?.liked);
     if (detail?.data) {
       setLiked(detail?.data?.liked);
     }
@@ -64,13 +67,12 @@ const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
   // API CALL --------------------------
   // PAGINATE COMMENTS
   const FetchMoreCommentsApi = () => {
-    if (!comments?.pagination?.nextPageURL) return;
-    dispatch(fetchComments({ pagination: comments?.pagination, id: postId }));
+    if (isLastPage) return;
+    dispatch(fetchGroupPostComments({ pagination: comment?.pagination, postId }));
   };
   // LIKE THE POST
   function LikePostApi() {
-    setLiked((pre) => !pre);
-    dispatch(likeDetailPost({ user_id: user?.id, post_id: postId }));
+    dispatch(likeGroupPost(postId));
   }
   //CREATE COMMENT
   const createCommentApi = async () => {
@@ -80,18 +82,7 @@ const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
     if (!text) return;
 
     try {
-      /*  unwrap return the object some looks like this :)
-      {
-        type: "auth/login/fulfilled",
-        payload: { user: {...}, token: "..." },
-        meta: {...}
-      }
-        and I can access the payload and also function like api call
-        so I can await the textareaRef.current to clear the value
-        and clear it after the api call by not passing it as a parameter in commentPost function from postSlice
-      */
-
-      await dispatch(commentPost({ post_id: postId, comment: text })).unwrap();
+      await dispatch(createGroupPostComment({ postId, comment: text })).unwrap();
       ta.value = "";
       ta.style.height = "auto";
     } catch (err) {
@@ -132,15 +123,15 @@ const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
           <h2 className="text-lg font-semibold leading-tight">Comments</h2>
           <p className="text-sm text-base-content/60 mt-1">
             {detail?.data?.comments_count} comment
-            {(comments?.data?.length ?? 0) !== 1 ? "s" : ""}
+            {(comment?.data?.length ?? 0) !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex items-center gap-3 text-sm text-base-content/60">
           <button
             onClick={LikePostApi}
-            disabled={detail?.likeLoading}
+            disabled={likeLoading}
             className={`flex items-center gap-2 text-sm ${liked ? "text-primary" : "text-base-content/80"}`}>
-            {detail?.likeLoading ? (
+            {likeLoading ? (
               <div className="loading loading-spinner loading-sm"></div>
             ) : (
               <>{liked ? <FaHeart size={22} /> : <FaRegHeart size={22} />}</>
@@ -221,12 +212,12 @@ const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
       {/* comments list */}
       <div className="max-h-[56vh] overflow-auto pr-2 space-y-2">
         {/* empty state */}
-        {detail?.data?.comments_count === 0 && !comments?.data?.length && !detail?.loading && (
+        {detail?.data?.comments_count === 0 && !comment?.data?.length && !detail?.loading && (
           <div className="py-4 text-center bg-base-300">No Comment Yet</div>
         )}
         {/*  LOOPING COMMENTS */}
-        {comments?.data?.length > 0 &&
-          comments?.data.map((c) => (
+        {comment?.data?.length > 0 &&
+          comment?.data.map((c) => (
             <CommentCard
               c={c}
               key={c.id}
@@ -237,18 +228,16 @@ const GroupPostComment = ({ postId, user, detail, comments, comment }) => {
           ))}
         {/* load more */}
         <div className="pt-3 pb-6 text-center">
-          {comments?.loading || detail?.loading ? (
+          {comment?.loading || detail?.loading ? (
             <div className="flex justify-center my-3">
               <span className="loading loading-spinner loading-md"></span>
             </div>
           ) : (
             <button
               onClick={FetchMoreCommentsApi}
-              disabled={!comments?.pagination?.nextPageURL}
-              className={`link link-hover link-primary text-sm ${
-                !comments?.pagination?.nextPageURL ? "opacity-50 cursor-not-allowed" : ""
-              }`}>
-              {comments?.pagination?.nextPageURL ? "See More Comments" : "No more comments"}
+              disabled={isLastPage}
+              className={`link link-hover link-primary text-sm ${isLastPage ? "opacity-50 cursor-not-allowed" : ""}`}>
+              {!isLastPage ? "See More Comments" : "No more comments"}
             </button>
           )}
         </div>
