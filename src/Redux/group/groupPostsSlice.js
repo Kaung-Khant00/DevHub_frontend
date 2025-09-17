@@ -72,6 +72,32 @@ export const fetchGroupPostComments = createAsyncThunk(
     }
   }
 );
+export const updateGroupPostComment = createAsyncThunk(
+  "groupPost/updateGroupPostComment",
+  async ({ commentId, comment }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/groups/posts/${commentId}/comments`, { comment });
+      console.log(response);
+      return response.data.comment;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+export const deleteGroupPostComment = createAsyncThunk(
+  "groupPost/deleteGroupPostComment",
+  async (commentId, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/groups/posts/${commentId}/comments`);
+      console.log(response);
+      return response.data.id;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
 
 const initialState = {
   fetch: {
@@ -90,6 +116,7 @@ const initialState = {
   },
   comment: {
     data: [],
+    error: {},
     pagination: {
       current_page: 1,
       last_page: 1,
@@ -154,6 +181,19 @@ const groupPostsSlice = createSlice({
           total: action.payload.total,
         };
       })
+      .addCase(updateGroupPostComment.fulfilled, (state, action) => {
+        state.comment.updateLoading = false;
+        state.comment.data = state.comment.data.map((comment) => {
+          if (comment.id === action.payload.id) {
+            return action.payload;
+          }
+          return comment;
+        });
+      })
+      .addCase(deleteGroupPostComment.fulfilled, (state, action) => {
+        state.comment.deleteLoading = false;
+        state.comment.data = state.comment.data.filter((comment) => comment.id !== action.payload);
+      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
@@ -168,9 +208,17 @@ const groupPostsSlice = createSlice({
             break;
           case "createGroupPostComment":
             state.comment.createLoading = false;
+            state.comment.error = action.payload;
             break;
           case "fetchGroupPostComments":
             state.comment.loading = false;
+            break;
+          case "updateGroupPostComment":
+            state.comment.updateLoading = false;
+            state.comment.error = action.payload;
+            break;
+          case "deleteGroupPostComment":
+            state.comment.deleteLoading = false;
             break;
           default:
             break;
@@ -193,6 +241,12 @@ const groupPostsSlice = createSlice({
             break;
           case "fetchGroupPostComments":
             state.comment.loading = true;
+            break;
+          case "updateGroupPostComment":
+            state.comment.updateLoading = true;
+            break;
+          case "deleteGroupPostComment":
+            state.comment.deleteLoading = true;
             break;
           default:
             break;

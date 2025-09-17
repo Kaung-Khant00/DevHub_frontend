@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { deleteComment, updateComment } from "../../Redux/post/postSlice";
 import { FiSend } from "react-icons/fi";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommentCard from "../Feed/CommentCard";
-import { createGroupPostComment, fetchGroupPostComments, likeGroupPost } from "../../Redux/group/groupPostsSlice";
+import {
+  createGroupPostComment,
+  deleteGroupPostComment,
+  fetchGroupPostComments,
+  likeGroupPost,
+  updateGroupPostComment,
+} from "../../Redux/group/groupPostsSlice";
 
 const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
   const textareaRef = useRef(null);
@@ -98,9 +103,9 @@ const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
 
     try {
       await dispatch(
-        updateComment({
-          id: updatingCommentId,
+        updateGroupPostComment({
           comment: text,
+          commentId: updatingCommentId,
         })
       ).unwrap();
       ta.value = "";
@@ -114,7 +119,8 @@ const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
     }
   };
   const deleteCommentApi = async (id) => {
-    await dispatch(deleteComment(id)).unwrap();
+    await dispatch(deleteGroupPostComment(id)).unwrap();
+    toast.success("Comment deleted successfully");
   };
   return (
     <section className="card bg-base-100 border border-base-200 rounded-2xl p-5 shadow-sm">
@@ -168,6 +174,7 @@ const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
               placeholder="Write a comment..."
               aria-label="Write a comment"
             />
+            {comment.error?.comment && <p className="text-sm text-red-500 mt-1">{comment.error?.comment}</p>}
             <div className="mt-3 flex items-center justify-between gap-3">
               <div className="text-xs text-base-content/60">Be respectful — follow community guidelines</div>
               <div className="flex items-center gap-2">
@@ -179,16 +186,16 @@ const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
                     <button
                       type="button"
                       onClick={UpdateCommentApi}
-                      disabled={comment.updateComment}
+                      disabled={comment.updateLoading}
                       className={`btn btn-primary btn-sm flex items-center gap-2 ${
-                        comment.updateComment ? "opacity-80" : ""
+                        comment.updateLoading ? "opacity-80" : ""
                       }`}>
-                      {comment.updateComment ? (
+                      {comment.updateLoading ? (
                         <span className="loading loading-spinner loading-md"></span>
                       ) : (
                         <FiSend />
                       )}
-                      <span>{comment.updateComment ? "Updating..." : "Update"}</span>
+                      <span>{comment.updateLoading ? "Updating..." : "Update"}</span>
                     </button>
                   </>
                 ) : (
@@ -210,7 +217,7 @@ const GroupPostComment = ({ postId, user, detail, comment, likeLoading }) => {
       </form>
 
       {/* comments list */}
-      <div className="max-h-[56vh] overflow-auto pr-2 space-y-2">
+      <div className="max-h-[56vh] overflow-y-auto pr-2 space-y-2">
         {/* empty state */}
         {detail?.data?.comments_count === 0 && !comment?.data?.length && !detail?.loading && (
           <div className="py-4 text-center bg-base-300">No Comment Yet</div>
