@@ -5,7 +5,7 @@ import PostContainer from "../../../Components/Feed/PostContainer";
 
 const Feed = () => {
   return (
-    <div className=" mx-auto flex p-4 gap-3 max-w-7xl">
+    <div className=" mx-auto flex px-2 gap-3 w-full">
       <main className="w-full col-span-2 ">
         <FilterTabs />
         <Composer />

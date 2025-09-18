@@ -27,6 +27,8 @@ export default function UserGroupPage() {
   useEffect(() => {
     if (!groupData) {
       dispatch(fetchGroupDetail(id));
+    } else if (groupData.id !== id) {
+      dispatch(fetchGroupDetail(id));
     }
   }, []);
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function UserGroupPage() {
     dispatch(fetchGroupPosts({ per_page: pagination.per_page, group_id: id }));
   }, []);
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className=" mx-auto p-2 w-full">
       <Link to={"/group"} className="btn btn-ghost mb-2" aria-label="Back" title="Back">
         <FaArrowLeft className="w-10 h-5" />
       </Link>

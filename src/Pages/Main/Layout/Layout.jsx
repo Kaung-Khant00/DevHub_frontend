@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import NavBar from "../../../Components/Feed/NavBar";
 import gsap from "gsap";
+import UserSideBar from "../../../Components/Common/UserSideBar";
 
 const Layout = () => {
   const navbarRef = useRef();
@@ -40,7 +41,11 @@ const Layout = () => {
       </div>
 
       {/* Page content */}
-      <Outlet />
+
+      <div className="flex">
+        <UserSideBar />
+        <Outlet className="flex-1" />
+      </div>
     </div>
   );
 };

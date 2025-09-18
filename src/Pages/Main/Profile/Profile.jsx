@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { FaMapMarkerAlt, FaEdit, FaCog, FaShareAlt, FaCheckCircle } from "react-icons/fa";
+import { useEffect } from "react";
+import { FaMapMarkerAlt, FaEdit, FaCog, FaShareAlt, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "./ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
@@ -28,11 +28,14 @@ export default function DeveloperProfilePage() {
     dispatch(fetchUser());
   }, []);
   return (
-    <>
+    <div className="w-full flex-1">
       {user && profile && (
         <div className=" min-h-screen bg-base-100">
           {/* Cover */}
           <div className="relative">
+            <Link to={-1} className="absolute left-0 top-0 btn mb-2 z-10 by-white" aria-label="Back" title="Back">
+                          <FaArrowLeft className="w-10 h-5" />
+                        </Link>
             <div className="h-30 w-full bg-gradient-to-r from-primary/30 via-secondary/30 to-accent/30 rounded-b-2xl" />
             <div className="max-w-6xl mx-auto px-4">
               <div className="absolute -bottom-12 md:-bottom-14 max-sm:inset-x-0 flex sm:block justify-center">
@@ -46,10 +49,7 @@ export default function DeveloperProfilePage() {
           </div>
 
           {/* Header */}
-          <div className="relative max-w-6xl mx-auto px-4 pt-16 md:pt-20">
-            <Link to={-1} className="btn btn-outline btn-primary btn-sm absolute top-5 sm:right-0 " aria-label="Back">
-              Back
-            </Link>
+          <div className="relative w-full mx-auto px-4 pt-16 md:pt-20">
             <div className="card bg-base-100 shadow-sm border border-base-200 rounded-2xl">
               <div className="card-body p-4 md:p-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -131,6 +131,6 @@ export default function DeveloperProfilePage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

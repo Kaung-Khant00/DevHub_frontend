@@ -322,8 +322,8 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     // CREATE POST
     builder
-      .addCase(createPost.fulfilled, (state, { post }) => {
-        state.posts = [post, ...state.posts];
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.posts = [action.payload.post, ...state.posts];
         state.create.loading = false;
         state.create.error = null;
       })

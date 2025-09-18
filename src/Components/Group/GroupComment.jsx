@@ -31,7 +31,7 @@ export default function GroupCommentPage() {
 
   return (
     <div className="min-h-screen bg-base-100 py-8 w-full p-3">
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main column */}
         <main className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">

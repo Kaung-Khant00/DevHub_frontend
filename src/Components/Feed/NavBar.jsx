@@ -45,7 +45,7 @@ const NavBar = () => {
         </div>
         <a className="btn btn-ghost text-xl">DevHub</a>
       </div>
-      <div className="navbar-center hidden lg:flex">
+      {/*       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 gap-1">
           <li className={location.pathname === "/feed" ? "active" : " "}>
             <Link to="/feed" className="btn-purple">
@@ -61,7 +61,7 @@ const NavBar = () => {
             <a className="btn-purple">Q&A</a>
           </li>
         </ul>
-      </div>
+      </div> */}
 
       <div className="navbar-end">
         <div className="mx-3 flex gap-3">

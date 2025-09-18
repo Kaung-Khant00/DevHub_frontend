@@ -1,17 +1,9 @@
 /*   !!  This code is generated from AI . Credit to ChatGPT and I understand it   !! */
 
 import React, { useRef, useState, useMemo, useEffect } from "react";
-import {
-  FaImage,
-  FaFileAlt,
-  FaPaperPlane,
-  FaTag,
-  FaTrashAlt,
-  FaTimes,
-  FaCode,
-} from "react-icons/fa";
+import { FaImage, FaFileAlt, FaPaperPlane, FaTag, FaTrashAlt, FaTimes, FaCode, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { createPost } from "../../../Redux/post/postSlice";
 import { CiFileOn } from "react-icons/ci";
 
@@ -66,21 +58,13 @@ export default function CreatePost() {
     }
 
     // Attempt to open image file picker if requested (best-effort), but only once
-    if (
-      tab === "image" &&
-      imageInputRef.current &&
-      !hasTriedOpenImageRef.current
-    ) {
+    if (tab === "image" && imageInputRef.current && !hasTriedOpenImageRef.current) {
       hasTriedOpenImageRef.current = true;
       setTimeout(() => {
         imageInputRef.current.click();
       }, 200);
     }
-    if (
-      tab === "file" &&
-      fileInputRef.current &&
-      !hasTriedOpenFileRef.current
-    ) {
+    if (tab === "file" && fileInputRef.current && !hasTriedOpenFileRef.current) {
       hasTriedOpenFileRef.current = true;
       setTimeout(() => {
         fileInputRef.current.click();
@@ -148,40 +132,24 @@ export default function CreatePost() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-6xl mx-auto">
-      <header className="flex items-center justify-between mb-2">
+    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 w-full mx-auto">
+      <header className="flex items-center justify-between mb-2 w-full">
         <div className="flex items-center gap-3">
-          <button
-            className="btn btn-ghost btn-sm md:hidden"
-            onClick={() => navigate(-1)}
-            aria-label="Back"
-          >
-            Back
-          </button>
-          <h1 className="text-xl md:text-2xl font-semibold text-primary">
-            Create a Post
-          </h1>
-        </div>
-        <div className="hidden md:flex items-center gap-3">
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
-            Back
-          </button>
+          <Link to={`/feed`} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
+            <FaArrowLeft className="w-5 h-5" />
+          </Link>
+          <h1 className="text-xl md:text-2xl font-semibold text-primary">Create a Post</h1>
         </div>
       </header>
-      <div className="w-full flex gap-6">
+      <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-6">
         {/* LEFT: main column */}
-        <div className="flex-3 space-y-5">
+        <div className="flex-3 col-span-3 space-y-5">
           {/* Content Card */}
           <section
             className={`collapse ${
               isOpen("content") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-          >
-            <input
-              type="checkbox"
-              className="hidden"
-              defaultChecked={isOpen("content")}
-            />
+            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
+            <input type="checkbox" className="hidden" defaultChecked={isOpen("content")} />
             <div className="card-body p-4">
               <div>
                 <input
@@ -194,14 +162,11 @@ export default function CreatePost() {
               </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-md font-semibold">Content</h2>
-                <span className="text-sm text-base-content/60 hidden md:inline">
-                  Characters: {content.length}
-                </span>
+                <span className="text-sm text-base-content/60 hidden md:inline">Characters: {content.length}</span>
               </div>
 
               <p className="text-sm text-base-content/60 mb-3 md:hidden">
-                Main text that will appear in the post. Keep it clear and
-                focused.
+                Main text that will appear in the post. Keep it clear and focused.
               </p>
 
               <textarea
@@ -211,36 +176,21 @@ export default function CreatePost() {
                 placeholder="What's on your mind?"
                 className="textarea w-full h-20 resize-y font-sans text-sm"
               />
-              {error?.content && (
-                <div className="text-sm text-error mt-2">{error.content}</div>
-              )}
+              {error?.content && <div className="text-sm text-error mt-2">{error.content}</div>}
 
               <div className="mt-3 flex items-center gap-3">
-                <button
-                  onClick={() => setContent("")}
-                  className="btn btn-ghost btn-sm"
-                >
+                <button onClick={() => setContent("")} className="btn btn-ghost btn-sm">
                   Clear
                 </button>
-                <div className="ml-auto text-sm text-base-content/60 md:hidden">
-                  Characters: {content.length}
-                </div>
+                <div className="ml-auto text-sm text-base-content/60 md:hidden">Characters: {content.length}</div>
               </div>
-              {error?.form && (
-                <div className="text-sm text-error mt-2">{error.form}</div>
-              )}
+              {error?.form && <div className="text-sm text-error mt-2">{error.form}</div>}
             </div>
           </section>
 
           {/* Code Card */}
-          <section
-            className={`bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-          >
-            <input
-              type="checkbox"
-              className="hidden"
-              defaultChecked={isOpen("code")}
-            />
+          <section className={`bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
+            <input type="checkbox" className="hidden" defaultChecked={isOpen("code")} />
             <div className=" p-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-md font-semibold flex items-center gap-2">
@@ -261,11 +211,9 @@ export default function CreatePost() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder={"Paste your code here."}
-                className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2"
+                className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2 overflow-x-auto"
               />
-              {error?.code && (
-                <div className="text-sm text-error mt-2">{error.code}</div>
-              )}
+              {error?.code && <div className="text-sm text-error mt-2">{error.code}</div>}
 
               {code && (
                 <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
@@ -274,7 +222,7 @@ export default function CreatePost() {
                     <FaCode /> View code snippet
                   </div>
                   <div className="collapse-content">
-                    <pre className="bg-base-300/60 p-3 rounded-lg overflow-x-auto text-sm">
+                    <pre className="bg-base-300/60 p-3 rounded-lg overflow-x-auto text-sm break-words max-w-[600px]">
                       <code>{code}</code>
                     </pre>
                   </div>
@@ -282,10 +230,7 @@ export default function CreatePost() {
               )}
 
               <div className="mt-3 flex justify-end">
-                <button
-                  onClick={() => setCode("")}
-                  className="btn btn-ghost btn-sm"
-                >
+                <button onClick={() => setCode("")} className="btn btn-ghost btn-sm">
                   Clear Code
                 </button>
               </div>
@@ -294,7 +239,7 @@ export default function CreatePost() {
         </div>
 
         {/* RIGHT: sidebar (balanced width) */}
-        <aside className="flex-2 space-y-5">
+        <aside className="flex-2 col-span-2 space-y-5">
           {/* Media (Image + Attachment grouped) */}
           <section className="bg-base-100 border border-base-300 shadow-sm rounded-lg pb-4">
             <div className="card-body p-4 grid grid-cols-1 gap-4">
@@ -308,8 +253,7 @@ export default function CreatePost() {
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
                   className="border-dashed border-2 border-base-300 rounded-lg p-3 flex flex-col items-center justify-center text-center bg-base-100"
-                  style={{ minHeight: 120 }}
-                >
+                  style={{ minHeight: 120 }}>
                   <div className="flex items-center gap-2">
                     <FaImage className="text-xl text-primary" />
                     <div>
@@ -320,40 +264,28 @@ export default function CreatePost() {
                   {imagePreview ? (
                     <div className="mt-3 w-full">
                       <div className="flex items-start justify-between gap-2">
-                        <img
-                          src={imagePreview}
-                          alt="preview"
-                          className="rounded max-h-36 object-cover"
-                        />
+                        <img src={imagePreview} alt="preview" className="rounded max-h-36 object-cover" />
                         <div className="flex flex-col items-end">
                           <button
                             className="btn btn-xs btn-ghost mb-2"
                             onClick={() => {
                               setImageFile(null);
                               setImagePreview(null);
-                            }}
-                          >
+                            }}>
                             Remove
                           </button>
-                          <div className="text-xs text-base-content/70">
-                            Image ready to upload
-                          </div>
+                          <div className="text-xs text-base-content/70">Image ready to upload</div>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-3 text-sm text-base-content/70">
-                      No image attached
-                    </div>
+                    <div className="mt-3 text-sm text-base-content/70">No image attached</div>
                   )}
 
                   <div className="mt-3 w-full flex gap-2">
                     <label
                       className="btn btn-outline btn-sm flex-1"
-                      onClick={() =>
-                        imageInputRef.current && imageInputRef.current.click()
-                      }
-                    >
+                      onClick={() => imageInputRef.current && imageInputRef.current.click()}>
                       <FaImage className="mr-2 text-primary" /> Upload Image
                     </label>
                     <input
@@ -365,9 +297,7 @@ export default function CreatePost() {
                     />
                   </div>
 
-                  {error?.image && (
-                    <div className="text-sm text-error mt-2">{error.image}</div>
-                  )}
+                  {error?.image && <div className="text-sm text-error mt-2">{error.image}</div>}
                 </div>
               </div>
 
@@ -381,9 +311,7 @@ export default function CreatePost() {
                       className="grow"
                       disabled={!attachedFile}
                       value={fileInfo?.name}
-                      onChange={(e) =>
-                        setFileInfo((pre) => ({ ...pre, name: e.target.value }))
-                      }
+                      onChange={(e) => setFileInfo((pre) => ({ ...pre, name: e.target.value }))}
                       placeholder="Enter File Name"
                     />
                   </label>
@@ -398,61 +326,37 @@ export default function CreatePost() {
                       <div className="flex items-center gap-3">
                         <FaFileAlt className="text-lg text-primary" />
                         <div>
-                          <div className="text-sm font-medium">
-                            {attachedFile.name}
-                          </div>
-                          <div className="text-xs text-base-content/70">
-                            {Math.round(attachedFile.size / 1024)} KB
-                          </div>
+                          <div className="text-sm font-medium">{attachedFile.name}</div>
+                          <div className="text-xs text-base-content/70">{Math.round(attachedFile.size / 1024)} KB</div>
                         </div>
                       </div>
                       <div>
-                        <button
-                          className="btn btn-ghost btn-xs"
-                          onClick={() => setAttachedFile(null)}
-                        >
+                        <button className="btn btn-ghost btn-xs" onClick={() => setAttachedFile(null)}>
                           <FaTimes />
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="text-sm text-base-content/70">
-                      No file attached
-                    </div>
+                    <div className="text-sm text-base-content/70">No file attached</div>
                   )}
 
                   <div className="flex gap-2">
                     <label
                       className="btn btn-outline btn-sm flex-1"
-                      onClick={() =>
-                        fileInputRef.current && fileInputRef.current.click()
-                      }
-                    >
+                      onClick={() => fileInputRef.current && fileInputRef.current.click()}>
                       <FaFileAlt className="mr-2 text-primary" /> Upload File
                     </label>
                     {attachedFile && (
-                      <button
-                        className="btn btn-error text-white btn-sm flex-1"
-                        onClick={() => setAttachedFile(null)}
-                      >
+                      <button className="btn btn-error text-white btn-sm flex-1" onClick={() => setAttachedFile(null)}>
                         Remove File
                       </button>
                     )}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={(e) => onFileSelect(e)}
-                      className="hidden"
-                    />
+                    <input type="file" ref={fileInputRef} onChange={(e) => onFileSelect(e)} className="hidden" />
                   </div>
 
-                  {error?.file && (
-                    <div className="text-sm text-error mt-2">{error.file}</div>
-                  )}
+                  {error?.file && <div className="text-sm text-error mt-2">{error.file}</div>}
                   {/* Tag error hint */}
-                  {error?.tags && (
-                    <div className="text-sm text-error mt-2">{error.tags}</div>
-                  )}
+                  {error?.tags && <div className="text-sm text-error mt-2">{error.tags}</div>}
                 </div>
               </div>
             </div>
@@ -462,13 +366,8 @@ export default function CreatePost() {
           <section
             className={`collapse ${
               isOpen("tags") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-          >
-            <input
-              type="checkbox"
-              className="hidden"
-              defaultChecked={isOpen("tags")}
-            />
+            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
+            <input type="checkbox" className="hidden" defaultChecked={isOpen("tags")} />
             <div className="card-body p-4">
               <h2 className="text-md font-semibold">Tags</h2>
               <p className="text-sm text-base-content/60 mb-3 md:hidden">
@@ -477,15 +376,9 @@ export default function CreatePost() {
 
               <div className="flex flex-wrap items-center gap-2">
                 {tags.map((t, i) => (
-                  <div
-                    key={i}
-                    className="badge badge-outline py-2 px-2 flex items-center gap-2"
-                  >
+                  <div key={i} className="badge badge-outline py-2 px-2 flex items-center gap-2">
                     <span className="text-sm">{t}</span>
-                    <button
-                      onClick={() => removeTag(i)}
-                      className="btn btn-ghost btn-xs"
-                    >
+                    <button onClick={() => removeTag(i)} className="btn btn-ghost btn-xs">
                       <FaTimes />
                     </button>
                   </div>
@@ -512,9 +405,7 @@ export default function CreatePost() {
 
           <section className=" bg-base-100 border border-base-300 shadow-sm rounded-lg">
             <div className="card-body p-4 flex items-center justify-between">
-              <div className="text-sm text-base-content/70">
-                Preview, save or publish your post when ready.
-              </div>
+              <div className="text-sm text-base-content/70">Preview, save or publish your post when ready.</div>
               <div className="flex items-center gap-3">
                 <button
                   className="btn btn-ghost"
@@ -525,15 +416,10 @@ export default function CreatePost() {
                     setAttachedFile(null);
                     setTags([]);
                     setCode("");
-                  }}
-                >
+                  }}>
                   <FaTrashAlt /> Clear All
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => publish()}
-                  disabled={loading}
-                >
+                <button className="btn btn-primary" onClick={() => publish()} disabled={loading}>
                   {loading ? (
                     <div className="flex items-center">
                       <div className="loading loading-ring loading-md"></div>
@@ -546,11 +432,7 @@ export default function CreatePost() {
                   )}
                 </button>
               </div>
-              {error?.form && (
-                <div className="sm:hidden block text-sm text-error mt-2 font-bold">
-                  {error.form}
-                </div>
-              )}
+              {error?.form && <div className="sm:hidden block text-sm text-error mt-2 font-bold">{error.form}</div>}
             </div>
           </section>
         </aside>
