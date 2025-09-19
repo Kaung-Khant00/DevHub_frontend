@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { FaMapMarkerAlt, FaEdit, FaCog, FaShareAlt, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "./ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
 import ProfilePosts from "../../../Components/Profile/ProfilePosts";
+import ReturnBackButton from "../../../Components/Common/ReturnBackButton";
 
 function Stat({ value, label }) {
   return (
@@ -17,7 +18,7 @@ function Stat({ value, label }) {
   );
 }
 
-export default function DeveloperProfilePage() {
+export default function ProfilePage() {
   const { profile, user } = useSelector((state) => state.user);
   const { data, loading } = useSelector((state) => state.user.userPosts);
   const skills = useSelector((state) => state.user.profile?.skills);
@@ -33,9 +34,7 @@ export default function DeveloperProfilePage() {
         <div className=" min-h-screen bg-base-100">
           {/* Cover */}
           <div className="relative">
-            <Link to={-1} className="absolute left-0 top-0 btn mb-2 z-10 by-white" aria-label="Back" title="Back">
-                          <FaArrowLeft className="w-10 h-5" />
-                        </Link>
+            <ReturnBackButton defaultBackTo={"/feed"} except={"/profile/edit"} />
             <div className="h-30 w-full bg-gradient-to-r from-primary/30 via-secondary/30 to-accent/30 rounded-b-2xl" />
             <div className="max-w-6xl mx-auto px-4">
               <div className="absolute -bottom-12 md:-bottom-14 max-sm:inset-x-0 flex sm:block justify-center">

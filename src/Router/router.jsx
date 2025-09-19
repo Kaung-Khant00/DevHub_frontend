@@ -26,6 +26,8 @@ import UserGroupCreationRequestDetail from "../Pages/Notification/GroupCreationR
 import UserGroupPage from "../Pages/Group/UserGroupPage";
 import CreateGroupPost from "../Pages/Group/CreateGroupPost";
 import GroupCommentPage from "../Components/Group/GroupComment";
+import Report from "../Pages/Report/ReportPost";
+import ProfilePage from "../Pages/Main/Profile/Profile";
 
 const router = createBrowserRouter([
   {
@@ -62,7 +64,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Profile />,
+                element: <ProfilePage />,
               },
               {
                 path: ":id",
@@ -117,6 +119,15 @@ const router = createBrowserRouter([
               {
                 path: ":id",
                 element: <NotificationDetail />,
+              },
+            ],
+          },
+          {
+            path: "report",
+            children: [
+              {
+                path: "post/:id",
+                element: <Report />,
               },
             ],
           },

@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  FaSave,
-  FaTimes,
-  FaTrash,
-  FaPlus,
-  FaGithub,
-  FaLinkedin,
-  FaGlobe,
-} from "react-icons/fa";
+import { FaSave, FaTimes, FaTrash, FaPlus, FaGithub, FaLinkedin, FaGlobe, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileImagePopup from "../../../Components/Profile/ProfileImagePopup";
@@ -15,12 +7,7 @@ import { editProfile } from "../../../Redux/user/userSlice";
 
 export default function DeveloperProfileEdit() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const {
-    loading,
-    user,
-    error,
-    profile: authProfile,
-  } = useSelector((state) => state.user);
+  const { loading, user, error, profile: authProfile } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -69,25 +56,14 @@ export default function DeveloperProfileEdit() {
   } */
 
   return (
-    <div className="min-h-screen bg-base-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto ">
+    <div className="min-h-screen w-full bg-base-100 p-4 md:p-8">
+      <div>
         <header className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
-            <button
-              className="btn btn-ghost btn-sm md:hidden"
-              onClick={() => navigate(-1)}
-              aria-label="Back"
-            >
-              Back
-            </button>
-            <h1 className="text-xl md:text-2xl font-semibold text-primary">
-              Edit Profile
-            </h1>
-          </div>
-          <div className="hidden md:flex items-center gap-3">
-            <button className="btn btn-ghost" onClick={() => navigate(-1)}>
-              Back
-            </button>
+            <Link to={`/profile`} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
+              <FaArrowLeft className="w-10 h-5" />
+            </Link>
+            <h1 className="text-xl md:text-2xl font-semibold text-primary">Edit Profile</h1>
           </div>
         </header>
         <form onSubmit={handleEditProfile} className="space-y-6">
@@ -106,19 +82,11 @@ export default function DeveloperProfileEdit() {
                         <span className="label-text">Full name</span>
                       </label>
                       <input
-                        className={`input input-bordered w-full ${
-                          error?.name ? "input-error" : ""
-                        }`}
-                        value={userData?.name}
-                        onChange={(e) =>
-                          setUserData((u) => ({ ...u, name: e.target.value }))
-                        }
+                        className={`input input-bordered w-full ${error?.name ? "input-error" : ""}`}
+                        value={userData?.name || ""}
+                        onChange={(e) => setUserData((u) => ({ ...u, name: e.target.value }))}
                       />
-                      {error?.name && (
-                        <div className="text-xs text-error mt-1">
-                          {error?.name}
-                        </div>
-                      )}
+                      {error?.name && <div className="text-xs text-error mt-1">{error?.name}</div>}
                     </div>
 
                     <div className="w-full">
@@ -128,7 +96,7 @@ export default function DeveloperProfileEdit() {
                       <div className="flex items-center gap-2">
                         <input
                           className="input input-bordered w-full"
-                          value={userData?.phone}
+                          value={userData?.phone || ""}
                           onChange={(e) =>
                             setUserData((u) => ({
                               ...u,
@@ -167,10 +135,8 @@ export default function DeveloperProfileEdit() {
                   <textarea
                     className="textarea textarea-bordered w-full"
                     rows={3}
-                    value={userData?.bio}
-                    onChange={(e) =>
-                      setUserData((u) => ({ ...u, bio: e.target.value }))
-                    }
+                    value={userData?.bio || ""}
+                    onChange={(e) => setUserData((u) => ({ ...u, bio: e.target.value }))}
                     placeholder="A one-line description about you"
                   />
                 </div>
@@ -190,9 +156,7 @@ export default function DeveloperProfileEdit() {
                 <input
                   className="input input-bordered w-full"
                   value={profile.address || ""}
-                  onChange={(e) =>
-                    setProfile((p) => ({ ...p, address: e.target.value }))
-                  }
+                  onChange={(e) => setProfile((p) => ({ ...p, address: e.target.value }))}
                   placeholder="City, region, country"
                 />
               </div>
@@ -204,9 +168,7 @@ export default function DeveloperProfileEdit() {
                 <div className="flex items-center gap-2">
                   <FaGlobe className="opacity-70" />
                   <input
-                    className={`input input-bordered w-full ${
-                      error?.portfolio_url ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered w-full ${error?.portfolio_url ? "input-error" : ""}`}
                     value={profile.portfolio_url || ""}
                     onChange={(e) =>
                       setProfile((p) => ({
@@ -217,11 +179,7 @@ export default function DeveloperProfileEdit() {
                     placeholder="https://your.site"
                   />
                 </div>
-                {error?.portfolio_url && (
-                  <div className="text-xs text-error mt-1">
-                    {error?.portfolio_url}
-                  </div>
-                )}
+                {error?.portfolio_url && <div className="text-xs text-error mt-1">{error?.portfolio_url}</div>}
               </div>
 
               <div>
@@ -231,21 +189,13 @@ export default function DeveloperProfileEdit() {
                 <div className="flex items-center gap-2">
                   <FaGithub className="opacity-70" />
                   <input
-                    className={`input input-bordered w-full ${
-                      error?.github_url ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered w-full ${error?.github_url ? "input-error" : ""}`}
                     value={profile.github_url || ""}
-                    onChange={(e) =>
-                      setProfile((p) => ({ ...p, github_url: e.target.value }))
-                    }
+                    onChange={(e) => setProfile((p) => ({ ...p, github_url: e.target.value }))}
                     placeholder="https://github.com/username"
                   />
                 </div>
-                {error?.github_url && (
-                  <div className="text-xs text-error mt-1">
-                    {error?.github_url}
-                  </div>
-                )}
+                {error?.github_url && <div className="text-xs text-error mt-1">{error?.github_url}</div>}
               </div>
 
               <div>
@@ -255,9 +205,7 @@ export default function DeveloperProfileEdit() {
                 <div className="flex items-center gap-2">
                   <FaLinkedin className="opacity-70" />
                   <input
-                    className={`input input-bordered w-full ${
-                      error?.linkedin_url ? "input-error" : ""
-                    }`}
+                    className={`input input-bordered w-full ${error?.linkedin_url ? "input-error" : ""}`}
                     value={profile.linkedin_url || ""}
                     onChange={(e) =>
                       setProfile((p) => ({
@@ -268,11 +216,7 @@ export default function DeveloperProfileEdit() {
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
-                {error?.linkedin_url && (
-                  <div className="text-xs text-error mt-1">
-                    {error?.linkedin_url}
-                  </div>
-                )}
+                {error?.linkedin_url && <div className="text-xs text-error mt-1">{error?.linkedin_url}</div>}
               </div>
             </div>
 
@@ -294,11 +238,7 @@ export default function DeveloperProfileEdit() {
                     }
                   }}
                 />
-                <button
-                  type="button"
-                  className="btn btn-sm"
-                  onClick={handleAddSkillFromInput}
-                >
+                <button type="button" className="btn btn-sm" onClick={handleAddSkillFromInput}>
                   <FaPlus />
                 </button>
               </div>
@@ -306,24 +246,15 @@ export default function DeveloperProfileEdit() {
               <div className="mt-3 flex flex-wrap gap-2">
                 {skills?.length ? (
                   skills.map((s, i) => (
-                    <span
-                      key={i}
-                      className="badge badge-outline flex items-center gap-2"
-                    >
+                    <span key={i} className="badge badge-outline flex items-center gap-2">
                       {s}
-                      <button
-                        type="button"
-                        className="btn btn-xs btn-ghost"
-                        onClick={() => handleRemoveSkill(i)}
-                      >
+                      <button type="button" className="btn btn-xs btn-ghost" onClick={() => handleRemoveSkill(i)}>
                         ✕
                       </button>
                     </span>
                   ))
                 ) : (
-                  <div className="text-sm opacity-70">
-                    No skills yet — add a few.
-                  </div>
+                  <div className="text-sm opacity-70">No skills yet — add a few.</div>
                 )}
               </div>
             </div>
@@ -336,8 +267,7 @@ export default function DeveloperProfileEdit() {
                 type="submit"
                 className={`btn btn-primary ${loading ? "loading" : ""}`}
                 disabled={loading}
-                aria-label="Save"
-              >
+                aria-label="Save">
                 <FaSave /> <span className="ml-2">Save changes</span>
               </button>
 
@@ -351,17 +281,14 @@ export default function DeveloperProfileEdit() {
                 type="button"
                 className="btn btn-outline btn-error"
                 onClick={() => setShowDeleteConfirm(true)}
-                aria-label="Delete account"
-              >
+                aria-label="Delete account">
                 <FaTrash /> Delete account
               </button>
             </div>
           </div>
 
           {/* Server error */}
-          {error?.server && (
-            <div className="text-sm text-error">{error?.server}</div>
-          )}
+          {error?.server && <div className="text-sm text-error">{error?.server}</div>}
         </form>
       </div>
       {/* Delete confirmation modal */}
@@ -370,14 +297,10 @@ export default function DeveloperProfileEdit() {
           <div className="bg-base-100 rounded-xl p-6 max-w-md w-full shadow-lg border border-base-200">
             <h3 className="text-lg font-semibold">Confirm account deletion</h3>
             <p className="mt-2 text-sm opacity-80">
-              This action cannot be undone. All your data will be removed. Are
-              you sure?
+              This action cannot be undone. All your data will be removed. Are you sure?
             </p>
             <div className="mt-4 flex items-center justify-end gap-2">
-              <button
-                className="btn btn-ghost"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
+              <button className="btn btn-ghost" onClick={() => setShowDeleteConfirm(false)}>
                 Cancel
               </button>
               <button

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import NavBar from "../../../Components/Feed/NavBar";
 import gsap from "gsap";
 import UserSideBar from "../../../Components/Common/UserSideBar";
+import { NavigationProvider } from "./NavigationContext";
 
 const Layout = () => {
   const navbarRef = useRef();
@@ -31,22 +32,24 @@ const Layout = () => {
   }, [lastScrollRef]);
 
   return (
-    <div className="min-h-screen">
-      {/* Spacer */}
-      <div className="w-full h-[65px]"></div>
+    <NavigationProvider>
+      <div className="min-h-screen">
+        {/* Spacer */}
+        <div className="w-full h-[65px]"></div>
 
-      {/* Navbar */}
-      <div className="fixed top-0 inset-x-0 z-10" ref={navbarRef}>
-        <NavBar />
+        {/* Navbar */}
+        <div className="fixed top-0 inset-x-0 z-10" ref={navbarRef}>
+          <NavBar />
+        </div>
+
+        {/* Page content */}
+
+        <div className="flex">
+          <UserSideBar />
+          <Outlet className="flex-1" />
+        </div>
       </div>
-
-      {/* Page content */}
-
-      <div className="flex">
-        <UserSideBar />
-        <Outlet className="flex-1" />
-      </div>
-    </div>
+    </NavigationProvider>
   );
 };
 

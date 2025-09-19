@@ -98,6 +98,7 @@ function PostCard({ post, isInProfile = false }) {
             FollowUserApi={FollowUserApi}
             user={user}
             followed={followed}
+            post={post}
           />
         </div>
 
