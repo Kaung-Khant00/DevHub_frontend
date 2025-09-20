@@ -5,7 +5,9 @@ import { Link, useLocation } from "react-router-dom";
 const UserSideBar = () => {
   const location = useLocation();
   return (
-    <div className="w-[250px] bg-white h-screen sticky top-0 pt-5 hidden lg:block">
+    <div
+      className="w-[250px] bg-white h-screen sticky top-0 pt-[60px] hidden lg:block
+    ">
       <ul className="menu w-full gap-1">
         <li className={`${location.pathname === "/feed" ? "active" : " "} w-full`}>
           <Link to={"/feed"}>

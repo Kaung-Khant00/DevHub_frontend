@@ -13,69 +13,71 @@ import { MdLibraryAdd } from "react-icons/md";
 import { RiAdminLine } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../Redux/user/userSlice";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const SideBar = ({ showSideBar }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   function handleLogout() {
     dispatch(logoutUser());
   }
+  const isActive = (path) => location.pathname === path;
   return (
     <div className={`relative transition-all duration-300 ease-in-out ${showSideBar ? "w-[65px]" : "w-60"}`}>
       <aside
         className={` absolute pt-3 h-full bg-info-content transition-all duration-300 ease-in-out ${
           !showSideBar ? "w-0" : "w-[65px]"
         }`}>
-        <ul className="menu text-white flex flex-col gap-2 items-center">
+        <ul className="bgInfo menu text-white flex flex-col gap-2 items-center">
           {/* Dashboard */}
-          <li>
-            <a
-              href="/admin/dashboard"
-              className="bg-info flex justify-center p-2 rounded-md hover:bg-info"
+          <li className={isActive("/admin/dashboard") ? "active" : ""}>
+            <Link
+              to="/admin/dashboard"
+              className="bg-blue-900 flex justify-center p-2 rounded-md hover:bg-info"
               title="Dashboard">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Dashboard">
                 <HiOutlineHome className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
 
           {/* Management */}
           <li>
-            <a href="/admin/admins" className="flex justify-center p-2 rounded-md hover:bg-info" title="Admins">
+            <Link to="/admin/admins" className="flex justify-center p-2 rounded-md hover:bg-info" title="Admins">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Admins">
                 <RiAdminLine className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
-          <li>
+          <li className={isActive("/admin/users") ? "active" : ""}>
             <Link to="/admin/users" className="flex justify-center p-2 rounded-md hover:bg-info" title="Users">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Users">
                 <HiOutlineUsers className="text-2xl" />
               </span>
             </Link>
           </li>
-          <li>
-            <a href="/admin/posts" className="flex justify-center p-2 rounded-md hover:bg-info" title="Posts">
+          <li className={isActive("/admin/posts") ? "active" : ""}>
+            <Link to="/admin/posts" className="flex justify-center p-2 rounded-md hover:bg-info" title="Posts">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Posts">
                 <HiOutlineDocumentText className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
-          <li>
-            <a href="/admin/questions" className="flex justify-center p-2 rounded-md hover:bg-info" title="Questions">
+          <li className={isActive("/admin/questions") ? "active" : ""}>
+            <Link to="/admin/questions" className="flex justify-center p-2 rounded-md hover:bg-info" title="Questions">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Questions">
                 <HiOutlineQuestionMarkCircle className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
-          <li>
-            <a href="/admin/groups" className="flex justify-center p-2 rounded-md hover:bg-info" title="Groups">
+          <li className={isActive("/admin/groups") ? "active" : ""}>
+            <Link to="/admin/groups" className="flex justify-center p-2 rounded-md hover:bg-info" title="Groups">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Groups">
                 <HiOutlineCollection className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
-          <li>
+          <li className={isActive("/admin/group_creation_requests") ? "active" : ""}>
             <Link
               to="/admin/group_creation_requests"
               className="flex justify-center p-2 rounded-md hover:bg-info"
@@ -85,28 +87,28 @@ const SideBar = ({ showSideBar }) => {
               </span>
             </Link>
           </li>
-          <li>
-            <a href="/admin/reports" className="flex justify-center p-2 rounded-md hover:bg-info" title="Reports">
+          <li className={isActive("/admin/reports") ? "active" : ""}>
+            <Link to="/admin/reports" className="flex justify-center p-2 rounded-md hover:bg-info" title="Reports">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Reports">
                 <HiOutlineExclamationCircle className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
 
           {/* Account */}
-          <li>
-            <a href="/admin/profile" className="flex justify-center p-2 rounded-md hover:bg-info" title="Profile">
+          <li className={isActive("/admin/profile") ? "active" : ""}>
+            <Link to="/admin/profile" className="flex justify-center p-2 rounded-md hover:bg-info" title="Profile">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Profile">
                 <HiOutlineUser className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
-          <li>
-            <a href="/admin/settings" className="flex justify-center p-2 rounded-md hover:bg-info" title="Settings">
+          <li className={isActive("/admin/settings") ? "active" : ""}>
+            <Link to="/admin/settings" className="flex justify-center p-2 rounded-md hover:bg-info" title="Settings">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Settings">
                 <HiOutlineCog className="text-2xl" />
               </span>
-            </a>
+            </Link>
           </li>
           <li>
             <div onClick={handleLogout} className="flex justify-center p-2 rounded-md hover:bg-info" title="Logout">

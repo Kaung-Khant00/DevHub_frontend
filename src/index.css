@@ -28,4 +28,7 @@
   .menu li.active > a {
     @apply bg-primary text-white;
   }
+  .menu.bgInfo li.active > a {
+    @apply bg-info text-white;
+  }
 }

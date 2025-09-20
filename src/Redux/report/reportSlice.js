@@ -1,11 +1,13 @@
 import { createAsyncThunk, createSlice, isPending, isRejected } from "@reduxjs/toolkit";
 import { api } from "../../Services/axios_instance";
+import { toast } from "react-toastify";
 
 export const reportPost = createAsyncThunk("report/reportPost", async ({ postId, reason }, { rejectWithValue }) => {
   try {
-    const response = await api.post(`/reports/${postId}/post`, { reason });
+    const response = await api.post(`/reports/post`, { reason, postId });
     console.log(response);
-    return response.data;
+    toast.success("Post reported successfully!");
+    return response.data.report;
   } catch (err) {
     console.log(err);
     return rejectWithValue(err.response?.data?.errors || err.message);
@@ -14,6 +16,7 @@ export const reportPost = createAsyncThunk("report/reportPost", async ({ postId,
 
 const initialState = {
   post: null,
+  loading: false,
 };
 const reportSlice = createSlice({
   name: "report",
@@ -25,10 +28,15 @@ const reportSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
+      .addCase(reportPost.fulfilled, (state) => {
+        state.loading = false;
+      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
+          case "reportPost":
+            state.loading = false;
+            break;
           default:
             break;
         }
@@ -36,6 +44,9 @@ const reportSlice = createSlice({
       .addMatcher(isPending, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
+          case "reportPost":
+            state.loading = true;
+            break;
           default:
             break;
         }

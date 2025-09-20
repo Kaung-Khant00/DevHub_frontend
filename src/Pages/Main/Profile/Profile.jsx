@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { FaMapMarkerAlt, FaEdit, FaCog, FaShareAlt, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "./ProfileAbout";
 import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";

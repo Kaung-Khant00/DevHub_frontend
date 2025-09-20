@@ -1,20 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiAlertCircle, FiSend } from "react-icons/fi";
 import { REASON_OPTIONS } from "../../Constants/ReportType";
 import ReturnBackButton from "../../Components/Common/ReturnBackButton";
 import PostCard from "../../Components/Feed/PostCard";
 import { useDispatch, useSelector } from "react-redux";
-import { reportPost } from "../../Redux/report/reportSlice";
+import { reportPost, setReportingPost } from "../../Redux/report/reportSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { fetchDetailPost } from "../../Redux/post/postSlice";
+import Spinner from "../../Components/Common/Spinner";
+import { toast } from "react-toastify";
 
 const Report = () => {
+  const { postId } = useParams();
   const [reportType, setReportType] = useState("");
   const [reportMessage, setReportMessage] = useState("");
-  const post = useSelector((state) => state.report?.post);
+  const { post, loading } = useSelector((state) => state.report);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  function reportPostApi() {
-    dispatch(reportPost({ reason: reportType === "Other" ? reportMessage : reportType, postId: post.id }));
-  }
+  const reportPostApi = async () => {
+    try {
+      await dispatch(
+        reportPost({ reason: reportType === "Other" ? reportMessage : reportType, postId: post.id })
+      ).unwrap();
+      toast.success("Post reported successfully!");
+      navigate("/feed");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+  useEffect(() => {
+    if (post?.id) return;
+    async function fetchPost() {
+      const response = await dispatch(fetchDetailPost(postId)).unwrap();
+      dispatch(setReportingPost(response));
+    }
+    fetchPost();
+  }, []);
 
   return (
     <div className="w-full grid grid-cols-2">
@@ -89,7 +111,8 @@ const Report = () => {
             Cancel
           </button>
           <button onClick={reportPostApi} type="button" className="btn btn-primary flex items-center gap-2">
-            <FiSend />
+            {loading ? <Spinner size="sm" /> : <FiSend />}
+
             <span>Report</span>
           </button>
         </div>

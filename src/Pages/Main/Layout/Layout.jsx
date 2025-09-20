@@ -8,6 +8,7 @@ import { NavigationProvider } from "./NavigationContext";
 const Layout = () => {
   const navbarRef = useRef();
   const lastScrollRef = useRef(0);
+  const sideBarRef = useRef();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +46,9 @@ const Layout = () => {
         {/* Page content */}
 
         <div className="flex">
-          <UserSideBar />
+          <div ref={sideBarRef}>
+            <UserSideBar />
+          </div>
           <Outlet className="flex-1" />
         </div>
       </div>

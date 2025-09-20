@@ -10,13 +10,12 @@ import Comment from "../Pages/Main/Feed/Comment";
 import ChooseRole from "../Pages/Auth/ChooseRole";
 import OAuthCallBack from "../Pages/Auth/OAuthCallBack";
 import Secure from "../Pages/Auth/Secure";
-import Profile from "../Pages/Main/Profile/Profile";
 import EditDevProfile from "../Pages/Main/Profile/EditDevProfile";
 import DeveloperProfilePage from "../Pages/Main/DeveloperProfile/DeveloperProfile";
 import GroupsPage from "../Pages/Group/Group";
 import Admin from "../Pages/Admin/Admin";
 import UsersAdminPage from "../Pages/Admin/UsersAdminPage";
-import GroupCreationRequestPage from "../Pages/Admin/GroupCreationRequestPage";
+import GroupCreationRequestAdminPage from "../Pages/Admin/GroupCreationRequestAdminPage";
 import CreateGroup from "../Pages/Group/CreateGroup";
 import SecureAdmin from "../Pages/Auth/SecureAdmin";
 import NotificationPage from "../Pages/Notification/NotificationPage";
@@ -26,8 +25,9 @@ import UserGroupCreationRequestDetail from "../Pages/Notification/GroupCreationR
 import UserGroupPage from "../Pages/Group/UserGroupPage";
 import CreateGroupPost from "../Pages/Group/CreateGroupPost";
 import GroupCommentPage from "../Components/Group/GroupComment";
-import Report from "../Pages/Report/ReportPost";
+import ReportPost from "../Pages/Report/ReportPost";
 import ProfilePage from "../Pages/Main/Profile/Profile";
+import ReportAdminPage from "../Pages/Admin/ReportAdminPage";
 
 const router = createBrowserRouter([
   {
@@ -126,8 +126,8 @@ const router = createBrowserRouter([
             path: "report",
             children: [
               {
-                path: "post/:id",
-                element: <Report />,
+                path: "post/:postId",
+                element: <ReportPost />,
               },
             ],
           },
@@ -153,7 +153,11 @@ const router = createBrowserRouter([
           },
           {
             path: "group_creation_requests",
-            element: <GroupCreationRequestPage />,
+            element: <GroupCreationRequestAdminPage />,
+          },
+          {
+            path: "reports",
+            element: <ReportAdminPage />,
           },
         ],
       },
