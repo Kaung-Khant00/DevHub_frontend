@@ -1,19 +1,19 @@
 import { useDispatch, useSelector } from "react-redux";
-import GroupCreationRequestTable from "../../Components/Admin/Tables/GroupCreationRequestTable";
 import { useEffect } from "react";
-import { changeGroupRequestStatus, fetchGroupRequest } from "../../Redux/admin/admin.groupRequest";
+import ReportsTable from "../../Components/Admin/Tables/ReportsTable";
+import { changeReportType, fetchReports } from "../../Redux/admin/admin.reports";
 
 const ReportAdminPage = () => {
   const dispatch = useDispatch();
-  const { data, status, fetchLoading, pagination } = useSelector((state) => state.admin.groupRequest.groupRequests);
+  const { fetch, type, pagination } = useSelector((state) => state.admin.report);
   useEffect(() => {
-    if (!data) {
-      dispatch(fetchGroupRequest({ current_page: pagination.page, per_page: pagination.per_page, status: "pending" }));
+    if (!fetch.data) {
+      dispatch(fetchReports({ current_page: pagination.current_page, per_page: pagination.per_page, type }));
     }
   }, []);
   function handleStatusChange(newStatus) {
-    if (newStatus === status) return;
-    dispatch(changeGroupRequestStatus(newStatus));
+    if (newStatus === type) return;
+    dispatch(changeReportType(newStatus));
   }
   return (
     <div className="flex flex-col max-h-full h-full">
@@ -23,9 +23,9 @@ const ReportAdminPage = () => {
         <div className="tabs tabs-box flex-1">
           <input
             type="radio"
-            disabled={fetchLoading}
+            disabled={fetch.loading}
             onClick={() => {
-              handleStatusChange("pending");
+              handleStatusChange("post");
             }}
             name="status"
             className="tab "
@@ -34,7 +34,7 @@ const ReportAdminPage = () => {
           />
           <input
             type="radio"
-            disabled={fetchLoading}
+            disabled={fetch.loading}
             onClick={() => {
               handleStatusChange("approved");
             }}
@@ -44,7 +44,7 @@ const ReportAdminPage = () => {
           />
           <input
             type="radio"
-            disabled={fetchLoading}
+            disabled={fetch.loading}
             onClick={() => {
               handleStatusChange("rejected");
             }}
@@ -54,7 +54,7 @@ const ReportAdminPage = () => {
           />
           <input
             type="radio"
-            disabled={fetchLoading}
+            disabled={fetch.loading}
             onClick={() => {
               handleStatusChange("rejected");
             }}
@@ -70,7 +70,7 @@ const ReportAdminPage = () => {
           <button className="btn btn-info text-white rounded-l-none">Search</button>
         </div>
       </div>
-      <GroupCreationRequestTable />
+      <ReportsTable />
     </div>
   );
 };

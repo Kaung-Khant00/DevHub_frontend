@@ -11,11 +11,13 @@ import reportSlice from "./report/reportSlice";
 import adminUserSlice from "./admin/admin.user";
 import groupRequestSlice from "./admin/admin.groupRequest";
 import adminUsersSlice from "./admin/admin.users";
+import adminReportSlice from "./admin/admin.reports";
 
 const adminReducer = combineReducers({
   user: adminUserSlice,
   groupRequest: groupRequestSlice,
   users: adminUsersSlice,
+  report: adminReportSlice,
 });
 
 const store = configureStore({
