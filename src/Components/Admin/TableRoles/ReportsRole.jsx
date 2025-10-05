@@ -1,10 +1,15 @@
-import { useDispatch } from "react-redux";
-import Spinner from "../../Common/Spinner";
 import { AiOutlineFileSearch } from "react-icons/ai";
 import { AiOutlineDelete } from "react-icons/ai";
 import ImageWIthSkeleton from "../../Common/ImageWIthSkeleton";
+import { Link } from "react-router-dom";
 
 const ReportsRole = ({ report }) => {
+  const statusColor =
+    report?.status === "pending"
+      ? "badge badge-warning"
+      : report?.status === "resolved"
+      ? "badge badge-success"
+      : "badge badge-error";
   return (
     <tr key={report.id} className="hover:bg-base-300">
       <th>
@@ -32,21 +37,20 @@ const ReportsRole = ({ report }) => {
           : report.reportable.content}
       </td>
       <td>{report.reason.length > 100 ? report.reason.slice(0, 80) + "..." : report.reason}</td>
+      <td>
+        <div className={statusColor}>{report.status}</div>
+      </td>
       <td className="flex justify-center gap-2">
-        {report.status === "pending" && (
-          <>
-            <div className="tooltip tooltip-info " data-tip="Report Detail">
-              <button className="btn btn-square btn-info btn-soft hover:text-white">
-                <AiOutlineFileSearch size={20} />
-              </button>
-            </div>
-            <div className="tooltip tooltip-error " data-tip="Delete the report">
-              <button className="btn btn-square btn-error btn-soft hover:text-white">
-                <AiOutlineDelete size={20} />
-              </button>
-            </div>
-          </>
-        )}
+        <div className="tooltip tooltip-info " data-tip="Report Detail">
+          <Link to={`detail/post/${report.id}`} className="btn btn-square btn-info btn-soft hover:text-white">
+            <AiOutlineFileSearch size={20} />
+          </Link>
+        </div>
+        <div className="tooltip tooltip-error " data-tip="Delete the report">
+          <button className="btn btn-square btn-error btn-soft hover:text-white">
+            <AiOutlineDelete size={20} />
+          </button>
+        </div>
       </td>
     </tr>
   );

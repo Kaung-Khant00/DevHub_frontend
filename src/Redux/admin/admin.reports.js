@@ -20,6 +20,40 @@ export const fetchReports = createAsyncThunk(
     }
   }
 );
+export const fetchReportDetail = createAsyncThunk(
+  "report/fetchReportDetail",
+  async ({ id, type }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/admin/reports/detail/${id}`, {
+        params: {
+          type,
+        },
+      });
+      console.log("REPORT DETAIL", response);
+      return response.data.report;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+
+export const changeReportStatus = createAsyncThunk(
+  "report/changeReportStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/admin/reports/status`, {
+        id,
+        status,
+      });
+      console.log("Changing report status", response);
+      return response.data.report;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
 
 const initialState = {
   fetch: {
@@ -33,6 +67,13 @@ const initialState = {
     last_page: null,
     sortBy: "created_at,desc",
   },
+  detail: {
+    data: null,
+    loading: false,
+    resolveLoading: false,
+    dismissLoading: false,
+    error: null,
+  },
   type: "post",
 };
 const adminReportsSlice = createSlice({
@@ -41,6 +82,13 @@ const adminReportsSlice = createSlice({
   reducers: {
     changeReportType: (state, action) => {
       state.type = action.payload;
+    },
+    changeResponseStatusLoading: (state, action) => {
+      if (action.payload.status === "resolved") {
+        state.detail.resolveLoading = false;
+      } else if (action.payload.status === "dismissed") {
+        state.detail.dismissLoading = false;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -55,12 +103,28 @@ const adminReportsSlice = createSlice({
           total: action.payload.total,
         };
       })
+      .addCase(fetchReportDetail.fulfilled, (state, action) => {
+        state.detail.loading = false;
+        state.detail.data = action.payload;
+      })
+      .addCase(changeReportStatus.fulfilled, (state, action) => {
+        state.detail.loading = false;
+        state.detail.data = action.payload;
+      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
           case "fetchReports":
             state.fetch.loading = false;
             state.fetch.error = action.payload;
+            break;
+          case "fetchReportDetail":
+            state.detail.loading = false;
+            state.detail.error = action.payload;
+            break;
+          case "changeReportStatus":
+            state.detail.loading = false;
+            state.detail.error = action.payload;
             break;
           default:
             break;
@@ -72,6 +136,14 @@ const adminReportsSlice = createSlice({
           case "fetchReports":
             state.fetch.loading = true;
             state.fetch.error = null;
+            break;
+          case "fetchReportDetail":
+            state.detail.loading = true;
+            state.detail.error = null;
+            break;
+          case "changeReportStatus":
+            state.detail.loading = true;
+            state.detail.error = null;
             break;
           default:
             break;

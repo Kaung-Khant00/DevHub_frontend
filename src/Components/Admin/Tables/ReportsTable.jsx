@@ -28,6 +28,7 @@ const ReportsTable = () => {
               <th>Post</th>
               <th>Post Description</th>
               <th>Reason</th>
+              <th>Status</th>
               <th className="text-center">Actions</th>
             </tr>
           </thead>

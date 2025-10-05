@@ -28,6 +28,7 @@ import GroupCommentPage from "../Components/Group/GroupComment";
 import ReportPost from "../Pages/Report/ReportPost";
 import ProfilePage from "../Pages/Main/Profile/Profile";
 import ReportAdminPage from "../Pages/Admin/ReportAdminPage";
+import ReportDetail from "../Components/Admin/Details/ReportPostDetail";
 
 const router = createBrowserRouter([
   {
@@ -157,7 +158,10 @@ const router = createBrowserRouter([
           },
           {
             path: "reports",
-            element: <ReportAdminPage />,
+            children: [
+              { path: "", element: <ReportAdminPage /> },
+              { path: "detail/post/:id", element: <ReportDetail /> },
+            ],
           },
         ],
       },
