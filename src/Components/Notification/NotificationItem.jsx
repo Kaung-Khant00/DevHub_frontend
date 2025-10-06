@@ -1,4 +1,4 @@
-import { FaBell, FaEnvelope, FaEnvelopeOpen } from "react-icons/fa";
+import { FaBell } from "react-icons/fa";
 import { NOTIFICATION_TYPES } from "../../Constants/notificationType";
 import { useNavigate } from "react-router-dom";
 import { deleteNotification, setDetailNotification } from "../../Redux/user/notificationSlice";

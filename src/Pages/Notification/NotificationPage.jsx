@@ -5,6 +5,7 @@ import NotificationContainer from "../../Components/Notification/NotificationCon
 import { api } from "../../Services/axios_instance";
 import { Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import ReturnBackButton from "../../Components/Common/ReturnBackButton";
 
 export default function NotificationPage() {
   const notifications = useSelector((state) => state.notification.fetch.data);
@@ -41,9 +42,7 @@ export default function NotificationPage() {
     <div className="p-6 w-full">
       <header className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-1">
-          <Link to={-1} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
-            <FaArrowLeft className="w-5 h-5" />
-          </Link>
+          <ReturnBackButton defaultBackTo="/feed" except="/notification" />
           <h1 className="text-2xl font-semibold">Notifications</h1>
         </div>
 
@@ -54,9 +53,6 @@ export default function NotificationPage() {
           <button onClick={handleClearRead} className="btn btn-sm btn-ghost">
             Clear read
           </button>
-          <Link to={-1} className="btn btn-sm btn-ghost">
-            Back
-          </Link>
         </div>
       </header>
 

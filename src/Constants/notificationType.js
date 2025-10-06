@@ -2,7 +2,6 @@ import { FaBell, FaCheckCircle, FaExclamationTriangle, FaShareSquare, FaTimesCir
 
 export const NOTIFICATION_TYPES = {
   GROUP_CREATION_REQUEST_APPROVED: {
-    label: "Group Approved",
     Icon: FaCheckCircle,
     colorClass: "text-primary",
     bgClass: "bg-primary/10",
@@ -10,7 +9,6 @@ export const NOTIFICATION_TYPES = {
   },
 
   GROUP_CREATION_REQUEST_REJECTED: {
-    label: "Group Rejected",
     Icon: FaTimesCircle,
     colorClass: "text-red-500",
     bgClass: "bg-red-50",
@@ -18,28 +16,30 @@ export const NOTIFICATION_TYPES = {
   },
 
   SHARED_POST: {
-    label: "Shared Post",
     Icon: FaShareSquare,
     colorClass: "text-indigo-600",
     bgClass: "bg-indigo-50",
     badgeText: "Shared",
   },
   POST_REMOVED_TEMPORARY: {
-    label: "Post Removed Temporarily",
     Icon: FaExclamationTriangle,
     colorClass: "text-yellow-600",
     bgClass: "bg-yellow-50",
     badgeText: "Post",
   },
   POST_RESTORED: {
-    label: "Post Restored",
     Icon: FaCheckCircle,
     colorClass: "text-primary",
     bgClass: "bg-primary/10",
     badgeText: "Post",
   },
-  POST_REMOVED_VIOLATION: {
-    label: "Post Removed",
+  POST_DELETED_PERMANENTLY: {
+    Icon: FaExclamationTriangle,
+    colorClass: "text-yellow-600",
+    bgClass: "bg-yellow-50",
+    badgeText: "Violation",
+  },
+  POST_REPORTED: {
     Icon: FaExclamationTriangle,
     colorClass: "text-yellow-600",
     bgClass: "bg-yellow-50",
@@ -47,7 +47,6 @@ export const NOTIFICATION_TYPES = {
   },
 
   SYSTEM: {
-    label: "System",
     Icon: FaBell,
     colorClass: "text-gray-600",
     bgClass: "bg-gray-100",
@@ -56,7 +55,6 @@ export const NOTIFICATION_TYPES = {
 
   // fallback
   DEFAULT: {
-    label: "Notification",
     Icon: FaBell,
     colorClass: "text-gray-600",
     bgClass: "bg-gray-100",

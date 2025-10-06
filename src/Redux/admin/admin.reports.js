@@ -3,13 +3,14 @@ import { api } from "../../Services/axios_instance";
 
 export const fetchReports = createAsyncThunk(
   "report/fetchReports",
-  async ({ per_page, current_page, type }, { rejectWithValue }) => {
+  async ({ per_page, current_page, type, status }, { rejectWithValue }) => {
     try {
       const response = await api.get("/admin/reports", {
         params: {
           per_page: per_page,
           page: current_page,
           type,
+          status,
         },
       });
       console.log("REPORTS", response);
@@ -68,12 +69,36 @@ export const togglePostVisibility = createAsyncThunk(
     }
   }
 );
+export const deletePostPermanently = createAsyncThunk(
+  "report/deletePostPermanently",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/admin/reports/remove/permanent/post/${id}`);
+      console.log("delete post permanently", response);
+      return response.data.report;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+export const notifyOwner = createAsyncThunk("report/notifyOwner", async (notification, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/admin/reports/notify/owner`, notification);
+    console.log("notify owner", response);
+    return response.data.report;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
 
 const initialState = {
   fetch: {
     data: null,
     loading: false,
     error: null,
+    status: "",
   },
   pagination: {
     per_page: 2,
@@ -89,6 +114,7 @@ const initialState = {
     error: null,
     visibility: true,
     visibilityLoading: false,
+    deletePostLoading: false,
   },
   type: "post",
 };
@@ -105,6 +131,9 @@ const adminReportsSlice = createSlice({
       } else if (action.payload.status === "dismissed") {
         state.detail.dismissLoading = false;
       }
+    },
+    changeReportsStatus: (state, action) => {
+      state.fetch.status = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -126,11 +155,23 @@ const adminReportsSlice = createSlice({
       })
       .addCase(changeReportStatus.fulfilled, (state, action) => {
         state.detail.data = action.payload;
+        if (state.fetch.data.length > 0) {
+          state.fetch.data = state.fetch.data.map((report) => {
+            if (report.id === action.payload.id) {
+              return action.payload;
+            }
+            return report;
+          });
+        }
       })
       .addCase(togglePostVisibility.fulfilled, (state, action) => {
         state.detail.data = action.payload;
         state.detail.visibility = action.payload.reportable.visibility;
         state.detail.visibilityLoading = false;
+      })
+      .addCase(deletePostPermanently.fulfilled, (state, action) => {
+        state.detail.data = action.payload;
+        state.detail.removePermanentlyLoading = false;
       })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
@@ -145,6 +186,9 @@ const adminReportsSlice = createSlice({
             break;
           case "togglePostVisibility":
             state.detail.visibilityLoading = false;
+            break;
+          case "deletePostPermanently":
+            state.detail.removePermanentlyLoading = false;
             break;
           default:
             break;
@@ -164,11 +208,14 @@ const adminReportsSlice = createSlice({
           case "togglePostVisibility":
             state.detail.visibilityLoading = true;
             break;
+          case "deletePostPermanently":
+            state.detail.removePermanentlyLoading = true;
+            break;
           default:
             break;
         }
       });
   },
 });
-export const { changeReportType } = adminReportsSlice.actions;
+export const { changeReportType, changeReportsStatus } = adminReportsSlice.actions;
 export default adminReportsSlice.reducer;

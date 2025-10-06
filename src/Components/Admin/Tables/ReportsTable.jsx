@@ -8,14 +8,20 @@ import { fetchReports } from "../../../Redux/admin/admin.reports";
 const ReportsTable = () => {
   const dispatch = useDispatch();
   const { fetch, pagination, type } = useSelector((state) => state.admin.report);
+  const fetchStatus = useSelector((state) => state.admin.report.fetch.status);
   const [page, setPage] = useState(pagination.current_page);
+  const [status, setStatus] = useState("");
   const dataCountRef = useRef(null);
+
   useEffect(() => {
-    if (page !== pagination.current_page) {
-      dispatch(fetchReports({ current_page: page, per_page: pagination.per_page, type }));
+    console.log(status, "===", fetchStatus);
+    if (page !== pagination.current_page || status !== fetchStatus) {
+      setStatus(fetchStatus);
+      console.log("REFETFHING THE REPORS");
+      dispatch(fetchReports({ current_page: page, per_page: pagination.per_page, type, status: fetchStatus }));
     }
     dataCountRef.current = null;
-  }, [dispatch, page]);
+  }, [dispatch, page, fetchStatus]);
 
   return (
     <div className=" flex justify-center items-center flex-1 ">

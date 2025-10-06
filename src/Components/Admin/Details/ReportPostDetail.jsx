@@ -4,7 +4,13 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import { AiOutlineHistory } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { changeReportStatus, fetchReportDetail, togglePostVisibility } from "../../../Redux/admin/admin.reports";
+import {
+  changeReportStatus,
+  deletePostPermanently,
+  fetchReportDetail,
+  notifyOwner,
+  togglePostVisibility,
+} from "../../../Redux/admin/admin.reports";
 import { useParams } from "react-router-dom";
 import Spinner from "../../Common/Spinner";
 import ReturnBackButton from "../../Common/ReturnBackButton";
@@ -27,12 +33,12 @@ export default function PostReportDetail() {
   // --------- Local UI state (UI-only, no external calls) ----------
   const [notes, setNotes] = useState(adminNotesStatic);
   const [noteInput, setNoteInput] = useState("");
-  const [subject, setSubject] = useState("Notice: content reported for copyright");
+  const [title, setTitle] = useState("Notice: content reported for copyright");
   const [message, setMessage] = useState();
   const [resolveLoading, setResolveLoading] = useState(false);
   const [dismissLoading, setDismissLoading] = useState(false);
 
-  const subjectOptions = [
+  const titleOptions = [
     "Notice: content reported for copyright",
     "Warning: policy violation",
     "Temporary takedown notice",
@@ -50,8 +56,9 @@ export default function PostReportDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const reportDetail = useSelector((state) => state.admin.report.detail.data);
-  const loading = useSelector((state) => state.admin.report.detail.loading);
-  const { visibility, visibilityLoading } = useSelector((state) => state.admin.report.detail);
+  const { visibility, visibilityLoading, deletePostLoading, loading } = useSelector(
+    (state) => state.admin.report.detail
+  );
   console.log(visibility);
   useEffect(() => {
     if (reportDetail && id == reportDetail.id) return;
@@ -73,6 +80,19 @@ export default function PostReportDetail() {
   function togglePostVisibilityApi() {
     console.log("REMOVE POST TEMPORARILY", id);
     dispatch(togglePostVisibility({ id }));
+  }
+  function deletePostPermanentlyApi() {
+    dispatch(deletePostPermanently({ id }));
+  }
+  function sendNotificationApi() {
+    dispatch(
+      notifyOwner({
+        user_id: reportDetail?.reportable?.user_id,
+        title,
+        message,
+        post_id: reportDetail?.reportable_id,
+      })
+    );
   }
   const statusColor =
     reportDetail?.status === "pending"
@@ -167,15 +187,8 @@ export default function PostReportDetail() {
               </div>
               {/* Notification panel: send message to the POST OWNER (reported user) */}
               <div className="p-4 border border-base-300 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold flex items-center gap-2">
-                    <FiBell /> Notify post owner
-                  </div>
-                  <div className="text-xs text-muted">Visible to owner</div>
-                </div>
-
-                <div className="mt-2 text-sm text-muted">
-                  Use this to inform the post owner about the report and required next steps (policy, takedown, appeal).
+                <div className="font-semibold flex items-center gap-2">
+                  <FiBell /> Notify post owner
                 </div>
 
                 <div className="mt-3">
@@ -189,13 +202,13 @@ export default function PostReportDetail() {
                   />
 
                   <label className="label mt-2">
-                    <span className="label-text">Subject</span>
+                    <span className="label-text">title</span>
                   </label>
                   <select
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     className="select select-sm select-bordered w-full">
-                    {subjectOptions.map((s, i) => (
+                    {titleOptions.map((s, i) => (
                       <option key={i} value={s}>
                         {s}
                       </option>
@@ -212,7 +225,9 @@ export default function PostReportDetail() {
                     onChange={(e) => setMessage(e.target.value)}
                   />
 
-                  <button className="btn btn-sm btn-primary">Send notification</button>
+                  <button onClick={sendNotificationApi} className="btn btn-sm btn-primary mt-2">
+                    Send notification
+                  </button>
                 </div>
               </div>
             </section>
@@ -262,8 +277,13 @@ export default function PostReportDetail() {
                     {visibilityLoading ? <Spinner /> : <FaBan size={19} />}{" "}
                     {visibility ? "Remove temporarily" : "Removed temporarily"}
                   </button>
-                  <button className="btn btn-block btn-error btn-sm flex items-center gap-2">
-                    <FiTrash2 size={19} /> Drop the post permanently
+                  <button
+                    onClick={deletePostPermanentlyApi}
+                    className={`btn btn-block ${
+                      reportDetail?.reportable?.deleted_at ? "btn-success" : "btn-error"
+                    } btn-sm flex items-center gap-2`}>
+                    {deletePostLoading ? <Spinner /> : <FiTrash2 size={19} />}{" "}
+                    {reportDetail?.reportable?.deleted_at ? "Deleted permanently" : "Delete permanently"}
                   </button>
                 </div>
               </div>
@@ -272,7 +292,6 @@ export default function PostReportDetail() {
               <div className="p-4 border border-base-200 rounded">
                 <div className="flex items-center justify-between">
                   <div className="font-semibold">Admin notes</div>
-                  <div className="text-xs text-muted">internal</div>
                 </div>
 
                 <div className="mt-3">

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import ReportsTable from "../../Components/Admin/Tables/ReportsTable";
-import { changeReportType, fetchReports } from "../../Redux/admin/admin.reports";
+import { changeReportsStatus, changeReportType, fetchReports } from "../../Redux/admin/admin.reports";
 
 const ReportAdminPage = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,9 @@ const ReportAdminPage = () => {
   function handleStatusChange(newStatus) {
     if (newStatus === type) return;
     dispatch(changeReportType(newStatus));
+  }
+  function changeStatus(status) {
+    dispatch(changeReportsStatus(status));
   }
   return (
     <div className="flex flex-col max-h-full h-full">
@@ -67,7 +70,19 @@ const ReportAdminPage = () => {
           <div className="flex-1">
             <input type="text" className="input w-full rounded-r-none" />
           </div>
-          <button className="btn btn-info text-white rounded-l-none">Search</button>
+          <button className="btn btn-info text-white rounded-l-none rounded-r-none">Search</button>
+          <select onChange={(e) => changeStatus(e.target.value)} name="status" className="select w-fit rounded-l-none">
+            <option value="">All</option>
+            <option value="pending" className="text-warning">
+              Pending
+            </option>
+            <option value="resolved" className="text-success">
+              Resolved
+            </option>
+            <option value="dismissed" className="text-error">
+              Dismissed
+            </option>
+          </select>
         </div>
       </div>
       <ReportsTable />
