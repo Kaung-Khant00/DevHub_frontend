@@ -23,7 +23,7 @@ export const fetchDetailNotification = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await api.get(`notifications/${id}`);
-      console.log(response);
+      console.log("Detail notification", response);
       return response.data.notification;
     } catch (err) {
       console.log(err);
@@ -128,7 +128,7 @@ const notificationSlice = createSlice({
       })
       .addCase(fetchDetailNotification.fulfilled, (state, action) => {
         state.detail.data = action.payload;
-        state.fetch.loading = false;
+        state.detail.loading = false;
       })
       .addCase(fetchGroupRequest.fulfilled, (state, action) => {
         state.groupRequest.loading = false;

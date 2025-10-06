@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { FiEye, FiPaperclip, FiExternalLink, FiBell } from "react-icons/fi";
+import { FiEye, FiPaperclip, FiExternalLink, FiBell, FiTrash2 } from "react-icons/fi";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdCancel } from "react-icons/md";
 import { AiOutlineHistory } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { changeReportStatus, fetchReportDetail } from "../../../Redux/admin/admin.reports";
+import { changeReportStatus, fetchReportDetail, togglePostVisibility } from "../../../Redux/admin/admin.reports";
 import { useParams } from "react-router-dom";
-import { CiSquareRemove } from "react-icons/ci";
 import Spinner from "../../Common/Spinner";
 import ReturnBackButton from "../../Common/ReturnBackButton";
+import { FaBan } from "react-icons/fa";
 
 export default function PostReportDetail() {
   const adminNotesStatic = [
@@ -28,7 +28,7 @@ export default function PostReportDetail() {
   const [notes, setNotes] = useState(adminNotesStatic);
   const [noteInput, setNoteInput] = useState("");
   const [subject, setSubject] = useState("Notice: content reported for copyright");
-  const [messageDraft, setMessageDraft] = useState();
+  const [message, setMessage] = useState();
   const [resolveLoading, setResolveLoading] = useState(false);
   const [dismissLoading, setDismissLoading] = useState(false);
 
@@ -47,15 +47,12 @@ export default function PostReportDetail() {
     setNoteInput("");
   };
 
-  const resetDraft = () => {
-    setMessageDraft();
-  };
-
   const { id } = useParams();
   const dispatch = useDispatch();
   const reportDetail = useSelector((state) => state.admin.report.detail.data);
   const loading = useSelector((state) => state.admin.report.detail.loading);
-
+  const { visibility, visibilityLoading } = useSelector((state) => state.admin.report.detail);
+  console.log(visibility);
   useEffect(() => {
     if (reportDetail && id == reportDetail.id) return;
     dispatch(fetchReportDetail({ id, type: "post" }));
@@ -73,6 +70,10 @@ export default function PostReportDetail() {
       setDismissLoading(false);
     }
   };
+  function togglePostVisibilityApi() {
+    console.log("REMOVE POST TEMPORARILY", id);
+    dispatch(togglePostVisibility({ id }));
+  }
   const statusColor =
     reportDetail?.status === "pending"
       ? "badge badge-warning"
@@ -202,13 +203,13 @@ export default function PostReportDetail() {
                   </select>
 
                   <label className="label mt-2">
-                    <span className="label-text">Message (draft)</span>
+                    <span className="label-text">Message</span>
                   </label>
                   <textarea
                     className="textarea textarea-bordered w-full"
                     rows={5}
-                    value={messageDraft}
-                    onChange={(e) => setMessageDraft(e.target.value)}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                   />
 
                   <button className="btn btn-sm btn-primary">Send notification</button>
@@ -217,7 +218,7 @@ export default function PostReportDetail() {
             </section>
 
             {/* RIGHT: Admin panel (Reporter, actions, notification, notes, audit) */}
-            <aside className="space-y-4">
+            <aside className="space-y-3">
               {/* Reporter card */}
               <div className="p-4 border border-base-200 rounded">
                 <div className="font-semibold text-md mb-2 pb-2 border-b border-gray-400">
@@ -235,25 +236,34 @@ export default function PostReportDetail() {
                     <div className="text-xs text-muted mt-1">Role: {reportDetail?.reporter.role}</div>
                   </div>
                 </div>
-                <div className="mt-4 space-y-2">
-                  <button
-                    onClick={() => {
-                      changeReportStatusApi("resolved");
-                    }}
-                    className="btn btn-block btn-success btn-sm flex items-center gap-2">
-                    {resolveLoading ? <Spinner /> : <IoMdCheckmark />} Resolve
-                  </button>
+                <div className="mt-4 space-y-3">
+                  <div className="flex gap-2 pb-2">
+                    <button
+                      onClick={() => {
+                        changeReportStatusApi("resolved");
+                      }}
+                      className="btn flex-1 btn-success btn-sm flex items-center gap-2">
+                      {resolveLoading ? <Spinner /> : <IoMdCheckmark size={20} />} Resolve
+                    </button>
 
+                    <button
+                      onClick={() => {
+                        changeReportStatusApi("dismissed");
+                      }}
+                      className="btn flex-1 btn-error btn-sm flex items-center gap-2">
+                      {dismissLoading ? <Spinner /> : <MdCancel size={20} />} Dismiss
+                    </button>
+                  </div>
                   <button
-                    onClick={() => {
-                      changeReportStatusApi("dismissed");
-                    }}
-                    className="btn btn-block btn-error btn-sm flex items-center gap-2">
-                    {dismissLoading ? <Spinner /> : <MdCancel />} Dismiss
+                    onClick={togglePostVisibilityApi}
+                    className={`btn btn-block ${
+                      visibility ? "btn-warning" : "btn-success"
+                    } btn-sm flex items-center gap-2`}>
+                    {visibilityLoading ? <Spinner /> : <FaBan size={19} />}{" "}
+                    {visibility ? "Remove temporarily" : "Removed temporarily"}
                   </button>
-
-                  <button className="btn btn-block btn-warning btn-sm flex items-center gap-2">
-                    <CiSquareRemove /> Drop the post
+                  <button className="btn btn-block btn-error btn-sm flex items-center gap-2">
+                    <FiTrash2 size={19} /> Drop the post permanently
                   </button>
                 </div>
               </div>

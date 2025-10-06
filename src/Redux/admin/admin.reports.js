@@ -55,6 +55,20 @@ export const changeReportStatus = createAsyncThunk(
   }
 );
 
+export const togglePostVisibility = createAsyncThunk(
+  "report/togglePostVisibility",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/admin/reports/remove/temporary/post/${id}`);
+      console.log("toggle post temporarily", response);
+      return response.data.report;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+
 const initialState = {
   fetch: {
     data: null,
@@ -73,6 +87,8 @@ const initialState = {
     resolveLoading: false,
     dismissLoading: false,
     error: null,
+    visibility: true,
+    visibilityLoading: false,
   },
   type: "post",
 };
@@ -106,10 +122,15 @@ const adminReportsSlice = createSlice({
       .addCase(fetchReportDetail.fulfilled, (state, action) => {
         state.detail.loading = false;
         state.detail.data = action.payload;
+        state.detail.visibility = action.payload.reportable.visibility;
       })
       .addCase(changeReportStatus.fulfilled, (state, action) => {
-        state.detail.loading = false;
         state.detail.data = action.payload;
+      })
+      .addCase(togglePostVisibility.fulfilled, (state, action) => {
+        state.detail.data = action.payload;
+        state.detail.visibility = action.payload.reportable.visibility;
+        state.detail.visibilityLoading = false;
       })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
@@ -122,9 +143,8 @@ const adminReportsSlice = createSlice({
             state.detail.loading = false;
             state.detail.error = action.payload;
             break;
-          case "changeReportStatus":
-            state.detail.loading = false;
-            state.detail.error = action.payload;
+          case "togglePostVisibility":
+            state.detail.visibilityLoading = false;
             break;
           default:
             break;
@@ -141,9 +161,8 @@ const adminReportsSlice = createSlice({
             state.detail.loading = true;
             state.detail.error = null;
             break;
-          case "changeReportStatus":
-            state.detail.loading = true;
-            state.detail.error = null;
+          case "togglePostVisibility":
+            state.detail.visibilityLoading = true;
             break;
           default:
             break;

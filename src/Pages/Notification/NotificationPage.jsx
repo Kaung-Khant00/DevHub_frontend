@@ -38,31 +38,29 @@ export default function NotificationPage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-5xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-1">
-            <Link to={-1} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
-              <FaArrowLeft className="w-5 h-5" />
-            </Link>
-            <h1 className="text-2xl font-semibold">Notifications</h1>
-          </div>
+    <div className="p-6 w-full">
+      <header className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-1">
+          <Link to={-1} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
+            <FaArrowLeft className="w-5 h-5" />
+          </Link>
+          <h1 className="text-2xl font-semibold">Notifications</h1>
+        </div>
 
-          <div className="flex gap-2 items-center">
-            <button onClick={handleMarkAllRead} className="btn btn-sm btn-primary">
-              Mark all read
-            </button>
-            <button onClick={handleClearRead} className="btn btn-sm btn-ghost">
-              Clear read
-            </button>
-            <Link to={-1} className="btn btn-sm btn-ghost">
-              Back
-            </Link>
-          </div>
-        </header>
+        <div className="flex gap-2 items-center">
+          <button onClick={handleMarkAllRead} className="btn btn-sm btn-primary">
+            Mark all read
+          </button>
+          <button onClick={handleClearRead} className="btn btn-sm btn-ghost">
+            Clear read
+          </button>
+          <Link to={-1} className="btn btn-sm btn-ghost">
+            Back
+          </Link>
+        </div>
+      </header>
 
-        <NotificationContainer />
-      </div>
+      <NotificationContainer />
     </div>
   );
 }

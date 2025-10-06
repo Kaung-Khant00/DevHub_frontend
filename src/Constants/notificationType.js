@@ -24,7 +24,20 @@ export const NOTIFICATION_TYPES = {
     bgClass: "bg-indigo-50",
     badgeText: "Shared",
   },
-
+  POST_REMOVED_TEMPORARY: {
+    label: "Post Removed Temporarily",
+    Icon: FaExclamationTriangle,
+    colorClass: "text-yellow-600",
+    bgClass: "bg-yellow-50",
+    badgeText: "Post",
+  },
+  POST_RESTORED: {
+    label: "Post Restored",
+    Icon: FaCheckCircle,
+    colorClass: "text-primary",
+    bgClass: "bg-primary/10",
+    badgeText: "Post",
+  },
   POST_REMOVED_VIOLATION: {
     label: "Post Removed",
     Icon: FaExclamationTriangle,

@@ -1,18 +1,12 @@
 /*   !!  This code is generated from AI . Credit to ChatGPT and I understand it   !! */
 
 import React, { useRef, useState, useMemo, useEffect } from "react";
-import {
-  FaImage,
-  FaFileAlt,
-  FaPaperPlane,
-  FaTrashAlt,
-  FaTimes,
-  FaCode,
-} from "react-icons/fa";
+import { FaImage, FaFileAlt, FaPaperPlane, FaTrashAlt, FaTimes, FaCode } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { RiEditFill } from "react-icons/ri";
 import { editPost, fetchSpecificPost } from "../../../Redux/post/postSlice";
+import ReturnBackButton from "../../../Components/Common/ReturnBackButton";
 
 export default function EditPost() {
   const { id } = useParams();
@@ -116,24 +110,11 @@ export default function EditPost() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 w-full">
       <header className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <button
-            className="btn btn-ghost btn-sm md:hidden"
-            onClick={() => navigate(-1)}
-            aria-label="Back"
-          >
-            Back
-          </button>
-          <h1 className="text-xl md:text-2xl font-semibold text-primary">
-            Edit Post
-          </h1>
-        </div>
-        <div className="hidden md:flex items-center gap-3">
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
-            Back
-          </button>
+          <ReturnBackButton defaultBackTo={-1} except={"/post/edit/"} />
+          <h1 className="text-xl md:text-2xl font-semibold text-primary">Edit Post</h1>
         </div>
       </header>
       {loading && (
@@ -150,13 +131,8 @@ export default function EditPost() {
             <section
               className={`collapse ${
                 isOpen("content") ? "collapse-open" : ""
-              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-            >
-              <input
-                type="checkbox"
-                className="hidden"
-                defaultChecked={isOpen("content")}
-              />
+              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
+              <input type="checkbox" className="hidden" defaultChecked={isOpen("content")} />
               <div className="card-body p-4">
                 <div>
                   <input
@@ -164,9 +140,7 @@ export default function EditPost() {
                     className="input input-bordered w-full mb-3 font-bold text-lg"
                     placeholder="Title your post"
                     value={post?.title || ""}
-                    onChange={(e) =>
-                      setPost({ ...post, title: e.target.value })
-                    }
+                    onChange={(e) => setPost({ ...post, title: e.target.value })}
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -177,37 +151,27 @@ export default function EditPost() {
                 </div>
 
                 <p className="text-sm text-base-content/60 mb-3 md:hidden">
-                  Main text that will appear in the post. Keep it clear and
-                  focused.
+                  Main text that will appear in the post. Keep it clear and focused.
                 </p>
 
                 <textarea
                   rows={3}
                   value={post?.content || ""}
-                  onChange={(e) =>
-                    setPost({ ...post, content: e.target.value })
-                  }
+                  onChange={(e) => setPost({ ...post, content: e.target.value })}
                   placeholder="What's on your mind?"
                   className="textarea w-full h-20 resize-y font-sans text-sm"
                 />
-                {error?.content && (
-                  <div className="text-sm text-error mt-2">{error.content}</div>
-                )}
+                {error?.content && <div className="text-sm text-error mt-2">{error.content}</div>}
 
                 <div className="mt-3 flex items-center gap-3">
-                  <button
-                    onClick={() => setPost({ ...post, content: "" })}
-                    className="btn btn-ghost btn-sm"
-                  >
+                  <button onClick={() => setPost({ ...post, content: "" })} className="btn btn-ghost btn-sm">
                     Clear
                   </button>
                   <div className="ml-auto text-sm text-base-content/60 md:hidden">
                     Characters: {post?.content?.length}
                   </div>
                 </div>
-                {error?.form && (
-                  <div className="text-sm text-error mt-2">{error.form}</div>
-                )}
+                {error?.form && <div className="text-sm text-error mt-2">{error.form}</div>}
               </div>
             </section>
 
@@ -215,13 +179,8 @@ export default function EditPost() {
             <section
               className={`collapse ${
                 isOpen("code") ? "collapse-open" : ""
-              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-            >
-              <input
-                type="checkbox"
-                className="hidden"
-                defaultChecked={isOpen("code")}
-              />
+              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
+              <input type="checkbox" className="hidden" defaultChecked={isOpen("code")} />
               <div className="card-body p-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-md font-semibold flex items-center gap-2">
@@ -230,9 +189,7 @@ export default function EditPost() {
                   <input
                     type="text"
                     value={post?.code_lang || ""}
-                    onChange={(e) =>
-                      setPost({ ...post, code_lang: e.target.value })
-                    }
+                    onChange={(e) => setPost({ ...post, code_lang: e.target.value })}
                     className="input input-sm w-full max-w-[150px] text-sm"
                     placeholder="Enter the Language"
                   />
@@ -246,9 +203,7 @@ export default function EditPost() {
                   placeholder={"Paste your code here."}
                   className="textarea textarea-bordered w-full h-20 resize-y font-mono text-sm mt-2"
                 />
-                {error?.code && (
-                  <div className="text-sm text-error mt-2">{error.code}</div>
-                )}
+                {error?.code && <div className="text-sm text-error mt-2">{error.code}</div>}
 
                 {post?.code && (
                   <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
@@ -265,10 +220,7 @@ export default function EditPost() {
                 )}
 
                 <div className="mt-3 flex justify-end">
-                  <button
-                    onClick={() => setPost({ ...post, code: "" })}
-                    className="btn btn-ghost btn-sm"
-                  >
+                  <button onClick={() => setPost({ ...post, code: "" })} className="btn btn-ghost btn-sm">
                     Clear Code
                   </button>
                 </div>
@@ -291,8 +243,7 @@ export default function EditPost() {
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                     className="border-dashed border-2 border-base-300 rounded-lg p-3 flex flex-col items-center justify-center text-center bg-base-100"
-                    style={{ minHeight: 120 }}
-                  >
+                    style={{ minHeight: 120 }}>
                     <div className="flex items-center gap-2">
                       <FaImage className="text-xl text-primary" />
                       <div>
@@ -303,26 +254,17 @@ export default function EditPost() {
                     {imagePreview ? (
                       <div className=" mt-3 w-full">
                         <div className="flex items-center justify-center gap-2">
-                          <img
-                            src={imagePreview}
-                            alt="preview"
-                            className=" rounded max-h-36 object-cover"
-                          />
+                          <img src={imagePreview} alt="preview" className=" rounded max-h-36 object-cover" />
                         </div>
                       </div>
                     ) : (
-                      <div className="mt-3 text-sm text-base-content/70">
-                        No image attached
-                      </div>
+                      <div className="mt-3 text-sm text-base-content/70">No image attached</div>
                     )}
 
                     <div className="mt-3 w-full flex">
                       <label
                         className="btn btn-outline btn-sm flex-1 gap-1"
-                        onClick={() =>
-                          imageInputRef.current && imageInputRef.current.click()
-                        }
-                      >
+                        onClick={() => imageInputRef.current && imageInputRef.current.click()}>
                         <FaImage className="mr-2 text-primary" /> Upload Image
                       </label>
                       {post?.image && (
@@ -337,8 +279,7 @@ export default function EditPost() {
                                 setImageFile(null);
                                 setImagePreview(data?.image_url);
                               }}
-                              className="btn btn-sm btn-error mb-2 w-full text-white"
-                            >
+                              className="btn btn-sm btn-error mb-2 w-full text-white">
                               Undo
                             </button>
                           ) : (
@@ -351,8 +292,7 @@ export default function EditPost() {
                                 }));
                                 setImageFile(null);
                                 setImagePreview(null);
-                              }}
-                            >
+                              }}>
                               Remove image
                             </button>
                           )}
@@ -368,11 +308,7 @@ export default function EditPost() {
                       />
                     </div>
 
-                    {error?.image && (
-                      <div className="text-sm text-error mt-2">
-                        {error.image}
-                      </div>
-                    )}
+                    {error?.image && <div className="text-sm text-error mt-2">{error.image}</div>}
                   </div>
                 </div>
 
@@ -388,19 +324,14 @@ export default function EditPost() {
                         <div className="flex items-center gap-3">
                           <FaFileAlt className="text-lg text-primary" />
                           <div>
-                            <div className="text-sm font-medium">
-                              {attachedFile.name}
-                            </div>
+                            <div className="text-sm font-medium">{attachedFile.name}</div>
                             <div className="text-xs text-base-content/70">
                               {Math.round(attachedFile.size / 1024)} KB
                             </div>
                           </div>
                         </div>
                         <div>
-                          <button
-                            className="btn btn-ghost btn-xs"
-                            onClick={() => setAttachedFile(null)}
-                          >
+                          <button className="btn btn-ghost btn-xs" onClick={() => setAttachedFile(null)}>
                             <FaTimes />
                           </button>
                         </div>
@@ -408,10 +339,7 @@ export default function EditPost() {
                     ) : (
                       <div className="text-sm text-base-content/70">
                         {post?.file ? (
-                          <div>
-                            Upload new file will delete the previous file (
-                            {post.file.split("/")[1]})
-                          </div>
+                          <div>Upload new file will delete the previous file ({post.file.split("/")[1]})</div>
                         ) : (
                           <div>No File uploaded yet</div>
                         )}
@@ -421,10 +349,7 @@ export default function EditPost() {
                     <div className="flex gap-1">
                       <label
                         className="btn btn-outline btn-sm flex-1"
-                        onClick={() =>
-                          fileInputRef.current && fileInputRef.current.click()
-                        }
-                      >
+                        onClick={() => fileInputRef.current && fileInputRef.current.click()}>
                         <FaFileAlt className="mr-2 text-primary" /> Upload File
                       </label>
                       {post?.file && (
@@ -437,8 +362,7 @@ export default function EditPost() {
                                 file: true,
                               }));
                               setAttachedFile(null);
-                            }}
-                          >
+                            }}>
                             Remove File
                           </button>
                         </div>
@@ -456,17 +380,9 @@ export default function EditPost() {
                       />
                     </div>
 
-                    {error?.file && (
-                      <div className="text-sm text-error mt-2">
-                        {error.file}
-                      </div>
-                    )}
+                    {error?.file && <div className="text-sm text-error mt-2">{error.file}</div>}
                     {/* Tag error hint */}
-                    {error?.tags && (
-                      <div className="text-sm text-error mt-2">
-                        {error.tags}
-                      </div>
-                    )}
+                    {error?.tags && <div className="text-sm text-error mt-2">{error.tags}</div>}
                   </div>
                 </div>
               </div>
@@ -476,13 +392,8 @@ export default function EditPost() {
             <section
               className={`collapse ${
                 isOpen("tags") ? "collapse-open" : ""
-              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}
-            >
-              <input
-                type="checkbox"
-                className="hidden"
-                defaultChecked={isOpen("tags")}
-              />
+              } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
+              <input type="checkbox" className="hidden" defaultChecked={isOpen("tags")} />
               <div className="card-body p-4">
                 <h2 className="text-md font-semibold">Tags</h2>
                 <p className="text-sm text-base-content/60 mb-3 md:hidden">
@@ -492,15 +403,9 @@ export default function EditPost() {
                 <div className="flex flex-wrap items-center gap-2">
                   {tags &&
                     tags.map((t, i) => (
-                      <div
-                        key={i}
-                        className="badge badge-outline py-2 px-2 flex items-center gap-2"
-                      >
+                      <div key={i} className="badge badge-outline py-2 px-2 flex items-center gap-2">
                         <span className="text-sm">{t}</span>
-                        <button
-                          onClick={() => removeTag(i)}
-                          className="btn btn-ghost btn-xs"
-                        >
+                        <button onClick={() => removeTag(i)} className="btn btn-ghost btn-xs">
                           <FaTimes />
                         </button>
                       </div>
@@ -536,15 +441,10 @@ export default function EditPost() {
                       setAttachedFile(null);
                       setPost(data);
                       setTags(data?.tags);
-                    }}
-                  >
+                    }}>
                     <FaTrashAlt /> Reset All
                   </button>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleEdit()}
-                    disabled={loading}
-                  >
+                  <button className="btn btn-primary" onClick={() => handleEdit()} disabled={loading}>
                     {loading ? (
                       <div className="flex items-center">
                         <div className="loading loading-ring loading-md"></div>
@@ -557,11 +457,7 @@ export default function EditPost() {
                     )}
                   </button>
                 </div>
-                {error?.form && (
-                  <div className="sm:hidden block text-sm text-error mt-2 font-bold">
-                    {error.form}
-                  </div>
-                )}
+                {error?.form && <div className="sm:hidden block text-sm text-error mt-2 font-bold">{error.form}</div>}
               </div>
             </section>
           </aside>

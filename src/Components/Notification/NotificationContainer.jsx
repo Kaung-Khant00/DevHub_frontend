@@ -8,7 +8,7 @@ const NotificationContainer = () => {
 
   return (
     <div>
-      <div className="card bg-base-100 p-4">
+      <div className="card bg-base-100 p-4 w-full">
         <div className="mt-4 space-y-3">
           {!loading && notifications.length === 0 && (
             <div className="text-center py-16">
@@ -18,7 +18,7 @@ const NotificationContainer = () => {
             </div>
           )}
           {loading && (
-            <div className="flex justify-center items-center h-40">
+            <div className="flex justify-center items-center h-40 w-full">
               <Spinner size="lg" />
             </div>
           )}
