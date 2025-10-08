@@ -48,6 +48,7 @@ export const loginUser = createAsyncThunk("user/loginUser", async (formData, { r
 
     return response.data;
   } catch (error) {
+    toast.error(error.response?.data?.message);
     return rejectWithValue(error.response?.data?.errors || error.response?.data?.message);
   }
 });

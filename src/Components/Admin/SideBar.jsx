@@ -11,29 +11,30 @@ import {
 } from "react-icons/hi";
 import { MdLibraryAdd } from "react-icons/md";
 import { RiAdminLine } from "react-icons/ri";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../Redux/user/userSlice";
 import { Link, useLocation } from "react-router-dom";
 
 const SideBar = ({ showSideBar }) => {
+  const admin = useSelector((state) => state.user.admin);
   const dispatch = useDispatch();
   const location = useLocation();
   function handleLogout() {
     dispatch(logoutUser());
   }
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname.includes(path);
   return (
     <div className={`relative transition-all duration-300 ease-in-out ${showSideBar ? "w-[65px]" : "w-60"}`}>
       <aside
-        className={` absolute pt-3 h-full bg-info-content transition-all duration-300 ease-in-out ${
+        className={` absolute pt-3 h-full bg-base-300 transition-all duration-300 ease-in-out border-r border-gray-300 ${
           !showSideBar ? "w-0" : "w-[65px]"
         }`}>
-        <ul className="bgInfo menu text-white flex flex-col gap-2 items-center">
+        <ul className=" bgInfo menu text-gray-700 flex flex-col gap-2 items-center">
           {/* Dashboard */}
           <li className={isActive("/admin/dashboard") ? "active" : ""}>
             <Link
               to="/admin/dashboard"
-              className="bg-blue-900 flex justify-center p-2 rounded-md hover:bg-info"
+              className="bg-gray-300 flex justify-center p-2 rounded-md hover:bg-info"
               title="Dashboard">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Dashboard">
                 <HiOutlineHome className="text-2xl" />
@@ -42,13 +43,15 @@ const SideBar = ({ showSideBar }) => {
           </li>
 
           {/* Management */}
-          <li>
-            <Link to="/admin/admins" className="flex justify-center p-2 rounded-md hover:bg-info" title="Admins">
-              <span className="tooltip tooltip-right tooltip-info" data-tip="Admins">
-                <RiAdminLine className="text-2xl" />
-              </span>
-            </Link>
-          </li>
+          {admin?.role === "SUPER_ADMIN" && (
+            <li className={isActive("/admin/admins") ? "active" : ""}>
+              <Link to="/admin/admins" className="flex justify-center p-2 rounded-md hover:bg-info" title="Admins">
+                <span className="tooltip tooltip-right tooltip-info" data-tip="Admins">
+                  <RiAdminLine className="text-2xl" />
+                </span>
+              </Link>
+            </li>
+          )}
           <li className={isActive("/admin/users") ? "active" : ""}>
             <Link to="/admin/users" className="flex justify-center p-2 rounded-md hover:bg-info" title="Users">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Users">
@@ -121,10 +124,10 @@ const SideBar = ({ showSideBar }) => {
       </aside>
       {/*  side bar components and links goes here :)  */}
       <aside
-        className={`absolute h-full bg-info-content transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`absolute h-full bg-base-300 transition-all duration-300 ease-in-out overflow-y-auto border-r border-gray-300 ${
           showSideBar ? "w-0" : "w-60"
         }`}>
-        <ul className="menu py-0 px-4 text-white w-full ">
+        <ul className="menu py-0 px-4 w-full ">
           <li className="pt-8">
             <a href="/admin/dashboard" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineHome className="text-xl" />
@@ -134,13 +137,28 @@ const SideBar = ({ showSideBar }) => {
 
           {/* Management */}
           <li className="menu-title mt-4 text-blue-300">Management</li>
-          <li>
-            <a href="/admin/admins" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
-              <RiAdminLine className="text-xl" />
-              <span>Admins</span>
-            </a>
-          </li>
+          {admin?.role === "SUPER_ADMIN" && (
+            <li>
+              <details>
+                <summary className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
+                  <RiAdminLine className="text-xl" />
+                  <span>Admins</span>
+                </summary>
+                <ul>
+                  <li>
+                    <a>Admin List</a>
+                  </li>
 
+                  <li>
+                    <a>Admin Actions</a>
+                  </li>
+                  <li>
+                    <Link to="/admin/admins/create">Create Admin</Link>
+                  </li>
+                </ul>
+              </details>
+            </li>
+          )}
           <li>
             <Link to="/admin/users" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineUsers className="text-xl" />

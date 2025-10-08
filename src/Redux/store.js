@@ -12,9 +12,11 @@ import adminUserSlice from "./admin/admin.user";
 import groupRequestSlice from "./admin/admin.groupRequest";
 import adminUsersSlice from "./admin/admin.users";
 import adminReportSlice from "./admin/admin.reports";
+import adminAdminsSlice from "./admin/admin.admins"; // sounds like a type or error but I want the name to be in consistence
 
 const adminReducer = combineReducers({
   user: adminUserSlice,
+  admins: adminAdminsSlice,
   groupRequest: groupRequestSlice,
   users: adminUsersSlice,
   report: adminReportSlice,

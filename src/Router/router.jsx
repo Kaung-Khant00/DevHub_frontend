@@ -29,6 +29,8 @@ import ReportPost from "../Pages/Report/ReportPost";
 import ProfilePage from "../Pages/Main/Profile/Profile";
 import ReportAdminPage from "../Pages/Admin/ReportAdminPage";
 import ReportDetail from "../Components/Admin/Details/ReportPostDetail";
+import AdminsPage from "../Pages/Admin/AdminsPage";
+import CreateAdminPage from "../Pages/Admin/CreateAdminPage";
 
 const router = createBrowserRouter([
   {
@@ -151,6 +153,23 @@ const router = createBrowserRouter([
           {
             path: "users",
             element: <UsersAdminPage />,
+          },
+          {
+            path: "admins",
+            children: [
+              {
+                path: "",
+                element: <AdminsPage />,
+              },
+              {
+                path: "create",
+                element: <CreateAdminPage />,
+              },
+              {
+                path: "edit/:id",
+                element: <CreateAdminPage />,
+              },
+            ],
           },
           {
             path: "group_creation_requests",

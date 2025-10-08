@@ -5,7 +5,7 @@ export const fetchUsers = createAsyncThunk(
   "admin/fetchUsers",
   async ({ current_page = 1, per_page }, { rejectWithValue }) => {
     try {
-      const response = await api.get("/super_admin/users", {
+      const response = await api.get("/admin/users", {
         params: {
           page: current_page,
           per_page,
