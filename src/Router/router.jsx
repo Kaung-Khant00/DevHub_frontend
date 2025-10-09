@@ -31,6 +31,8 @@ import ReportAdminPage from "../Pages/Admin/ReportAdminPage";
 import ReportDetail from "../Components/Admin/Details/ReportPostDetail";
 import AdminsPage from "../Pages/Admin/AdminsPage";
 import CreateAdminPage from "../Pages/Admin/CreateAdminPage";
+import QuestionPage from "../Pages/Dev/Questions/QuestionPage";
+import CreateQuestionPage from "../Pages/Dev/Questions/CreateQuestionPage";
 
 const router = createBrowserRouter([
   {
@@ -131,6 +133,16 @@ const router = createBrowserRouter([
               {
                 path: "post/:postId",
                 element: <ReportPost />,
+              },
+            ],
+          },
+          {
+            path: "question",
+            children: [
+              { path: "", element: <QuestionPage /> },
+              {
+                path: "create",
+                element: <CreateQuestionPage />,
               },
             ],
           },

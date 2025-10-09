@@ -6,6 +6,7 @@ import groupSlice from "./group/groupSlice";
 import groupPostsSlice from "./group/groupPostsSlice";
 import notificationSlice from "./user/notificationSlice";
 import reportSlice from "./report/reportSlice";
+import questionSlice from "./question/questionSlice";
 
 /*  admin side slices */
 import adminUserSlice from "./admin/admin.user";
@@ -31,6 +32,7 @@ const store = configureStore({
     notification: notificationSlice,
     groupPost: groupPostsSlice,
     report: reportSlice,
+    question: questionSlice,
   },
   devTools: import.meta.env.VITE_ENV !== "production",
 });

@@ -20,10 +20,10 @@ const UserSideBar = () => {
             <FaUsers /> Group
           </Link>
         </li>
-        <li>
-          <a>
+        <li className={`${location.pathname === "/question" ? "active" : " "} w-full`}>
+          <Link to="/question" className="btn-purple w-full">
             <FaQuestionCircle /> Questions
-          </a>
+          </Link>
         </li>
       </ul>
     </div>
