@@ -28,7 +28,27 @@ export const createQuestion = createAsyncThunk(
     }
   }
 );
-
+export const fetchQuestionDetail = createAsyncThunk(
+  "questions/fetchQuestionDetail",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/questions/${id}`);
+      console.log("QUESTION DETAIL", response);
+      return response.data.question;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+export const sendMessage = createAsyncThunk("questions/sendMessage", async ({ id, ...data }, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/questions/${id}/answer`, data);
+    console.log("SEND MESSAGE", response);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
 export const updateQuestion = createAsyncThunk(
   "questions/updateQuestion",
   async ({ id, ...data }, { rejectWithValue }) => {
@@ -62,6 +82,11 @@ const questionSlice = createSlice({
     create: {
       loading: false,
       errors: null,
+      commentLoading: false,
+    },
+    detail: {
+      loading: false,
+      data: null,
     },
     pagination: {
       perPage: 3,
@@ -97,6 +122,13 @@ const questionSlice = createSlice({
         state.create.loading = false;
         state.create.errors = null;
       })
+      .addCase(fetchQuestionDetail.fulfilled, (state, action) => {
+        state.detail.loading = false;
+        state.detail.data = action.payload;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.create.commentLoading = false;
+      })
       .addCase(updateQuestion.fulfilled, (state, action) => {
         state.loading = false;
         const idx = state.items.findIndex((q) => q.id === action.payload.question?.id || action.payload.id);
@@ -118,6 +150,12 @@ const questionSlice = createSlice({
           case "fetchQuestions":
             state.fetch.loading = true;
             break;
+          case "fetchQuestionDetail":
+            state.detail.loading = true;
+            break;
+          case "sendMessage":
+            state.create.commentLoading = true;
+            break;
         }
       })
       // Generic error matcher
@@ -130,6 +168,12 @@ const questionSlice = createSlice({
             break;
           case "fetchQuestions":
             state.fetch.loading = false;
+            break;
+          case "fetchQuestionDetail":
+            state.detail.loading = false;
+            break;
+          case "sendMessage":
+            state.create.commentLoading = false;
             break;
         }
       });

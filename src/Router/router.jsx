@@ -33,6 +33,7 @@ import AdminsPage from "../Pages/Admin/AdminsPage";
 import CreateAdminPage from "../Pages/Admin/CreateAdminPage";
 import QuestionPage from "../Pages/Dev/Questions/QuestionPage";
 import CreateQuestionPage from "../Pages/Dev/Questions/CreateQuestionPage";
+import QuestionDetailPage from "../Pages/Dev/Questions/QuestionDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -143,6 +144,10 @@ const router = createBrowserRouter([
               {
                 path: "create",
                 element: <CreateQuestionPage />,
+              },
+              {
+                path: ":id",
+                element: <QuestionDetailPage />,
               },
             ],
           },
