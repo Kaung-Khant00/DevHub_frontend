@@ -5,7 +5,8 @@ import { api } from "../../Services/axios_instance.js";
 export const fetchQuestions = createAsyncThunk("questions/fetchQuestions", async (params, { rejectWithValue }) => {
   try {
     const response = await api.get("/questions", { params });
-    return response.data;
+    console.log(response);
+    return response.data.questions;
   } catch (err) {
     return rejectWithValue(err.response?.data || err.message);
   }
@@ -52,9 +53,21 @@ export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async
 const questionSlice = createSlice({
   name: "questions",
   initialState: {
+    fetch: {
+      loading: false,
+      data: [],
+      sortBy: "created_at,desc",
+      status: null,
+    },
     create: {
       loading: false,
       errors: null,
+    },
+    pagination: {
+      perPage: 3,
+      page: 1,
+      lastPage: null,
+      sortBy: "created_at,desc",
     },
   },
   reducers: {
@@ -64,13 +77,21 @@ const questionSlice = createSlice({
     clearSelectedQuestion(state) {
       state.selected = null;
     },
+    changeStatus(state, action) {
+      state.fetch.status = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
       // Fulfilled logic (specific)
       .addCase(fetchQuestions.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = action.payload.questions || action.payload;
+        state.fetch.loading = false;
+        state.fetch.data = action.payload.data;
+        state.pagination = {
+          perPage: action.payload.per_page,
+          page: action.payload.current_page,
+          lastPage: action.payload.last_page,
+        };
       })
       .addCase(createQuestion.fulfilled, (state) => {
         state.create.loading = false;
@@ -94,6 +115,9 @@ const questionSlice = createSlice({
           case "createQuestion":
             state.create.loading = true;
             break;
+          case "fetchQuestions":
+            state.fetch.loading = true;
+            break;
         }
       })
       // Generic error matcher
@@ -104,10 +128,13 @@ const questionSlice = createSlice({
             state.create.loading = false;
             state.create.errors = action.payload;
             break;
+          case "fetchQuestions":
+            state.fetch.loading = false;
+            break;
         }
       });
   },
 });
 
-export const { setSelectedQuestion, clearSelectedQuestion } = questionSlice.actions;
+export const { setSelectedQuestion, clearSelectedQuestion, changeStatus } = questionSlice.actions;
 export default questionSlice.reducer;
