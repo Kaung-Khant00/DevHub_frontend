@@ -1,27 +1,60 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiThumbsUp, FiThumbsDown, FiUser, FiSend, FiPlusSquare, FiCheckCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { fetchQuestionDetail, sendMessage } from "../../../Redux/question/questionSlice";
+import { fetchQuestionDetail, fetchQuestionMessages, sendMessage } from "../../../Redux/question/questionSlice";
 import ImageWIthSkeleton from "../../../Components/Common/ImageWIthSkeleton";
-import CommentSection from "../../../Components/Question/CommentSection";
-import SolutionSection from "../../../Components/Question/SolutionSection";
 import Spinner from "../../../Components/Common/Spinner";
+import MessageSection from "../../../Components/Question/MessageSession";
 
 export default function QuestionDetailPage() {
   // UI state
   const [messageBody, setMessageBody] = useState("");
   const [messageType, setMessageType] = useState("solution"); // 'solution' or 'comment'
   const [tab, setTab] = useState("all");
-  const [error, setError] = useState(null);
   const { data: question, loading } = useSelector((state) => state.question.detail);
-  const { commentLoading } = useSelector((state) => state.question.create);
+  const { createCommentLoading } = useSelector((state) => state.question.create);
+  const { messageLoading, allMessages, comments, solutions, messagePagination, commentPagination, solutionPagination } =
+    useSelector((state) => state.question.messages);
   const dispatch = useDispatch();
   const { id } = useParams();
-  useEffect(() => {
-    dispatch(fetchQuestionDetail(id));
-  }, []);
+  const isFetched = useRef(false);
 
+  useEffect(() => {
+    const fetchData = () => {
+      if (!isFetched.current && !messageLoading) {
+        isFetched.current = true;
+        console.log("FETCHING MESSAGE 1 CUZ", isFetched.current);
+        dispatch(fetchQuestionDetail({ id }));
+        dispatch(fetchQuestionMessages({ id, pagination: messagePagination }));
+      }
+    };
+    fetchData();
+  }, []);
+  function handleTabChange(tabType) {
+    if (tabType !== "all") {
+      setMessageType(tabType);
+    }
+    if (tab !== tabType) {
+      setTab(tabType);
+      if (
+        (tabType === "solution" && !solutionPagination.lastPage) ||
+        (tabType === "comment" && !commentPagination.lastPage)
+      ) {
+        dispatch(
+          fetchQuestionMessages({
+            id,
+            pagination:
+              tabType === "all"
+                ? messagePagination
+                : tabType === "solution"
+                ? { ...solutionPagination, type: "solution" }
+                : { ...commentPagination, type: "comment" },
+          })
+        );
+      }
+    }
+  }
   function sendMessageApi() {
     dispatch(sendMessage({ type: messageType, id, body: messageBody }));
   }
@@ -32,19 +65,6 @@ export default function QuestionDetailPage() {
         <div className="text-center">
           <div className="loading loading-spinner loading-lg"></div>
           <div className="mt-3 text-sm text-muted">Loading question…</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="alert alert-error shadow-lg">
-          <div>
-            <FiUser />
-            <span>{error}</span>
-          </div>
         </div>
       </div>
     );
@@ -88,18 +108,22 @@ export default function QuestionDetailPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium">Add a comment</h2>
             <div className="btn-group space-x-2">
-              <button
-                className={`btn btn-sm ${messageType === "solution" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setMessageType("solution")}
-                aria-pressed={messageType === "solution"}>
-                <FiCheckCircle className="mr-2" size={18} /> Solution
-              </button>
-              <button
-                className={`btn btn-sm ${messageType === "comment" ? "btn-accent" : "btn-ghost"}`}
-                onClick={() => setMessageType("comment")}
-                aria-pressed={messageType === "comment"}>
-                <FiPlusSquare className="mr-2" size={18} /> Comment
-              </button>
+              {tab === "all" && (
+                <>
+                  <button
+                    className={`btn btn-sm ${messageType === "solution" ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => setMessageType("solution")}
+                    aria-pressed={messageType === "solution"}>
+                    <FiCheckCircle className="mr-2" size={18} /> Solution
+                  </button>
+                  <button
+                    className={`btn btn-sm ${messageType === "comment" ? "btn-accent" : "btn-ghost"}`}
+                    onClick={() => setMessageType("comment")}
+                    aria-pressed={messageType === "comment"}>
+                    <FiPlusSquare className="mr-2" size={18} /> Comment
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -126,8 +150,8 @@ export default function QuestionDetailPage() {
                 }}>
                 Reset
               </button>
-              <button onClick={sendMessageApi} className={`btn btn-primary`} disabled={commentLoading}>
-                {commentLoading ? <Spinner /> : <FiSend className="mr-2" />} Post as a{" "}
+              <button onClick={sendMessageApi} className={`btn btn-primary`} disabled={createCommentLoading}>
+                {createCommentLoading ? <Spinner /> : <FiSend className="mr-2" />} Post as a{" "}
                 {messageType === "solution" ? "Solution" : "Comment"}
               </button>
             </div>
@@ -136,25 +160,35 @@ export default function QuestionDetailPage() {
         {/*  Comments and solution section  */}
         <div className="card bg-base-100 p-4">
           <div role="tablist" className="tabs tabs-box w-fit">
-            <div role="tab" className={`tab w-24 ${tab === "all" ? "tab-active" : ""}`} onClick={() => setTab("all")}>
+            <div
+              role="tab"
+              className={`tab w-24 ${tab === "all" ? "tab-active" : ""}`}
+              onClick={() => handleTabChange("all")}>
               All
             </div>
             <div
               role="tab"
               className={`tab w-24 ${tab === "comment" ? "tab-active" : ""}`}
-              onClick={() => setTab("comment")}>
+              onClick={() => handleTabChange("comment")}>
               Comments
             </div>
             <div
               role="tab"
               className={`tab w-24 ${tab === "solution" ? "tab-active" : ""}`}
-              onClick={() => setTab("solution")}>
+              onClick={() => handleTabChange("solution")}>
               Solution
             </div>
           </div>
           <div>
-            {tab !== "solution" && <CommentSection comments={question?.comments} />}
-            {tab !== "comment" && <SolutionSection solution={question?.solutions} />}
+            <MessageSection
+              messages={tab === "all" ? allMessages : tab === "comment" ? comments : solutions}
+              messageLoading={messageLoading}
+              pagination={
+                tab === "all" ? messagePagination : tab === "comment" ? commentPagination : solutionPagination
+              }
+              type={tab}
+              id={id}
+            />
           </div>
         </div>
       </div>

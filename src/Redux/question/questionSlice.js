@@ -30,11 +30,11 @@ export const createQuestion = createAsyncThunk(
 );
 export const fetchQuestionDetail = createAsyncThunk(
   "questions/fetchQuestionDetail",
-  async (id, { rejectWithValue }) => {
+  async ({ id }, { rejectWithValue }) => {
     try {
       const response = await api.get(`/questions/${id}`);
       console.log("QUESTION DETAIL", response);
-      return response.data.question;
+      return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -49,6 +49,20 @@ export const sendMessage = createAsyncThunk("questions/sendMessage", async ({ id
     return rejectWithValue(err.response?.data || err.message);
   }
 });
+export const fetchQuestionMessages = createAsyncThunk(
+  "questions/fetchQuestionMessages",
+  async ({ id, pagination }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/questions/${id}/messages`, {
+        params: pagination,
+      });
+      console.log("QUESTION MESSAGES", response);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
 export const updateQuestion = createAsyncThunk(
   "questions/updateQuestion",
   async ({ id, ...data }, { rejectWithValue }) => {
@@ -79,10 +93,32 @@ const questionSlice = createSlice({
       sortBy: "created_at,desc",
       status: null,
     },
+    messages: {
+      messageLoading: false,
+      allMessages: [],
+      comments: [],
+      solutions: [],
+      messagePagination: {
+        perPage: 3,
+        page: 1,
+        lastPage: null,
+      },
+      commentPagination: {
+        perPage: 3,
+        page: 1,
+        lastPage: null,
+      },
+      solutionPagination: {
+        perPage: 3,
+        page: 1,
+        lastPage: null,
+      },
+      type: null,
+    },
     create: {
       loading: false,
       errors: null,
-      commentLoading: false,
+      createCommentLoading: false,
     },
     detail: {
       loading: false,
@@ -124,10 +160,35 @@ const questionSlice = createSlice({
       })
       .addCase(fetchQuestionDetail.fulfilled, (state, action) => {
         state.detail.loading = false;
-        state.detail.data = action.payload;
+        state.detail.data = action.payload.question;
+        state.create.commentLoading = false;
+      })
+      .addCase(fetchQuestionMessages.fulfilled, (state, action) => {
+        const payloadType = action.payload.type;
+        const [paginationKey, messagesKey] =
+          payloadType === "comment"
+            ? ["commentPagination", "comments"]
+            : payloadType === "solution"
+            ? ["solutionPagination", "solutions"]
+            : ["messagePagination", "allMessages"];
+
+        state.messages[paginationKey] = {
+          perPage: action.payload.messages.per_page,
+          page: action.payload.messages.current_page,
+          lastPage: action.payload.messages.last_page,
+        };
+        const incoming = action.payload.messages.data ?? [];
+        const existing = state.messages[messagesKey] ?? [];
+
+        state.messages[messagesKey] = [...existing, ...incoming];
+        state.messages.type = payloadType;
+        state.messages.messageLoading = false;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.create.commentLoading = false;
+        if (!state.messages.type || state.messages.type === action.payload.message.type) {
+          state.messages.messages = [action.payload.message, ...state.messages.messages];
+        }
+        state.create.createCommentLoading = false;
       })
       .addCase(updateQuestion.fulfilled, (state, action) => {
         state.loading = false;
@@ -154,7 +215,10 @@ const questionSlice = createSlice({
             state.detail.loading = true;
             break;
           case "sendMessage":
-            state.create.commentLoading = true;
+            state.create.createCommentLoading = true;
+            break;
+          case "fetchQuestionMessages":
+            state.messages.messageLoading = true;
             break;
         }
       })
@@ -173,7 +237,10 @@ const questionSlice = createSlice({
             state.detail.loading = false;
             break;
           case "sendMessage":
-            state.create.commentLoading = false;
+            state.create.createCommentLoading = false;
+            break;
+          case "fetchQuestionMessages":
+            state.messages.messageLoading = false;
             break;
         }
       });
