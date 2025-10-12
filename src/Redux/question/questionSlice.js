@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, isPending, isRejected } from "@reduxjs/toolkit";
 import { api } from "../../Services/axios_instance.js";
+import { toast } from "react-toastify";
 
 // Async thunks
 export const fetchQuestions = createAsyncThunk("questions/fetchQuestions", async (params, { rejectWithValue }) => {
@@ -44,6 +45,7 @@ export const sendMessage = createAsyncThunk("questions/sendMessage", async ({ id
   try {
     const response = await api.post(`/questions/${id}/answer`, data);
     console.log("SEND MESSAGE", response);
+    toast.success("Message sent successfully!");
     return response.data;
   } catch (err) {
     return rejectWithValue(err.response?.data || err.message);
@@ -79,6 +81,18 @@ export const updateQuestion = createAsyncThunk(
     }
   }
 );
+export const updateMessage = createAsyncThunk("questions/updateMessage", async ({ body, id }, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/questions/${id}/message/edit`, { body });
+    console.log(response);
+    toast.success("Message updated successfully!");
+    return response.data.data;
+  } catch (err) {
+    console.log(err);
+    toast.error("Something went wrong!");
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
 
 export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (id, { rejectWithValue }) => {
   try {
@@ -210,10 +224,14 @@ const questionSlice = createSlice({
         state.messages.messageLoading = false;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        if (!state.messages.type || state.messages.type === action.payload.message.type) {
-          state.messages.messages = [action.payload.message, ...state.messages.messages];
+        const message = action.payload.data;
+        const messageKey = message.type === "comment" ? "comments" : "solutions";
+        if (state.messages.type === "all") {
+          state.messages.allMessages = [message, ...state.messages.allMessages];
+        } else {
+          state.messages[messageKey] = [message, ...state.messages[messageKey]];
         }
-        state.create.createCommentLoading = false;
+        state.create.loading = false;
       })
       .addCase(updateQuestion.fulfilled, (state, action) => {
         state.create.loading = false;
@@ -223,6 +241,23 @@ const questionSlice = createSlice({
           state.fetch.data[idx] = action.payload.question || action.payload;
           state.detail.data = action.payload.question || action.payload;
         }
+      })
+      .addCase(updateMessage.fulfilled, (state, action) => {
+        state.messages.allMessages = state.messages.allMessages.map((message) => {
+          if (message.id === action.payload.id) {
+            return action.payload;
+          }
+          return message;
+        });
+        const messageKey = action.payload.type === "comment" ? "comments" : "solutions";
+        state.messages[messageKey] = state.messages[messageKey].map((message) => {
+          if (message.id === action.payload.id) {
+            return action.payload;
+          }
+          return message;
+        });
+        state.create.loading = false;
+        state.create.errors = null;
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.loading = false;
@@ -245,10 +280,13 @@ const questionSlice = createSlice({
             state.detail.loading = true;
             break;
           case "sendMessage":
-            state.create.createCommentLoading = true;
+            state.create.loading = true;
             break;
           case "fetchQuestionMessages":
             state.messages.messageLoading = true;
+            break;
+          case "updateMessage":
+            state.create.loading = true;
             break;
         }
       })
@@ -271,10 +309,14 @@ const questionSlice = createSlice({
             state.detail.loading = false;
             break;
           case "sendMessage":
-            state.create.createCommentLoading = false;
+            state.create.loading = false;
             break;
           case "fetchQuestionMessages":
             state.messages.messageLoading = false;
+            break;
+          case "updateMessage":
+            state.create.loading = false;
+            state.create.errors = action.payload;
             break;
         }
       });

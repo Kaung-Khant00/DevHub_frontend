@@ -1,9 +1,11 @@
 import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
 import Spinner from "../Common/Spinner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchQuestionMessages } from "../../Redux/question/questionSlice";
-const MessageSection = ({ messages = [], messageLoading, pagination, id, type }) => {
+import { BsThreeDotsVertical } from "react-icons/bs";
+const MessageSection = ({ messages = [], messageLoading, pagination, id, type, setUpdatingId, setMessageBody }) => {
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.user?.id);
   function loadMoreMessages() {
     if (pagination.page >= pagination.lastPage) return;
     dispatch(
@@ -19,34 +21,60 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type })
       {messages.map((message) => (
         <div
           key={message.id}
-          className={`border-b border-base-300 flex items-start gap-3 p-3 
+          className={`flex flex-col sm:flex-row sm:items-start gap-4 p-4 border-b border-base-300 rounded-lg 
   ${message.type === "solution" ? "bg-green-50 border-l-4 border-green-200" : "bg-base-100"}`}>
-          <img src={message.user?.profile_image_url} className="w-10 h-10 rounded-full" alt={message.user?.name} />
-          <div>{message.id}</div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm">{message.user?.name}</h3>
+          {/* Avatar */}
+          <img
+            src={message.user?.profile_image_url}
+            alt={message.user?.name}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
+          />
 
-                {/* show solution badge when type === 'solution' */}
-                {message.type === "solution" && (
-                  <span className="badge badge-sm badge-success ml-2 flex items-center gap-1">Solution</span>
-                )}
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="font-semibold text-sm truncate">{message.user?.name}</h3>
+                {message.type === "solution" && <span className="badge badge-sm badge-success">Solution</span>}
               </div>
 
-              <span className="text-xs text-gray-500">{message.created_at}</span>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <span>{message.created_at}</span>
+                {userId === message.user_id && (
+                  <div className="dropdown dropdown-end">
+                    <div tabIndex={0} role="button" className="btn btn-square m-1 btn-xs">
+                      <BsThreeDotsVertical size={20} />
+                    </div>
+                    <ul tabIndex={0} className="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                      <li>
+                        <div
+                          onClick={() => {
+                            setUpdatingId(message.id);
+                            setMessageBody(message.body);
+                          }}>
+                          Edit Message
+                        </div>
+                      </li>
+                      <li>
+                        <div>Change into {message.type === "solution" ? "comment" : "solution"}</div>
+                      </li>
+                      <li>
+                        <div className="text-error ">Delete message</div>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <p className={`mt-1 text-sm ${message.type === "solution" ? "text-gray-800" : "text-gray-700"}`}>
-              {message.body}
-            </p>
+            <p className="mt-2 text-sm text-gray-700 break-words">{message.body}</p>
 
-            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-600">
               <button className="btn btn-ghost btn-xs flex items-center gap-1">
-                <FiThumbsUp /> <span className="ml-1">{message.likes ?? 0}</span>
+                <FiThumbsUp /> <span>{message.likes ?? 0}</span>
               </button>
               <button className="btn btn-ghost btn-xs flex items-center gap-1">
-                <FiThumbsDown /> <span className="ml-1">{message.dislikes ?? 0}</span>
+                <FiThumbsDown /> <span>{message.dislikes ?? 0}</span>
               </button>
             </div>
           </div>

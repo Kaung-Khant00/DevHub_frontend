@@ -7,6 +7,7 @@ import {
   fetchQuestionMessages,
   resetMessages,
   sendMessage,
+  updateMessage,
 } from "../../../Redux/question/questionSlice";
 import ImageWIthSkeleton from "../../../Components/Common/ImageWIthSkeleton";
 import Spinner from "../../../Components/Common/Spinner";
@@ -19,13 +20,16 @@ export default function QuestionDetailPage() {
   const [messageBody, setMessageBody] = useState("");
   const [messageType, setMessageType] = useState("solution"); // 'solution' or 'comment'
   const [tab, setTab] = useState("all");
+  const [updatingId, setUpdatingId] = useState(null);
   const { data: question, loading } = useSelector((state) => state.question.detail);
-  const { createCommentLoading } = useSelector((state) => state.question.create);
+  const { loading: createCommentLoading, errors } = useSelector((state) => state.question.create);
+
   const { messageLoading, allMessages, comments, solutions, messagePagination, commentPagination, solutionPagination } =
     useSelector((state) => state.question.messages);
   const dispatch = useDispatch();
   const { id } = useParams();
   const isFetched = useRef(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const fetchData = () => {
@@ -41,6 +45,10 @@ export default function QuestionDetailPage() {
     };
     fetchData();
   }, []);
+  useEffect(() => {
+    inputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    inputRef.current.focus();
+  }, [updatingId]);
   function handleTabChange(tabType) {
     if (tabType !== "all") {
       setMessageType(tabType);
@@ -65,8 +73,14 @@ export default function QuestionDetailPage() {
       }
     }
   }
+  function updateMessageApi() {
+    dispatch(updateMessage({ body: messageBody, id: updatingId }));
+    setUpdatingId(null);
+    setMessageBody("");
+  }
   function sendMessageApi() {
     dispatch(sendMessage({ type: messageType, id, body: messageBody }));
+    setMessageBody("");
   }
 
   if (loading) {
@@ -171,6 +185,7 @@ export default function QuestionDetailPage() {
           </div>
 
           <textarea
+            ref={inputRef}
             className="textarea textarea-bordered w-full mt-4"
             rows={4}
             placeholder={
@@ -181,6 +196,7 @@ export default function QuestionDetailPage() {
             value={messageBody}
             onChange={(e) => setMessageBody(e.target.value)}
           />
+          {errors?.body && <div className="text-danger text-sm">{errors?.body}</div>}
 
           <div className="flex items-center justify-between mt-4">
             <div className="text-sm text-muted">Be respectful. Cite sources where relevant.</div>
@@ -193,9 +209,18 @@ export default function QuestionDetailPage() {
                 }}>
                 Reset
               </button>
-              <button onClick={sendMessageApi} className={`btn btn-primary`} disabled={createCommentLoading}>
-                {createCommentLoading ? <Spinner /> : <FiSend className="mr-2" />} Post as a{" "}
-                {messageType === "solution" ? "Solution" : "Comment"}
+              <button
+                onClick={() => {
+                  updatingId ? updateMessageApi() : sendMessageApi();
+                }}
+                className={`btn btn-primary`}
+                disabled={createCommentLoading}>
+                {createCommentLoading ? <Spinner /> : <FiSend className="mr-2" />}{" "}
+                {updatingId ? (
+                  <span>Update</span>
+                ) : (
+                  <span>Post as a {messageType === "solution" ? "Solution" : "Comment"}</span>
+                )}
               </button>
             </div>
           </div>
@@ -231,6 +256,8 @@ export default function QuestionDetailPage() {
               }
               type={tab}
               id={id}
+              setUpdatingId={setUpdatingId}
+              setMessageBody={setMessageBody}
             />
           </div>
         </div>
