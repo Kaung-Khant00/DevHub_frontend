@@ -93,6 +93,15 @@ export const updateMessage = createAsyncThunk("questions/updateMessage", async (
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
+export const toggleQuestionLike = createAsyncThunk("questions/toggleQuestionLike", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/questions/${id}/question/like`);
+    console.log("LIKED QUESTION", response);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
 
 export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (id, { rejectWithValue }) => {
   try {
@@ -149,6 +158,7 @@ const questionSlice = createSlice({
       lastPage: null,
       sortBy: "created_at,desc",
     },
+    likeLoading: false,
   },
   reducers: {
     setSelectedQuestion(state, action) {
@@ -259,6 +269,13 @@ const questionSlice = createSlice({
         state.create.loading = false;
         state.create.errors = null;
       })
+      .addCase(toggleQuestionLike.fulfilled, (state, action) => {
+        const idx = state.fetch.data.findIndex((q) => q.id === action.payload.question?.id);
+        if (idx !== -1) {
+          state.fetch.data[idx] = action.payload.question;
+        }
+        state.likeLoading = false;
+      })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.loading = false;
         state.items = state.items.filter((q) => q.id !== action.payload);
@@ -287,6 +304,9 @@ const questionSlice = createSlice({
             break;
           case "updateMessage":
             state.create.loading = true;
+            break;
+          case "toggleQuestionLike":
+            state.likeLoading = true;
             break;
         }
       })
@@ -317,6 +337,9 @@ const questionSlice = createSlice({
           case "updateMessage":
             state.create.loading = false;
             state.create.errors = action.payload;
+            break;
+          case "toggleQuestionLike":
+            state.likeLoading = false;
             break;
         }
       });

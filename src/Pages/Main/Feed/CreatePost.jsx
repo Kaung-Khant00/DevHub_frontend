@@ -19,7 +19,6 @@ export default function CreatePost() {
     return p.get("tab");
   }, [search]);
 
-  // if tab is empty => default behavior (all sections open on mobile)
   const isOpen = (section) => {
     return tab === section;
   };

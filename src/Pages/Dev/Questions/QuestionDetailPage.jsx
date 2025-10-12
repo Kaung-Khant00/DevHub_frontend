@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiThumbsUp, FiThumbsDown, FiUser, FiSend, FiPlusSquare, FiCheckCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import {
   fetchQuestionDetail,
   fetchQuestionMessages,
@@ -205,7 +205,6 @@ export default function QuestionDetailPage() {
                 className="btn btn-ghost"
                 onClick={() => {
                   setMessageBody("");
-                  setMessageType("solution");
                 }}>
                 Reset
               </button>

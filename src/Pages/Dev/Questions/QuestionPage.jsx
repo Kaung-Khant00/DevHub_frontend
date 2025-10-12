@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FiPlus, FiFilter, FiUser, FiClock, FiCheckCircle } from "react-icons/fi";
-import { MdThumbUpOffAlt } from "react-icons/md";
+import { useState, useEffect } from "react";
+import { FiPlus, FiFilter } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { changeStatus, fetchQuestions } from "../../../Redux/question/questionSlice";
 import Spinner from "../../../Components/Common/Spinner";
 import Pagination from "../../Admin/Pagination";
+import QuestionCard from "../../../Components/Question/QuestionCard";
 
 // DevQPage.jsx
 // Single-file React component using TailwindCSS + DaisyUI + react-icons
@@ -101,50 +101,7 @@ export default function DevQPage() {
         {/* results */}
         <div className="space-y-4">
           {questions.length > 0 ? (
-            questions.map((q) => (
-              <article
-                key={q.id}
-                className={`border-l-8 ${
-                  q.is_solved ? "border-success" : "border-gray-400"
-                } card card-compact bg-base-100 shadow-md`}>
-                <div className="card-body p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <Link
-                        to={`${q.id}`}
-                        className="text-lg font-medium hover:underline hover:text-primary underline-offset-2">
-                        {q.title}
-                      </Link>
-                      <p className="text-sm opacity-75 mt-1">{q.body}</p>
-                      <div className="w-full flex justify-between items-center">
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {q.tags &&
-                            q.tags.map((t) => (
-                              <div key={t} className="badge badge-outline badge-sm">
-                                {t}
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-right flex flex-col items-end gap-2">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <MdThumbUpOffAlt size={18} /> {q.votes}
-                        </div>
-                        <div className="flex items-center gap-1">💬 {q.question_messages_count} messages</div>
-                      </div>
-                      <div className="text-xs opacity-70 flex items-center gap-2">
-                        <span className="flex items-center gap-1">
-                          <FiClock /> {q.created_at}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            ))
+            questions.map((q) => <QuestionCard key={q.id} question={q} />)
           ) : loading ? (
             <div className="flex justify-center h-30 items-center">
               <Spinner />
