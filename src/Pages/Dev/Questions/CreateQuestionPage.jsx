@@ -1,12 +1,13 @@
-import React, { useState, useRef } from "react";
-import { FiImage, FiCode, FiX, FiSend } from "react-icons/fi";
+import { useState, useRef, useEffect } from "react";
+import { FiImage, FiX, FiSend } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { createQuestion } from "../../../Redux/question/questionSlice";
-import { useNavigate } from "react-router-dom";
+import { createQuestion, fetchQuestionDetail, updateQuestion } from "../../../Redux/question/questionSlice";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReturnBackButton from "../../../Components/Common/ReturnBackButton";
 import { FaTimes } from "react-icons/fa";
 import Spinner from "../../../Components/Common/Spinner";
+import CreateQuestionSkeleton from "../../SkeletonLoading/CreateQuestionSkeleton";
 
 // CreateQuestion.jsx
 // Requirements: TailwindCSS + DaisyUI + react-icons
@@ -23,26 +24,82 @@ export default function CreateQuestion() {
   const [tagInput, setTagInput] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isRemoveImage, setIsRemoveImage] = useState(false);
   const imageRef = useRef(null);
   const errors = useSelector((state) => state.question.create.errors || {});
   const loading = useSelector((state) => state.question.create.loading || false);
+  const editDataLoadingRef = useRef(false);
   const dispatch = useDispatch();
+  const { id } = useParams();
+  const detailQuestion = useSelector((state) => state.question.detail.data);
   // Basic client-side constraints
   const MAX_TITLE = 255;
   const MAX_BODY = 5000;
   const MAX_CODE_SNIPPET = 5000;
   const MAX_IMAGE_MB = 3; // limit upload size
 
+  useEffect(() => {
+    if (id) {
+      const fetchQuestionDetailApi = async () => {
+        editDataLoadingRef.current = true;
+        const response = await dispatch(fetchQuestionDetail({ id })).unwrap();
+        console.log("response", {
+          title: response.question.title ?? "",
+          body: response.question.body ?? "",
+          code_snippet: response.question.code_snippet ?? "",
+        });
+        setForm({
+          title: response.question.title ?? "",
+          body: response.question.body ?? "",
+          code_snippet: response.question.code_snippet ?? "",
+        });
+        setTags(response.question.tags || []);
+        setIsAnonymous(response.question.is_anonymous);
+        setImagePreview(response.question.image_url);
+        editDataLoadingRef.current = false;
+      };
+      if (detailQuestion?.id === id) {
+        setForm({
+          title: detailQuestion.title,
+          body: detailQuestion.body,
+          code_snippet: detailQuestion.code_snippet,
+        });
+        setTags(detailQuestion.tags || []);
+        setIsAnonymous(detailQuestion.is_anonymous);
+        setImagePreview(detailQuestion.image_url);
+      } else {
+        fetchQuestionDetailApi();
+      }
+    }
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      await dispatch(
-        createQuestion({ ...form, image: imageRef.current, tags, is_anonymous: isAnonymous ? 1 : 0 })
-      ).unwrap();
+      if (id) {
+        await dispatch(
+          updateQuestion({
+            data: {
+              ...form,
+              isRemoveImage,
+              image: imageRef.current,
+              tags,
+              is_anonymous: isAnonymous ? 1 : 0,
+            },
+            id,
+          })
+        ).unwrap();
+        toast.success("Question updated successfully!");
+      } else {
+        await dispatch(
+          createQuestion({ ...form, image: imageRef.current, tags, is_anonymous: isAnonymous ? 1 : 0 })
+        ).unwrap();
+        toast.success("Question created successfully!");
+      }
       navigate("/question");
-      toast.success("Question created successfully!");
     } catch {
-      toast.error("Failed to create question");
+      const message = id ? "Failed to update question" : "Failed to create question";
+      toast.error(message);
     }
   }
   function handleChange(e) {
@@ -70,15 +127,18 @@ export default function CreateQuestion() {
 
   function removeImage() {
     setImagePreview(null);
+    setIsRemoveImage(true);
     if (imageRef.current) imageRef.current = null;
   }
-
+  if (editDataLoadingRef.current) {
+    return <CreateQuestionSkeleton />;
+  }
   return (
     <div className="w-full m-5 bg-base-100 p-5 rounded">
       <div className="flex justify-between mb-3">
         <div className="flex items-center gap-3">
-          <ReturnBackButton defaultBackTo={"/questions"} />
-          <h2 className="text-lg font-semibold">Ask a question — DevHub</h2>
+          <ReturnBackButton defaultBackTo={`${id ? `/question/${id}` : "/question"}`} />
+          <h2 className="text-lg font-semibold">{id ? "Update the" : "Ask a"} question — DevHub</h2>
         </div>
         <div className="flex flex-col justify-end">
           <label className="cursor-pointer label">
@@ -164,9 +224,6 @@ export default function CreateQuestion() {
               {imagePreview ? (
                 <div className="relative">
                   <img src={imagePreview} alt="preview" className="h-32 object-contain" />
-                  <button type="button" onClick={removeImage} className="absolute top-1 right-1 btn btn-xs btn-circle">
-                    <FiX />
-                  </button>
                 </div>
               ) : (
                 <div className="flex items-center justify-center text-sm opacity-80">
@@ -213,14 +270,15 @@ export default function CreateQuestion() {
               />
               {errors.tags && <p className="text-xs text-error my-2">{errors.tags}</p>}
               <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((t, i) => (
-                  <div key={i} className="badge badge-outline py-2 px-2 flex items-center gap-2">
-                    <span className="text-sm">{t}</span>
-                    <button type="button" onClick={() => removeTag(i)} className="btn btn-ghost btn-xs">
-                      <FaTimes />
-                    </button>
-                  </div>
-                ))}
+                {tags &&
+                  tags.map((t, i) => (
+                    <div key={i} className="badge badge-outline py-2 px-2 flex items-center gap-2">
+                      <span className="text-sm">{t}</span>
+                      <button type="button" onClick={() => removeTag(i)} className="btn btn-ghost btn-xs">
+                        <FaTimes />
+                      </button>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

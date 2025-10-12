@@ -1,14 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiThumbsUp, FiThumbsDown, FiUser, FiSend, FiPlusSquare, FiCheckCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { fetchQuestionDetail, fetchQuestionMessages, sendMessage } from "../../../Redux/question/questionSlice";
+import { Link, useParams } from "react-router-dom";
+import {
+  fetchQuestionDetail,
+  fetchQuestionMessages,
+  resetMessages,
+  sendMessage,
+} from "../../../Redux/question/questionSlice";
 import ImageWIthSkeleton from "../../../Components/Common/ImageWIthSkeleton";
 import Spinner from "../../../Components/Common/Spinner";
 import MessageSection from "../../../Components/Question/MessageSession";
+import ReturnBackButton from "../../../Components/Common/ReturnBackButton";
+import { TbUserQuestion } from "react-icons/tb";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function QuestionDetailPage() {
-  // UI state
   const [messageBody, setMessageBody] = useState("");
   const [messageType, setMessageType] = useState("solution"); // 'solution' or 'comment'
   const [tab, setTab] = useState("all");
@@ -24,6 +31,9 @@ export default function QuestionDetailPage() {
     const fetchData = () => {
       if (!isFetched.current && !messageLoading) {
         isFetched.current = true;
+        if (question?.id && question?.id !== id) {
+          dispatch(resetMessages());
+        }
         console.log("FETCHING MESSAGE 1 CUZ", isFetched.current);
         dispatch(fetchQuestionDetail({ id }));
         dispatch(fetchQuestionMessages({ id, pagination: messagePagination }));
@@ -73,27 +83,45 @@ export default function QuestionDetailPage() {
   return (
     <div className="min-h-screen bg-base-200 py-8 px-4 sm:px-6 lg:px-12 w-full">
       <div className="w-full">
+        <ReturnBackButton defaultBackTo="/question" />
         {/* Header */}
         <div className="card bg-base-100 shadow-md p-6 mb-6">
           <div className="flex items-start gap-4">
             <div className="avatar">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <ImageWIthSkeleton
-                  src={question?.user?.profile_image_url}
-                  alt="avatar"
-                  className={"w-15 h-15 rounded-full"}
-                />
+              <div className="w-15 h-15 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                {question?.is_anonymous ? (
+                  <div className="flex justify-center items-center w-full h-full bg-base-300">
+                    <TbUserQuestion size={24} />
+                  </div>
+                ) : (
+                  <ImageWIthSkeleton
+                    src={question?.user?.profile_image_url}
+                    alt="avatar"
+                    className={"w-full h-full rounded-full"}
+                  />
+                )}
               </div>
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-semibold leading-tight">{question?.title}</h1>
               <div className="mt-2 text-sm text-muted">
-                Posted by {question?.author?.name ?? "Anonymous"} • {question?.created_at}
+                Posted by {question?.user?.name ?? "Anonymous"} • {question?.created_at}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="badge badge-outline">ID #{question?.id}</div>
               {question?.is_anonymous && <div className="badge badge-warning">Anonymous</div>}
+              {question?.is_owner && (
+                <div className="dropdown dropdown-end">
+                  <div tabIndex={0} role="button" className="btn btn-circle m-1">
+                    <BsThreeDotsVertical size={20} />
+                  </div>
+                  <ul tabIndex={0} className="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                    <li>
+                      <Link to={`/question/${question?.id}/edit`}>Edit Question</Link>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
@@ -101,6 +129,21 @@ export default function QuestionDetailPage() {
             {/* You may want to sanitize/convert Markdown on real app */}
             <p style={{ whiteSpace: "pre-wrap" }}>{question?.body}</p>
           </div>
+          <div className="relative max-w-96 my-2">
+            <ImageWIthSkeleton src={question?.image_url} alt="question image" className={"w-full h-full peer"} />
+            <a
+              href={question?.image_url}
+              target="_black"
+              className="absolute inset-0 peer-hover:bg-black/70 peer-hover:flex hover:flex justify-center backdrop-blur-md items-center hidden">
+              <div className="text-white">View Image</div>
+            </a>
+          </div>
+          {question?.code_snippet && (
+            <div className="p-2 rounded bg-gray-100">
+              <span className="text-sm text-gray-500 ps-2">Code Snippet</span>
+              <pre>{question?.code_snippet}</pre>
+            </div>
+          )}
         </div>
 
         {/* Comment composer */}

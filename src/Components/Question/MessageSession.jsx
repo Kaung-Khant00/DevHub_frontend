@@ -65,7 +65,13 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type })
               </button>
             </div>
           ) : (
-            <div className="m-3 my-5 text-center tracking-wider">-- -- -- End -- -- -- </div>
+            <>
+              {messages.length === 0 ? (
+                <div className="flex justify-center items-center h-10">No messages</div>
+              ) : (
+                <div className="m-3 my-5 text-center tracking-wider">-- -- -- End -- -- -- </div>
+              )}
+            </>
           )}
         </>
       )}

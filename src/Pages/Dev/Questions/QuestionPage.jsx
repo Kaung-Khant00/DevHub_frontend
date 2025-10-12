@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FiPlus, FiFilter, FiUser, FiClock, FiCheckCircle } from "react-icons/fi";
 import { MdThumbUpOffAlt } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,13 +15,19 @@ export default function DevQPage() {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const pagination = useSelector((state) => state.question.pagination);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(pagination.page || 1);
   const { data: questions, loading, sortBy, status } = useSelector((state) => state.question.fetch);
-
+  console.log("CHECKING PAGE NO.", page);
   useEffect(() => {
-    console.log("FETCHING QUESTION");
-    dispatch(fetchQuestions({ perPage: pagination.perPage, page, searchQuery, status, sortBy }));
+    if (questions) {
+      dispatch(fetchQuestions({ perPage: pagination.perPage, page, searchQuery, status, sortBy }));
+    }
   }, [status, sortBy, page]);
+  useEffect(() => {
+    if (!questions) {
+      dispatch(fetchQuestions({ perPage: pagination.perPage, page: 1, searchQuery, status, sortBy }));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen p-6 bg-base-200 w-full">
@@ -104,9 +110,11 @@ export default function DevQPage() {
                 <div className="card-body p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-lg font-medium hover:underline hover:text-primary underline-offset-2">
+                      <Link
+                        to={`${q.id}`}
+                        className="text-lg font-medium hover:underline hover:text-primary underline-offset-2">
                         {q.title}
-                      </h3>
+                      </Link>
                       <p className="text-sm opacity-75 mt-1">{q.body}</p>
                       <div className="w-full flex justify-between items-center">
                         <div className="mt-3 flex flex-wrap gap-2">
@@ -125,7 +133,7 @@ export default function DevQPage() {
                         <div className="flex items-center gap-1">
                           <MdThumbUpOffAlt size={18} /> {q.votes}
                         </div>
-                        <div className="flex items-center gap-1">💬 {q.answers} answers</div>
+                        <div className="flex items-center gap-1">💬 {q.question_messages_count} messages</div>
                       </div>
                       <div className="text-xs opacity-70 flex items-center gap-2">
                         <span className="flex items-center gap-1">

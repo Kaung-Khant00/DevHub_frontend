@@ -149,6 +149,10 @@ const router = createBrowserRouter([
                 path: ":id",
                 element: <QuestionDetailPage />,
               },
+              {
+                path: ":id/edit",
+                element: <CreateQuestionPage />,
+              },
             ],
           },
         ],

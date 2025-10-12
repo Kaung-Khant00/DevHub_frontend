@@ -65,12 +65,17 @@ export const fetchQuestionMessages = createAsyncThunk(
 );
 export const updateQuestion = createAsyncThunk(
   "questions/updateQuestion",
-  async ({ id, ...data }, { rejectWithValue }) => {
+  async ({ id, data }, { rejectWithValue }) => {
+    console.log("REQUEST", data);
     try {
-      const response = await api.put(`/questions/${id}`, data);
+      const response = await api.post(`/questions/${id}/edit`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(err.response?.data.errors || err.message);
     }
   }
 );
@@ -141,6 +146,26 @@ const questionSlice = createSlice({
     changeStatus(state, action) {
       state.fetch.status = action.payload;
     },
+    resetMessages(state) {
+      state.messages.allMessages = [];
+      state.messages.comments = [];
+      state.messages.solutions = [];
+      state.messages.messagePagination = {
+        perPage: 3,
+        page: 1,
+        lastPage: null,
+      };
+      state.messages.commentPagination = {
+        perPage: 3,
+        page: 1,
+        lastPage: null,
+      };
+      state.messages.solutionPagination = {
+        perPage: 3,
+        page: 1,
+        lastPage: null,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -191,10 +216,12 @@ const questionSlice = createSlice({
         state.create.createCommentLoading = false;
       })
       .addCase(updateQuestion.fulfilled, (state, action) => {
-        state.loading = false;
-        const idx = state.items.findIndex((q) => q.id === action.payload.question?.id || action.payload.id);
+        state.create.loading = false;
+        state.create.errors = null;
+        const idx = state.fetch.data.findIndex((q) => q.id === action.payload.question?.id || action.payload.id);
         if (idx !== -1) {
-          state.items[idx] = action.payload.question || action.payload;
+          state.fetch.data[idx] = action.payload.question || action.payload;
+          state.detail.data = action.payload.question || action.payload;
         }
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
@@ -206,6 +233,9 @@ const questionSlice = createSlice({
         const actionName = action.type.split("/")[1];
         switch (actionName) {
           case "createQuestion":
+            state.create.loading = true;
+            break;
+          case "updateQuestion":
             state.create.loading = true;
             break;
           case "fetchQuestions":
@@ -230,6 +260,10 @@ const questionSlice = createSlice({
             state.create.loading = false;
             state.create.errors = action.payload;
             break;
+          case "updateQuestion":
+            state.create.loading = false;
+            state.create.errors = action.payload;
+            break;
           case "fetchQuestions":
             state.fetch.loading = false;
             break;
@@ -247,5 +281,5 @@ const questionSlice = createSlice({
   },
 });
 
-export const { setSelectedQuestion, clearSelectedQuestion, changeStatus } = questionSlice.actions;
+export const { setSelectedQuestion, clearSelectedQuestion, changeStatus, resetMessages } = questionSlice.actions;
 export default questionSlice.reducer;
