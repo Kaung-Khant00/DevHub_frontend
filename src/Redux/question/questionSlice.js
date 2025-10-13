@@ -103,6 +103,27 @@ export const toggleQuestionLike = createAsyncThunk("questions/toggleQuestionLike
   }
 });
 
+export const toggleMessageLike = createAsyncThunk("questions/toggleMessageLike", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/questions/${id}/message/like`);
+    console.log("LIKED MESSAGE", response);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
+export const toggleMessageDislike = createAsyncThunk(
+  "questions/toggleMessageDislike",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/questions/${id}/message/dislike`);
+      console.log("DISLIKED MESSAGE", response);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
 export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (id, { rejectWithValue }) => {
   try {
     await api.delete(`/questions/${id}`);
@@ -275,6 +296,54 @@ const questionSlice = createSlice({
           state.fetch.data[idx] = action.payload.question;
         }
         state.likeLoading = false;
+      })
+      .addCase(toggleMessageDislike.fulfilled, (state, action) => {
+        const message = action.payload.data;
+        const messageKey = message.type === "comment" ? "comments" : "solutions";
+        state.messages[messageKey] = state.messages[messageKey].map((m) => {
+          if (message.id === m.id) {
+            return {
+              ...message,
+              disliked_by_user: action.payload.is_liked === "disliked" ? true : false,
+              liked_by_user: action.payload.is_liked === "liked" ? true : false,
+            };
+          }
+          return m;
+        });
+        state.messages.allMessages = state.messages.allMessages.map((m) => {
+          if (message.id === m.id) {
+            return {
+              ...message,
+              disliked_by_user: action.payload.is_liked === "disliked" ? true : false,
+              liked_by_user: action.payload.is_liked === "liked" ? true : false,
+            };
+          }
+          return m;
+        });
+      })
+      .addCase(toggleMessageLike.fulfilled, (state, action) => {
+        const message = action.payload.data;
+        const messageKey = message.type === "comment" ? "comments" : "solutions";
+        state.messages[messageKey] = state.messages[messageKey].map((m) => {
+          if (message.id === m.id) {
+            return {
+              ...message,
+              disliked_by_user: action.payload.is_liked === "disliked" ? true : false,
+              liked_by_user: action.payload.is_liked === "liked" ? true : false,
+            };
+          }
+          return m;
+        });
+        state.messages.allMessages = state.messages.allMessages.map((m) => {
+          if (message.id === m.id) {
+            return {
+              ...message,
+              disliked_by_user: action.payload.is_liked === "disliked" ? true : false,
+              liked_by_user: action.payload.is_liked === "liked" ? true : false,
+            };
+          }
+          return m;
+        });
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.loading = false;

@@ -1,8 +1,9 @@
 import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
 import Spinner from "../Common/Spinner";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchQuestionMessages } from "../../Redux/question/questionSlice";
+import { fetchQuestionMessages, toggleMessageDislike, toggleMessageLike } from "../../Redux/question/questionSlice";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdOutlineThumbDownOffAlt, MdOutlineThumbUpOffAlt, MdThumbDown, MdThumbUp } from "react-icons/md";
 const MessageSection = ({ messages = [], messageLoading, pagination, id, type, setUpdatingId, setMessageBody }) => {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.user?.id);
@@ -15,7 +16,12 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type, s
       })
     );
   }
-
+  function toggleMessageLikeApi(messageId) {
+    dispatch(toggleMessageLike(messageId));
+  }
+  function toggleMessageDislikeApi(messageId) {
+    dispatch(toggleMessageDislike(messageId));
+  }
   return (
     <div className="w-full p-4">
       {messages.map((message) => (
@@ -70,11 +76,20 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type, s
             <p className="mt-2 text-sm text-gray-700 break-words">{message.body}</p>
 
             <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-600">
-              <button className="btn btn-ghost btn-xs flex items-center gap-1">
-                <FiThumbsUp /> <span>{message.likes ?? 0}</span>
+              <button
+                onClick={() => {
+                  toggleMessageLikeApi(message.id);
+                }}
+                className="btn btn-ghost btn-sm flex items-center gap-1">
+                {message.liked_by_user ? <MdThumbUp /> : <MdOutlineThumbUpOffAlt />} <span>{message.likes ?? 0}</span>
               </button>
-              <button className="btn btn-ghost btn-xs flex items-center gap-1">
-                <FiThumbsDown /> <span>{message.dislikes ?? 0}</span>
+              <button
+                onClick={() => {
+                  toggleMessageDislikeApi(message.id);
+                }}
+                className="btn btn-ghost btn-sm flex items-center gap-1">
+                {message.disliked_by_user ? <MdThumbDown /> : <MdOutlineThumbDownOffAlt />}{" "}
+                <span>{message.dislikes ?? 0}</span>
               </button>
             </div>
           </div>
