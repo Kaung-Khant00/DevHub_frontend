@@ -133,6 +133,15 @@ export const changeMessageType = createAsyncThunk("questions/changeMessageType",
     return rejectWithValue(err.response?.data || err.message);
   }
 });
+export const deleteMessage = createAsyncThunk("questions/deleteMessage", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.delete(`/questions/${id}/message`);
+    toast.success("Message deleted successfully!");
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
 export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (id, { rejectWithValue }) => {
   try {
     await api.delete(`/questions/${id}`);
@@ -150,6 +159,7 @@ const questionSlice = createSlice({
       data: [],
       sortBy: "created_at,desc",
       status: null,
+      deleteLoading: false,
     },
     messages: {
       messageLoading: false,
@@ -395,6 +405,12 @@ const questionSlice = createSlice({
           }
           return true;
         });
+      })
+      .addCase(deleteMessage.fulfilled, (state, action) => {
+        const message = action.payload.data;
+        const messageKey = message.type === "comment" ? "comments" : "solutions";
+        state.messages[messageKey] = state.messages[messageKey].filter((m) => m.id !== message.id);
+        state.messages.allMessages = state.messages.allMessages.filter((m) => m.id !== message.id);
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
         state.loading = false;

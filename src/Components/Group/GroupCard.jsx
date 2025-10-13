@@ -55,7 +55,7 @@ export default function GroupCard({ group }) {
                 {group?.members_count}
               </div>
               <div className="text-primary flex gap-2">
-                <HiOutlineDocumentText size={18} /> 10
+                <HiOutlineDocumentText size={18} /> {group?.posts_count}
               </div>
             </div>
             <div className="space-x-2">

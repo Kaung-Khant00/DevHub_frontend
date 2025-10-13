@@ -19,9 +19,14 @@ export const createGroup = createAsyncThunk("group/createGroup", async (groupDat
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
-export const fetchGroups = createAsyncThunk("group/fetchGroups", async (id, { rejectWithValue }) => {
+export const fetchGroups = createAsyncThunk("group/fetchGroups", async ({ sortBy, query }, { rejectWithValue }) => {
   try {
-    const response = await api.get(`groups`);
+    const response = await api.get(`groups`, {
+      params: {
+        sortBy,
+        query,
+      },
+    });
     console.log(response);
     return response.data.groups;
   } catch (err) {
@@ -29,23 +34,7 @@ export const fetchGroups = createAsyncThunk("group/fetchGroups", async (id, { re
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
-export const fetchGroupWithSearchQuery = createAsyncThunk(
-  "group/fetchGroupWithSearchQuery",
-  async (query, { rejectWithValue }) => {
-    try {
-      const response = await api.get(`groups`, {
-        params: {
-          search: query,
-        },
-      });
-      console.log("fetchGroupWithSearchQuery", response);
-      return response.data.groups;
-    } catch (err) {
-      console.log(err);
-      return rejectWithValue(err.response?.data?.errors || err.message);
-    }
-  }
-);
+
 export const fetchGroupDetail = createAsyncThunk("group/fetchGroupDetail", async (id, { rejectWithValue }) => {
   try {
     const response = await api.get(`groups/${id}`);
@@ -147,10 +136,6 @@ const groupSlice = createSlice({
             : state.detail.data.members_count - 1;
         }
       })
-      .addCase(fetchGroupWithSearchQuery.fulfilled, (state, action) => {
-        state.fetch.loading = false;
-        state.fetch.data = action.payload;
-      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
 
@@ -164,9 +149,6 @@ const groupSlice = createSlice({
             break;
           case "fetchGroupDetail":
             state.detail.loading = false;
-            break;
-          case "fetchGroupWithSearchQuery":
-            state.fetch.loading = false;
             break;
           default:
             break;
@@ -184,9 +166,6 @@ const groupSlice = createSlice({
             break;
           case "fetchGroupDetail":
             state.detail.loading = true;
-            break;
-          case "fetchGroupWithSearchQuery":
-            state.fetch.loading = true;
             break;
           default:
             break;

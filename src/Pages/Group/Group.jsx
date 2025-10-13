@@ -4,26 +4,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchGroupRequest } from "../../Redux/user/notificationSlice";
 import GroupContainer from "../../Components/Group/GroupContainer";
-import { fetchGroups, fetchGroupWithSearchQuery } from "../../Redux/group/groupSlice";
+import { fetchGroups } from "../../Redux/group/groupSlice";
 
 export default function GroupsPage() {
   const groupCreationRequests = useSelector((state) => state.notification.groupRequest.data);
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const searchingGroupRef = useRef(false);
+  const groupLoading = useSelector((state) => state.group.fetch.loading);
 
   function searchGroupApi() {
-    searchingGroupRef.current = true;
-    dispatch(fetchGroupWithSearchQuery(searchQuery));
+    dispatch(fetchGroups({ searchQuery }));
   }
 
   useEffect(() => {
     if (groupCreationRequests.length === 0) {
       dispatch(fetchGroupRequest());
     }
-  }, []);
-  useEffect(() => {
-    dispatch(fetchGroups());
+    dispatch(fetchGroups({}));
   }, []);
 
   return (
@@ -36,9 +33,6 @@ export default function GroupsPage() {
         </div>
 
         <div className="flex gap-2 items-center">
-          <button className="btn btn-outline btn-sm">
-            <FaSlidersH className="mr-2" /> Filters
-          </button>
           <Link to={"/group/requests"} className="btn btn-primary btn-outline btn-sm">
             Your Requests (<b>{groupCreationRequests.length || 0}</b>)
           </Link>
@@ -83,17 +77,19 @@ export default function GroupsPage() {
             </div>
 
             <div className="hidden sm:flex items-center gap-2">
-              <select defaultValue="Sort By" className="select">
+              <select
+                defaultValue="Sort By"
+                className="select"
+                onChange={(e) => dispatch(fetchGroups({ sortBy: e.target.value }))}>
                 <option disabled>Sort By</option>
-                <option value="popular">Most members</option>
-                <option value="newest">Newest</option>
-                <option value="alphabet">A-Z</option>
+                <option value="members_count,desc">Most members</option>
+                <option value="posts_count,desc">Most posts</option>
               </select>
             </div>
           </div>
         </div>
       </div>
-      <GroupContainer searchingGroup={searchingGroupRef || false} />
+      <GroupContainer groupLoading={groupLoading} />
     </div>
   );
 }

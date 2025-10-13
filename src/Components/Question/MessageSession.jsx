@@ -1,8 +1,8 @@
-import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
 import Spinner from "../Common/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changeMessageType,
+  deleteMessage,
   fetchQuestionMessages,
   toggleMessageDislike,
   toggleMessageLike,
@@ -30,6 +30,7 @@ const MessageSection = ({
       })
     );
   }
+  const deleteLoading = useSelector((state) => state.question.messages.deleteLoading);
   function toggleMessageLikeApi(messageId) {
     dispatch(toggleMessageLike(messageId));
   }
@@ -38,6 +39,9 @@ const MessageSection = ({
   }
   function changeMessageTypeApi(messageId) {
     dispatch(changeMessageType(messageId));
+  }
+  function deleteMessageApi(messageId) {
+    dispatch(deleteMessage(messageId));
   }
   return (
     <div className="w-full p-4">
@@ -87,7 +91,14 @@ const MessageSection = ({
                         </button>
                       </li>
                       <li>
-                        <div className="text-error ">Delete message</div>
+                        <button
+                          onClick={() => {
+                            deleteMessageApi(message.id);
+                          }}
+                          disabled={deleteLoading}
+                          className="text-error ">
+                          {deleteLoading && <Spinner />}Delete message
+                        </button>
                       </li>
                     </ul>
                   </div>
