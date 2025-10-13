@@ -1,10 +1,24 @@
 import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
 import Spinner from "../Common/Spinner";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchQuestionMessages, toggleMessageDislike, toggleMessageLike } from "../../Redux/question/questionSlice";
+import {
+  changeMessageType,
+  fetchQuestionMessages,
+  toggleMessageDislike,
+  toggleMessageLike,
+} from "../../Redux/question/questionSlice";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdOutlineThumbDownOffAlt, MdOutlineThumbUpOffAlt, MdThumbDown, MdThumbUp } from "react-icons/md";
-const MessageSection = ({ messages = [], messageLoading, pagination, id, type, setUpdatingId, setMessageBody }) => {
+const MessageSection = ({
+  messages = [],
+  messageLoading,
+  pagination,
+  id,
+  type,
+  setUpdatingId,
+  setMessageBody,
+  sortBy,
+}) => {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.user?.id);
   function loadMoreMessages() {
@@ -12,7 +26,7 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type, s
     dispatch(
       fetchQuestionMessages({
         id,
-        pagination: { ...pagination, page: pagination.page + 1, type: type === "all" ? null : type },
+        pagination: { ...pagination, page: pagination.page + 1, type: type === "all" ? null : type, sortBy },
       })
     );
   }
@@ -21,6 +35,9 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type, s
   }
   function toggleMessageDislikeApi(messageId) {
     dispatch(toggleMessageDislike(messageId));
+  }
+  function changeMessageTypeApi(messageId) {
+    dispatch(changeMessageType(messageId));
   }
   return (
     <div className="w-full p-4">
@@ -62,7 +79,12 @@ const MessageSection = ({ messages = [], messageLoading, pagination, id, type, s
                         </div>
                       </li>
                       <li>
-                        <div>Change into {message.type === "solution" ? "comment" : "solution"}</div>
+                        <button
+                          onClick={() => {
+                            changeMessageTypeApi(message.id);
+                          }}>
+                          Change into {message.type === "solution" ? "comment" : "solution"}
+                        </button>
                       </li>
                       <li>
                         <div className="text-error ">Delete message</div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiThumbsUp, FiThumbsDown, FiUser, FiSend, FiPlusSquare, FiCheckCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   fetchQuestionDetail,
   fetchQuestionMessages,
@@ -20,6 +20,7 @@ export default function QuestionDetailPage() {
   const [messageBody, setMessageBody] = useState("");
   const [messageType, setMessageType] = useState("solution"); // 'solution' or 'comment'
   const [tab, setTab] = useState("all");
+  const [sortBy, setSortBy] = useState("created_at,desc");
   const [updatingId, setUpdatingId] = useState(null);
   const { data: question, loading } = useSelector((state) => state.question.detail);
   const { loading: createCommentLoading, errors } = useSelector((state) => state.question.create);
@@ -40,7 +41,7 @@ export default function QuestionDetailPage() {
         }
         console.log("FETCHING MESSAGE 1 CUZ", isFetched.current);
         dispatch(fetchQuestionDetail({ id }));
-        dispatch(fetchQuestionMessages({ id, pagination: messagePagination }));
+        dispatch(fetchQuestionMessages({ id, pagination: { ...messagePagination, sortBy } }));
       }
     };
     fetchData();
@@ -64,10 +65,10 @@ export default function QuestionDetailPage() {
             id,
             pagination:
               tabType === "all"
-                ? messagePagination
+                ? { ...messagePagination, sortBy }
                 : tabType === "solution"
-                ? { ...solutionPagination, type: "solution" }
-                : { ...commentPagination, type: "comment" },
+                ? { ...solutionPagination, sortBy, type: "solution" }
+                : { ...commentPagination, sortBy, type: "comment" },
           })
         );
       }
@@ -82,7 +83,20 @@ export default function QuestionDetailPage() {
     dispatch(sendMessage({ type: messageType, id, body: messageBody }));
     setMessageBody("");
   }
-
+  function handleSortChangeApi(sortBy) {
+    setSortBy(sortBy);
+    dispatch(
+      fetchQuestionMessages({
+        id,
+        pagination:
+          tab === "all"
+            ? { ...messagePagination, page: 1, sortBy }
+            : tab === "solution"
+            ? { ...solutionPagination, page: 1, type: "solution", sortBy }
+            : { ...commentPagination, page: 1, type: "comment", sortBy },
+      })
+    );
+  }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 w-full">
@@ -226,25 +240,34 @@ export default function QuestionDetailPage() {
         </div>
         {/*  Comments and solution section  */}
         <div className="card bg-base-100 p-4">
-          <div role="tablist" className="tabs tabs-box w-fit">
-            <div
-              role="tab"
-              className={`tab w-24 ${tab === "all" ? "tab-active" : ""}`}
-              onClick={() => handleTabChange("all")}>
-              All
+          <div className="flex justify-between">
+            <div role="tablist" className="tabs tabs-box w-fit">
+              <div
+                role="tab"
+                className={`tab w-24 ${tab === "all" ? "tab-active" : ""}`}
+                onClick={() => handleTabChange("all")}>
+                All
+              </div>
+              <div
+                role="tab"
+                className={`tab w-24 ${tab === "comment" ? "tab-active" : ""}`}
+                onClick={() => handleTabChange("comment")}>
+                Comments
+              </div>
+              <div
+                role="tab"
+                className={`tab w-24 ${tab === "solution" ? "tab-active" : ""}`}
+                onClick={() => handleTabChange("solution")}>
+                Solution
+              </div>
             </div>
-            <div
-              role="tab"
-              className={`tab w-24 ${tab === "comment" ? "tab-active" : ""}`}
-              onClick={() => handleTabChange("comment")}>
-              Comments
-            </div>
-            <div
-              role="tab"
-              className={`tab w-24 ${tab === "solution" ? "tab-active" : ""}`}
-              onClick={() => handleTabChange("solution")}>
-              Solution
-            </div>
+            <select className="select" onChange={(e) => handleSortChangeApi(e.target.value)}>
+              <option value="created_at,desc" selected>
+                Latest
+              </option>
+              <option value="created_at,asc">Oldest</option>
+              <option value="likes,desc">Most Liked</option>
+            </select>
           </div>
           <div>
             <MessageSection
@@ -257,6 +280,7 @@ export default function QuestionDetailPage() {
               id={id}
               setUpdatingId={setUpdatingId}
               setMessageBody={setMessageBody}
+              sortBy={sortBy}
             />
           </div>
         </div>

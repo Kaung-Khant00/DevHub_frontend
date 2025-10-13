@@ -59,7 +59,7 @@ export const fetchQuestionMessages = createAsyncThunk(
         params: pagination,
       });
       console.log("QUESTION MESSAGES", response);
-      return response.data;
+      return { ...response.data, sortBy: pagination.sortBy };
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -124,6 +124,15 @@ export const toggleMessageDislike = createAsyncThunk(
     }
   }
 );
+export const changeMessageType = createAsyncThunk("questions/changeMessageType", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.put(`/questions/${id}/message/changeType`);
+    console.log("CHANGE MESSAGE TYPE", response);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
 export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (id, { rejectWithValue }) => {
   try {
     await api.delete(`/questions/${id}`);
@@ -249,9 +258,13 @@ const questionSlice = createSlice({
         };
         const incoming = action.payload.messages.data ?? [];
         const existing = state.messages[messagesKey] ?? [];
-
-        state.messages[messagesKey] = [...existing, ...incoming];
+        console.log("CHECK", action.payload);
+        state.messages[messagesKey] =
+          state.fetch.sortBy === action.payload.sortBy || !action.payload.sortBy
+            ? [...existing, ...incoming]
+            : incoming;
         state.messages.type = payloadType;
+        state.fetch.sortBy = action.payload.sortBy;
         state.messages.messageLoading = false;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
@@ -343,6 +356,44 @@ const questionSlice = createSlice({
             };
           }
           return m;
+        });
+      })
+      .addCase(changeMessageType.fulfilled, (state, action) => {
+        const message = action.payload.data;
+        state.messages.allMessages = state.messages.allMessages.map((m) => {
+          if (m.id === message.id) {
+            return {
+              ...m,
+              type: message.type,
+            };
+          }
+          return m;
+        });
+        /*         const [firstKey, secondKey] =
+          message.type === "comment" ? ["solutions", "comments"] : ["comments", "solutions"];
+        state.messages[firstKey] = state.messages[firstKey].filter((m) => {
+          if (m.id === message.id) {
+            state.messages[secondKey] = [{ ...m, type: message.type }, ...state.messages[secondKey]];
+            return false;
+          }
+          return true;
+        }); */
+        const messageKey = message.type === "comment" ? "solutions" : "comments";
+        state.messages[messageKey] = state.messages[messageKey].filter((m) => {
+          state.messages.commentPagination = {
+            ...state.messages.commentPagination,
+            page: 1,
+            lastPage: null,
+          };
+          state.messages.solutionPagination = {
+            ...state.messages.solutionPagination,
+            page: 1,
+            lastPage: null,
+          };
+          if (m.id === message.id) {
+            return false;
+          }
+          return true;
         });
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
