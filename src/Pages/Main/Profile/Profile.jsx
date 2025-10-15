@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { FaMapMarkerAlt, FaEdit, FaCog, FaShareAlt, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, fetchUserPosts } from "../../../Redux/user/userSlice";
+import { fetchUserPosts, fetchUserProfile } from "../../../Redux/user/userSlice";
 import { Link } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "./ProfileAbout";
@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     dispatch(fetchUserPosts());
-    dispatch(fetchUser());
+    dispatch(fetchUserProfile());
   }, []);
   return (
     <div className="w-full flex-1">
@@ -55,6 +55,11 @@ export default function ProfilePage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h1 className="text-2xl md:text-3xl font-semibold">{user.name || "—"}</h1>
+                      {user?.gender && (
+                        <div className={`badge ${user?.gender === "male" ? "badge-primary" : "badge-secondary"}`}>
+                          {user?.gender}
+                        </div>
+                      )}
                       {user.role && (
                         <div className="badge badge-primary badge-outline gap-1">
                           <FaCheckCircle size={14} /> {user.role}
@@ -81,9 +86,9 @@ export default function ProfilePage() {
                     <Link to="/profile/edit" className="btn btn-primary btn-sm gap-2">
                       <FaEdit size={16} /> Edit profile
                     </Link>
-                    <button className="btn btn-outline btn-sm gap-2">
+                    {/*   <button className="btn btn-outline btn-sm gap-2">
                       <FaShareAlt size={16} /> Share
-                    </button>
+                    </button> 
                     <div className="dropdown dropdown-end">
                       <div tabIndex={0} role="button" className="btn btn-sm btn-ghost">
                         <FaCog size={18} />
@@ -100,6 +105,7 @@ export default function ProfilePage() {
                         </li>
                       </ul>
                     </div>
+                    */}
                   </div>
                 </div>
 
@@ -112,8 +118,6 @@ export default function ProfilePage() {
                     <Stat value={user?.groups_count} label="Joined Groups" />
                   </div>
                 </div>
-
-                <ProfileQuickLink />
               </div>
             </div>
           </div>

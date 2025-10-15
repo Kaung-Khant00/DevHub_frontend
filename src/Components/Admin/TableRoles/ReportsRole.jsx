@@ -2,6 +2,8 @@ import { AiOutlineFileSearch } from "react-icons/ai";
 import { AiOutlineDelete } from "react-icons/ai";
 import ImageWIthSkeleton from "../../Common/ImageWIthSkeleton";
 import { Link } from "react-router-dom";
+/* import { useDispatch } from "react-redux";
+import { deleteReport } from "../../../Redux/admin/admin.reports"; */
 
 const ReportsRole = ({ report }) => {
   const statusColor =
@@ -10,6 +12,10 @@ const ReportsRole = ({ report }) => {
       : report?.status === "resolved"
       ? "badge badge-success"
       : "badge badge-error";
+  /*   const dispatch = useDispatch();
+  function deleteReportApi() {
+    dispatch(deleteReport(report.id));
+  } */
   return (
     <tr key={report.id} className="hover:bg-base-300">
       <th>
@@ -22,9 +28,11 @@ const ReportsRole = ({ report }) => {
       <td>
         <div className="flex items-center gap-3">
           <div className="avatar">
-            <div className="mask mask-squircle h-15 w-15">
-              <ImageWIthSkeleton src={report.reportable.image_url} />
-            </div>
+            {report.reportable.image_url && (
+              <div className="mask mask-squircle h-15 w-15">
+                <ImageWIthSkeleton src={report.reportable.image_url} />
+              </div>
+            )}
           </div>
           <div>
             <div className="font-bold">{report.reportable.title}</div>
@@ -46,11 +54,11 @@ const ReportsRole = ({ report }) => {
             <AiOutlineFileSearch size={20} />
           </Link>
         </div>
-        <div className="tooltip tooltip-error " data-tip="Delete the report">
-          <button className="btn btn-square btn-error btn-soft hover:text-white">
+        {/*         <div className="tooltip tooltip-error " data-tip="Delete the report">
+          <button onClick={deleteReportApi} className="btn btn-square btn-error btn-soft hover:text-white">
             <AiOutlineDelete size={20} />
           </button>
-        </div>
+        </div> */}
       </td>
     </tr>
   );

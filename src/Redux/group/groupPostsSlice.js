@@ -107,7 +107,7 @@ const initialState = {
   pagination: {
     current_page: 1,
     last_page: 1,
-    per_page: 1,
+    per_page: 5,
     total: null,
   },
   detail: {
@@ -120,7 +120,7 @@ const initialState = {
     pagination: {
       current_page: 1,
       last_page: 1,
-      per_page: 1,
+      per_page: 10,
       total: null,
     },
     createLoading: false,
@@ -132,7 +132,16 @@ const initialState = {
 const groupPostsSlice = createSlice({
   name: "groupPosts",
   initialState,
-  reducers: {},
+  reducers: {
+    resetPostPagination: (state) => {
+      state.pagination = {
+        current_page: 1,
+        last_page: 1,
+        per_page: 5,
+        total: null,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchGroupPosts.fulfilled, (state, action) => {
@@ -254,5 +263,5 @@ const groupPostsSlice = createSlice({
       });
   },
 });
-// export const {} = groupPostsSlice.actions;
+export const { resetPostPagination } = groupPostsSlice.actions;
 export default groupPostsSlice.reducer;

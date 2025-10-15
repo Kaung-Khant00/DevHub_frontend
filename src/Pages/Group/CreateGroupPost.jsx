@@ -4,16 +4,19 @@ import React, { useRef, useState, useMemo, useEffect } from "react";
 import { FaImage, FaFileAlt, FaPaperPlane, FaTrashAlt, FaTimes, FaCode, FaArrowLeft } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useLocation, useParams, Link, useNavigate } from "react-router-dom";
 import ImageWIthSkeleton from "../../Components/Common/ImageWIthSkeleton";
 import { createGroupPost, fetchGroupDetail } from "../../Redux/group/groupSlice";
 import CreateGroupPostSkeleton from "../SkeletonLoading/CreateGroupPostSkeleton";
+import { toast } from "react-toastify";
+import { resetPostPagination } from "../../Redux/group/groupPostsSlice";
 // import { createPost } from "../../../Redux/post/postSlice";
 
 export default function CreateGroupPost() {
   const { id } = useParams();
   const { search } = useLocation();
-  const { loading, error } = useSelector((state) => state.post.create);
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.group.createPost);
   const { data: groupData, loading: detailLoading } = useSelector((state) => state.group.detail);
 
   // parse `tab` query param; allow comma-separated values (e.g. ?tab=code,image)
@@ -110,7 +113,7 @@ export default function CreateGroupPost() {
     const t = tagInput.trim();
     if (!t) return;
     if (tags.includes(t)) return setTagInput("");
-    setTags((s) => [...s, t]);
+    setTags((s) => [...s, t.slice(0, 25)]);
     setTagInput("");
   }
 
@@ -132,11 +135,18 @@ export default function CreateGroupPost() {
       group_id: id || groupData?.id,
     };
 
-    dispatch(createGroupPost(form));
+    try {
+      await dispatch(createGroupPost(form)).unwrap();
+      toast.success("Post created successfully!");
+      dispatch(resetPostPagination());
+      navigate(`/group/${id}`);
+    } catch {
+      toast.error("Failed to create post");
+    }
   }
 
   return (
-    <div className="bg-base-200 p-4 rounded-lg shadow-sm">
+    <div className="bg-base-200 p-4 rounded-lg shadow-sm w-full">
       {detailLoading ? (
         <CreateGroupPostSkeleton />
       ) : (
@@ -159,7 +169,7 @@ export default function CreateGroupPost() {
               <div className="text-xs text-base-content/60">Posting to</div>
               <div className="flex items-center gap-2">
                 <div className="text-lg font-semibold text-primary">{groupData?.name}</div>
-                <div className="text-sm text-muted"> · 2 members</div>
+                <div className="text-sm text-muted"> · {groupData?.members_count} members</div>
               </div>
             </div>
           </div>
@@ -176,6 +186,7 @@ export default function CreateGroupPost() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+                {error?.title && <div className="text-sm text-error mt-2">{error.title}</div>}
 
                 {/* Content */}
                 <textarea
@@ -201,7 +212,7 @@ export default function CreateGroupPost() {
                     placeholder="Language (optional)"
                   />
                 </div>
-
+                {error?.codeLang && <div className="text-sm text-error mt-2">{error.codeLang}</div>}
                 <textarea
                   ref={codeRef}
                   rows={3}
@@ -210,7 +221,7 @@ export default function CreateGroupPost() {
                   placeholder={"Paste your code here (optional)."}
                   className="textarea textarea-bordered w-full h-28 resize-y font-mono text-sm"
                 />
-
+                {error?.code && <div className="text-sm text-error mt-2">{error.code}</div>}
                 {code && (
                   <div className="collapse collapse-arrow border border-base-300 bg-base-200/60 mt-3">
                     <input type="checkbox" />
@@ -329,7 +340,6 @@ export default function CreateGroupPost() {
                 </div>
 
                 {error?.file && <div className="text-sm text-error mt-2">{error.file}</div>}
-                {error?.tags && <div className="text-sm text-error mt-2">{error.tags}</div>}
               </div>
 
               {/* Tags */}
@@ -344,10 +354,15 @@ export default function CreateGroupPost() {
                       </button>
                     </div>
                   ))}
+                  {error?.tags && <div className="text-sm text-error mt-2">{error.tags}</div>}
 
                   <input
                     value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 25) {
+                        setTagInput(e.target.value);
+                      }
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -383,11 +398,11 @@ export default function CreateGroupPost() {
                     {loading ? (
                       <div className="flex items-center gap-2">
                         <div className="loading loading-ring loading-sm"></div>
-                        Publishing...
+                        Posting...
                       </div>
                     ) : (
                       <>
-                        <FaPaperPlane className="mr-2" /> Publish to {groupData?.name}
+                        <FaPaperPlane className="mr-2" /> Post in {groupData?.name}
                       </>
                     )}
                   </button>

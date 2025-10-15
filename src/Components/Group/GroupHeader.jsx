@@ -1,11 +1,12 @@
 import { FaUsers } from "react-icons/fa";
 import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { joinGroup } from "../../Redux/group/groupSlice";
 
 const GroupHeader = ({ group, admin }) => {
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.user?.id);
 
   function joinGroupApi() {
     dispatch(joinGroup(group.id));
@@ -52,10 +53,16 @@ const GroupHeader = ({ group, admin }) => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button className={`btn btn-primary ${!group?.joined && "btn-soft"}`} onClick={joinGroupApi}>
-                {group?.joined ? "Joined" : "Join"}
-              </button>
-              <button className="btn btn-primary">Message</button>
+              {admin?.id !== userId ? (
+                <>
+                  <button className={`btn btn-primary ${!group?.joined && "btn-soft"}`} onClick={joinGroupApi}>
+                    {group?.joined ? "Joined" : "Join"}
+                  </button>
+                  <button className="btn btn-primary">Message</button>
+                </>
+              ) : (
+                <div className="badge badge-primary"> Admin</div>
+              )}
             </div>
           </div>
 
@@ -70,16 +77,21 @@ const GroupHeader = ({ group, admin }) => {
         </div>
 
         {/* Compact admin bubble attached to header (smaller) */}
-        <div className="absolute right-4 top-28 transform translate-y-1/2">
-          <Link to={`/profile/${admin?.id}`} title={`View ${admin?.name} profile`} className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full ring ring-primary/30 overflow-hidden cursor-pointer">
-              <ImageWIthSkeleton src={admin?.profile_url} alt={admin?.name} className="w-full h-full object-cover" />
-            </div>
-            <div className="hidden sm:block text-sm badge badge-primary badge-soft">
-              <div className="font-medium ">{admin?.name}</div>
-            </div>
-          </Link>
-        </div>
+        {admin?.id !== userId && (
+          <div className="absolute right-4 top-28 transform translate-y-1/2">
+            <Link
+              to={`/profile/${admin?.id}`}
+              title={`View ${admin?.name} profile`}
+              className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full ring ring-primary/30 overflow-hidden cursor-pointer">
+                <ImageWIthSkeleton src={admin?.profile_url} alt={admin?.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="hidden sm:block text-sm badge badge-primary badge-soft">
+                <div className="font-medium ">{admin?.name}</div>
+              </div>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -17,22 +17,7 @@ import ReturnBackButton from "../../Common/ReturnBackButton";
 import { FaBan } from "react-icons/fa";
 
 export default function PostReportDetail() {
-  const adminNotesStatic = [
-    {
-      author: "Admin Aung",
-      note: "Initial triage: looks identical to existing post #9.",
-      when: "2025-09-20T16:00:00.000Z",
-    },
-  ];
-
-  const auditStatic = [
-    { actor: "System", action: "Report created", when: "2025-09-20T15:30:03.000000Z" },
-    { actor: "Admin Aung", action: "Marked for review", when: "2025-09-20T16:00:00.000000Z" },
-  ];
-
   // --------- Local UI state (UI-only, no external calls) ----------
-  const [notes, setNotes] = useState(adminNotesStatic);
-  const [noteInput, setNoteInput] = useState("");
   const [title, setTitle] = useState("Notice: content reported for copyright");
   const [message, setMessage] = useState();
   const [resolveLoading, setResolveLoading] = useState(false);
@@ -43,15 +28,6 @@ export default function PostReportDetail() {
     "Warning: policy violation",
     "Temporary takedown notice",
   ];
-
-  // UI-only handlers
-  const addNote = () => {
-    const text = (noteInput || "").trim();
-    if (!text) return;
-    const entry = { author: "You (Admin)", note: text, when: new Date().toISOString() };
-    setNotes((s) => [entry, ...s]);
-    setNoteInput("");
-  };
 
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -126,25 +102,29 @@ export default function PostReportDetail() {
             <section className="lg:col-span-2 space-y-4">
               <div className="flex gap-4">
                 <div>
-                  <img
-                    src={reportDetail?.reportable.image_url}
-                    alt={reportDetail?.reportable.title}
-                    className="object-cover w-44 h-28 rounded"
-                  />
-                  <a
-                    href={reportDetail?.reportable.image_url}
-                    target="_blank"
-                    className="w-full mt-2 btn btn-outline btn-sm">
-                    See image
-                  </a>
+                  {reportDetail?.reportable.image_url && (
+                    <>
+                      <img
+                        src={reportDetail?.reportable.image_url}
+                        alt={reportDetail?.reportable.title}
+                        className="w-48 h-48 object-cover rounded"
+                      />
+                      <a
+                        href={reportDetail?.reportable.image_url}
+                        target="_blank"
+                        className="w-full mt-2 btn btn-outline btn-sm">
+                        See image
+                      </a>
+                    </>
+                  )}
                 </div>
 
                 <div className="flex-1">
-                  <h2 className="text-lg font-bold">{reportDetail?.reportable.title}</h2>
                   <div className="text-sm text-muted">
                     Author: <strong>User #{reportDetail?.reportable.user_id}</strong> •{" "}
                     {reportDetail?.reportable.created_at_formatted}
                   </div>
+                  <h2 className="text-lg font-bold">{reportDetail?.reportable.title}</h2>
 
                   <p className="mt-3 text-gray-800 line-clamp-6 whitespace-pre-wrap">
                     {reportDetail?.reportable.content}
@@ -289,7 +269,7 @@ export default function PostReportDetail() {
               </div>
 
               {/* Admin notes (editable) */}
-              <div className="p-4 border border-base-200 rounded">
+              {/* <div className="p-4 border border-base-200 rounded">
                 <div className="flex items-center justify-between">
                   <div className="font-semibold">Admin notes</div>
                 </div>
@@ -322,10 +302,10 @@ export default function PostReportDetail() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Audit (static) */}
-              <div className="p-4 border border-base-200 rounded">
+              {/* <div className="p-4 border border-base-200 rounded">
                 <div className="flex items-center gap-2">
                   <AiOutlineHistory />
                   <div className="font-semibold">Audit</div>
@@ -340,7 +320,7 @@ export default function PostReportDetail() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </aside>
           </div>
         </div>

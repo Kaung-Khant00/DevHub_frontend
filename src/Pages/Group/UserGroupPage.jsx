@@ -25,9 +25,7 @@ export default function UserGroupPage() {
     dispatch(fetchGroupPosts({ current_page: pagination.current_page, per_page: pagination.per_page, group_id: id }));
   }
   useEffect(() => {
-    if (!groupData) {
-      dispatch(fetchGroupDetail(id));
-    } else if (groupData.id !== id) {
+    if (!groupData || groupData.id !== id) {
       dispatch(fetchGroupDetail(id));
     }
   }, []);
@@ -46,14 +44,14 @@ export default function UserGroupPage() {
       ) : (
         <>
           <GroupHeader group={groupData} admin={groupData?.user} />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <main className="lg:col-span-2">
+          <div className="flex justify-center">
+            <main className="max-w-[800px] w-full">
               <GroupComposer id={id} />
               <GroupPostContainer />
               <LoadMoreGroupPost loadMoreGroupPosts={loadMoreGroupPosts} />
             </main>
 
-            <SideBar group={groupData} />
+            {/* <SideBar group={groupData} /> */}
           </div>
         </>
       )}

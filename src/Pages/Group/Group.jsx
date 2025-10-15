@@ -38,20 +38,6 @@ export default function GroupsPage() {
           <Link to={"/group/create"} className="btn btn-primary btn-sm flex items-center">
             <FaPlus className="mr-2" /> Create Group
           </Link>
-
-          <div className="dropdown dropdown-end">
-            <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li>
-                <a>My Groups</a>
-              </li>
-              <li>
-                <a>Invitations</a>
-              </li>
-              <li>
-                <a>Group Settings</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
 

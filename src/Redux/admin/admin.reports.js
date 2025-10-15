@@ -92,7 +92,16 @@ export const notifyOwner = createAsyncThunk("report/notifyOwner", async (notific
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
-
+export const deleteReport = createAsyncThunk("report/deleteReport", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.delete(`/admin/reports/${id}`);
+    console.log("delete report", response);
+    return id;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
 const initialState = {
   fetch: {
     data: null,
@@ -173,6 +182,9 @@ const adminReportsSlice = createSlice({
         state.detail.data = action.payload;
         state.detail.removePermanentlyLoading = false;
       })
+      .addCase(deleteReport.fulfilled, (state, action) => {
+        state.fetch.data = state.fetch.data.filter((report) => report.id !== action.payload);
+      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
@@ -190,6 +202,7 @@ const adminReportsSlice = createSlice({
           case "deletePostPermanently":
             state.detail.removePermanentlyLoading = false;
             break;
+
           default:
             break;
         }

@@ -8,6 +8,7 @@ import {
   fetchQuestionMessages,
   resetMessages,
   sendMessage,
+  toggleSolved,
   updateMessage,
 } from "../../../Redux/question/questionSlice";
 import ImageWIthSkeleton from "../../../Components/Common/ImageWIthSkeleton";
@@ -26,10 +27,11 @@ export default function QuestionDetailPage() {
   const [sortBy, setSortBy] = useState("created_at,desc");
   const [updatingId, setUpdatingId] = useState(null);
   const { data: question, loading } = useSelector((state) => state.question.detail);
-  const { loading: createCommentLoading, errors } = useSelector((state) => state.question.create);
+  const { loading: createCommentLoading, errors, toggleSolvedLoading } = useSelector((state) => state.question.create);
 
   const { messageLoading, allMessages, comments, solutions, messagePagination, commentPagination, solutionPagination } =
     useSelector((state) => state.question.messages);
+
   const deleteLoading = useSelector((state) => state.question.fetch.deleteLoading);
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -110,6 +112,14 @@ export default function QuestionDetailPage() {
       toast.error("Something went wrong!");
     }
   }
+  function toggleSolvedApi() {
+    try {
+      dispatch(toggleSolved(id));
+      toast.success("Question marked successfully!");
+    } catch {
+      toast.error("Something went wrong!");
+    }
+  }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 w-full">
@@ -161,6 +171,12 @@ export default function QuestionDetailPage() {
                       <Link to={`/question/${question?.id}/edit`}>Edit Question</Link>
                     </li>
                     <li>
+                      <button disabled={toggleSolvedLoading} onClick={toggleSolvedApi}>
+                        {" "}
+                        Mark {question?.is_solved ? "unsolved" : "solved"}
+                      </button>
+                    </li>
+                    <li>
                       <button disabled={deleteLoading} onClick={deleteQuestionApi} className="text-error">
                         {deleteLoading && <Spinner />}Delete Question
                       </button>
@@ -188,9 +204,9 @@ export default function QuestionDetailPage() {
             </a>
           </div>
           {question?.code_snippet && (
-            <div className="p-2 rounded bg-gray-100">
+            <div className="p-2 rounded bg-gray-100  max-w-4xl">
               <span className="text-sm text-gray-500 ps-2">Code Snippet</span>
-              <pre>{question?.code_snippet}</pre>
+              <pre className="overflow-x-scroll w-full">{question?.code_snippet}</pre>
             </div>
           )}
         </div>
@@ -234,7 +250,6 @@ export default function QuestionDetailPage() {
           {errors?.body && <div className="text-danger text-sm">{errors?.body}</div>}
 
           <div className="flex items-center justify-between mt-4">
-            <div className="text-sm text-muted hidden sm:block">Be respectful. Cite sources where relevant.</div>
             <div className="flex items-center gap-2">
               <button
                 className="btn btn-ghost"

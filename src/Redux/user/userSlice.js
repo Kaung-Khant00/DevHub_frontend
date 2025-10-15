@@ -79,7 +79,7 @@ export const logoutUser = createAsyncThunk("user/logoutUser", async (_, { reject
 export const fetchUser = createAsyncThunk("user/fetchUser", async (_, { rejectWithValue }) => {
   try {
     const response = await api.get("/user");
-    console.log("USER FETCHING");
+    console.log("USER FETCHING", response);
     if (!response.data.role) {
       window.location.href = "/select/role";
     }
@@ -96,6 +96,7 @@ export const fetchUser = createAsyncThunk("user/fetchUser", async (_, { rejectWi
 export const fetchUserProfile = createAsyncThunk("user/fetchUserProfile", async (_, { rejectWithValue }) => {
   try {
     const response = await api.get("/profile");
+    console.log("PROFILE", response);
     return response.data.profile;
   } catch {
     toast.error("Something went wrong!");
@@ -154,8 +155,8 @@ export const removeProfileImage = createAsyncThunk("user/removeProfileImage", as
   try {
     const response = await api.delete("/profile/developer/image");
     toast.success("Profile image removed successfully");
-    console.log(response);
-    return response.data.profile;
+    console.log("AAAAAAAAAA", response);
+    return response.data;
   } catch (error) {
     console.log(error);
     toast.error("Something went wrong!");
@@ -317,6 +318,7 @@ const userSlice = createSlice({
       })
       .addCase(editProfileImage.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.loading = false;
       })
       .addCase(removeProfileImage.fulfilled, (state, action) => {
         state.user = action.payload.user;

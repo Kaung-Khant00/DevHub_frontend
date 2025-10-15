@@ -7,7 +7,7 @@ const PostContainer = () => {
   const dispatch = useDispatch();
   const { posts, pagination, fetch } = useSelector((state) => state.post);
   const isFetching = useRef(false);
-
+  console.log(pagination);
   function loadMorePosts() {
     if (isFetching.current || pagination.page >= pagination.lastPage) return;
     isFetching.current = true;
@@ -39,7 +39,7 @@ const PostContainer = () => {
             </div>
           ) : (
             <>
-              {pagination.currentPage < pagination.lastPage ? (
+              {pagination.page < pagination.lastPage ? (
                 <button onClick={loadMorePosts} className="btn btn-primary mt-2">
                   Show more
                 </button>

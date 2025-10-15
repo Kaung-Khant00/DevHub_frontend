@@ -33,7 +33,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "",
+    role: "developer",
     isAgree: false,
   });
   function handleSubmit(e) {
@@ -118,7 +118,7 @@ const Register = () => {
             {registerError?.password_confirmation && (
               <div className="text-red-500 text-sm mb-2">{registerError.password_confirmation}</div>
             )}
-            <select className="btn mt-2" onChange={(e) => setForm({ ...form, role: e.target.value })}>
+            {/*             <select className="btn mt-2" onChange={(e) => setForm({ ...form, role: e.target.value })}>
               <option disabled selected>
                 Select Role
               </option>
@@ -129,7 +129,7 @@ const Register = () => {
                 Client
               </option>
             </select>
-            {registerError?.role && <div className="text-red-500 text-sm mb-2">{registerError.role}</div>}
+            {registerError?.role && <div className="text-red-500 text-sm mb-2">{registerError.role}</div>} */}
             <div className="flex items-start mb-2 mt-3">
               <input
                 type="checkbox"

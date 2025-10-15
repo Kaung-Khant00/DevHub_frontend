@@ -45,7 +45,7 @@ const UsersTable = () => {
               <th>Main Career</th>
               <th>Phone</th>
               <th>Gender</th>
-              <th className="text-center">Action</th>
+              {/* <th className="text-center">Action</th> */}
             </tr>
           </thead>
           <tbody>

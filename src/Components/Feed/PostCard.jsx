@@ -13,10 +13,9 @@ import { followUser } from "../../Redux/post/postSlice";
 function PostCard({ post, isInProfile = false }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [likeLoading, setLikeLoading] = useState(false);
   const { user, file, content, title, code, code_lang, followed, image, image_url, created_at_formatted, tags } = post;
   const { user: authUser } = useSelector((state) => state.user);
-  const likeLoading = useSelector((state) => state.post.like.loading);
   const [expand, setExpand] = useState(false);
   /*  I am making for better UX so the like button response immediately after I click the like  */
   /*  And the data request will send to the backend site  */
@@ -29,22 +28,24 @@ function PostCard({ post, isInProfile = false }) {
     navigate(`/post/edit/${post.id}`);
   };
 
-  function CreateLikeApi() {
+  async function CreateLikeApi() {
+    setLikeLoading(true);
     setLiked((pre) => !pre);
     if (isInProfile) {
-      dispatch(
+      await dispatch(
         likePost({
           likeData: { post_id: post.id, user_id: authUser.id },
           isInProfile: user.id === authUser.id ? "myProfile" : "othersProfile",
         })
-      );
+      ).unwrap();
     } else {
-      dispatch(
+      await dispatch(
         likePost({
           likeData: { post_id: post.id, user_id: authUser.id },
         })
-      );
+      ).unwrap();
     }
+    setLikeLoading(false);
   }
 
   function DeletePostApi() {
@@ -196,10 +197,12 @@ function PostCard({ post, isInProfile = false }) {
         <div className="mt-3 flex items-center gap-2">
           <button
             onClick={CreateLikeApi}
+            disabled={likeLoading}
             className={`flex items-center gap-2 text-sm cursor-pointer ${
               liked ? "text-primary" : "text-base-content/80"
             }`}>
             {likeLoading ? <Spinner size="sm" /> : <>{liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}</>}
+
             <span>{post?.liked_users_count ?? 0}</span>
           </button>
 

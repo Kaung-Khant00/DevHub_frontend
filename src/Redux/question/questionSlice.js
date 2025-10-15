@@ -150,7 +150,14 @@ export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async
     return rejectWithValue(err.response?.data || err.message);
   }
 });
-
+export const toggleSolved = createAsyncThunk("questions/toggleSolved", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.post(`/questions/${id}/solved`);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || err.message);
+  }
+});
 const questionSlice = createSlice({
   name: "questions",
   initialState: {
@@ -184,6 +191,7 @@ const questionSlice = createSlice({
       type: null,
     },
     create: {
+      toggleSolvedLoading: false,
       loading: false,
       errors: null,
       createCommentLoading: false,
@@ -416,6 +424,18 @@ const questionSlice = createSlice({
         state.fetch.deleteLoading = false;
         state.fetch.data = state.fetch.data.filter((question) => question.id !== action.payload.id);
       })
+      .addCase(toggleSolved.fulfilled, (state, action) => {
+        state.create.toggleSolvedLoading = false;
+        state.fetch.data = state.fetch.data.map((question) => {
+          if (question.id === action.payload.id) {
+            return {
+              ...question,
+              is_solved: action.payload.is_solved,
+            };
+          }
+          return question;
+        });
+      })
       // Generic loading matcher
       .addMatcher(isPending, (state, action) => {
         const actionName = action.type.split("/")[1];
@@ -446,6 +466,9 @@ const questionSlice = createSlice({
             break;
           case "deleteQuestion":
             state.fetch.deleteLoading = true;
+            break;
+          case "toggleSolvedLoading":
+            state.create.toggleSolvedLoading = true;
             break;
         }
       })
@@ -482,6 +505,9 @@ const questionSlice = createSlice({
             break;
           case "deleteQuestion":
             state.fetch.deleteLoading = false;
+            break;
+          case "toggleSolvedLoading":
+            state.create.toggleSolvedLoading = false;
             break;
         }
       });

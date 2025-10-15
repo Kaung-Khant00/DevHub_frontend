@@ -31,19 +31,19 @@ const UsersRole = ({ user }) => {
           {user?.gender ? user?.gender : "__"}
         </div>
       </th>
-      <td className="flex justify-center gap-2">
+      {/* TODO:: ban user and delete feature is not available yet */}
+      {/* <td className="flex justify-center gap-2">
         <div className="tooltip tooltip-error " data-tip="Delete permanently">
           <button className="btn btn-square btn-error btn-soft hover:text-white">
             <MdDelete size={20} />
           </button>
         </div>
         <div className="tooltip tooltip-error " data-tip="Ban user">
-          {/* TODO:: ban user feature is not available yet */}
-          {/*<button className="btn btn-square btn-error btn-soft hover:text-white">
+          {<button className="btn btn-square btn-error btn-soft hover:text-white">
                     <FaBan size={20} />
-                  </button> */}
+                  </button>}
         </div>
-      </td>
+      </td> */}
     </tr>
   );
 };

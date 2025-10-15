@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { FaSave, FaTimes, FaTrash, FaPlus, FaGithub, FaLinkedin, FaGlobe, FaArrowLeft } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProfileImagePopup from "../../../Components/Profile/ProfileImagePopup";
 import { editProfile } from "../../../Redux/user/userSlice";
 
 export default function DeveloperProfileEdit() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { loading, user, error, profile: authProfile } = useSelector((state) => state.user);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [userData, setUserData] = useState({});
   const [profile, setProfile] = useState({});
-  const [skills, setSkills] = useState(null);
+  const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState("");
 
   useEffect(() => {
@@ -27,13 +26,13 @@ export default function DeveloperProfileEdit() {
     }
   }, [authProfile]);
   useEffect(() => {
-    setSkills(profile.skills);
+    setSkills(profile.skills || []);
   }, [profile.skills]);
 
   function handleAddSkillFromInput() {
     const s = newSkill.trim();
     if (!s) return;
-    if (!skills.includes(s)) setSkills((v) => [...v, s]);
+    if (!skills.includes(s)) setSkills((v) => [...v, s.slice(0, 50)]);
     setNewSkill("");
   }
 
@@ -124,6 +123,20 @@ export default function DeveloperProfileEdit() {
                           placeholder="Software Developer"
                         />
                       </div>
+                    </div>
+                    <div className="w-full">
+                      <label className="label">
+                        <span className="label-text">Gender</span>
+                      </label>
+                      <select
+                        className="select select-bordered"
+                        onChange={(e) => setUserData((u) => ({ ...u, gender: e.target.value }))}>
+                        <option selected disabled>
+                          Choose gender
+                        </option>
+                        <option value={"male"}>Male</option>
+                        <option value={"female"}>Female</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -230,7 +243,11 @@ export default function DeveloperProfileEdit() {
                   className="input input-bordered input-sm flex-1"
                   placeholder="Type a skill and press Enter or comma"
                   value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length < 50) {
+                      setNewSkill(e.target.value);
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === ",") {
                       e.preventDefault();
@@ -276,7 +293,7 @@ export default function DeveloperProfileEdit() {
               </Link>
             </div>
 
-            <div>
+            {/*             <div>
               <button
                 type="button"
                 className="btn btn-outline btn-error"
@@ -284,7 +301,7 @@ export default function DeveloperProfileEdit() {
                 aria-label="Delete account">
                 <FaTrash /> Delete account
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Server error */}

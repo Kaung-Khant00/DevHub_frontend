@@ -110,7 +110,7 @@ export default function CreateQuestion() {
     const t = tagInput.trim();
     if (!t) return;
     if (tags.includes(t)) return setTagInput("");
-    setTags((s) => [...s, t]);
+    setTags((s) => [...s, t.slice(0, 25)]);
     setTagInput("");
   }
   function removeTag(index) {
@@ -240,7 +240,9 @@ export default function CreateQuestion() {
             <div className="mt-2">
               <input
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length <= 25) setTagInput(e.target.value);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();

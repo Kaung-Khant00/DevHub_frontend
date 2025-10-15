@@ -61,7 +61,7 @@ function PostCard({ post }) {
   }
 
   return (
-    <div className="my-2 card bg-base-100 border border-base-300 shadow-md w-full max-w-[650px] shrink-0">
+    <div className="justify-self-center my-2 card bg-base-100 border border-base-300 shadow-md w-full max-w-[650px] shrink-0">
       <div className="flex flex-col gap-2 p-5">
         {/* Header */}
         <div className="flex justify-between">
@@ -186,9 +186,9 @@ function PostCard({ post }) {
             <FaRegCommentDots size={16} /> <span>Comments</span>
           </Link>
 
-          <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80 cursor-pointer">
+          {/*  <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80 cursor-pointer">
             <PiShareFatBold /> <span>Share</span>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

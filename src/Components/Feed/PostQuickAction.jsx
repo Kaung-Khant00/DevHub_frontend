@@ -3,12 +3,20 @@ import FollowButton from "./FollowButton";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { followUser } from "../../Redux/post/postSlice";
+import { setReportingPost } from "../../Redux/report/reportSlice";
+import { useNavigate } from "react-router-dom";
 
 const PostQuickAction = ({ detail, user }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-
   function followUserApi() {
     dispatch(followUser({ userId: user.id }));
+  }
+  function ReportPostApi() {
+    if (detail?.data) {
+      dispatch(setReportingPost(detail?.data));
+      navigate(`/report/post/${detail?.data?.id}`);
+    }
   }
   return (
     <aside className="lg:col-span-1 space-y-6">
@@ -74,8 +82,7 @@ const PostQuickAction = ({ detail, user }) => {
               <button
                 type="button"
                 className="btn btn-outline btn-error btn-sm w-full flex items-center justify-center gap-2"
-                // onClick={handleReport}
-              >
+                onClick={ReportPostApi}>
                 <FaFlag /> <span className="text-xs">Report</span>
               </button>
             </>

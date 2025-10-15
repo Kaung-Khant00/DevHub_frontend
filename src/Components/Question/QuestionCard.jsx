@@ -14,6 +14,8 @@ const QuestionCard = ({ question }) => {
     dispatch(toggleQuestionLike(id));
     setIsLiked((pre) => !pre);
   }
+  const isLong = question.body.length > 100;
+  const displayText = isLong ? question.body.slice(0, 100) + "..." : question.body;
   return (
     <article
       key={question.id}
@@ -28,7 +30,7 @@ const QuestionCard = ({ question }) => {
               className="text-lg font-medium hover:underline hover:text-primary underline-offset-2">
               {question.title}
             </Link>
-            <p className="text-sm opacity-75 mt-1">{question.body}</p>
+            <p className="text-sm opacity-75 mt-1">{displayText}</p>
             <div className="w-full flex justify-between items-center">
               <div className="mt-3 flex flex-wrap gap-2">
                 {question.tags &&

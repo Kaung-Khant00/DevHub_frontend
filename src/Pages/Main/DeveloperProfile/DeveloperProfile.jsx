@@ -5,7 +5,6 @@ import { fetchDeveloperProfile } from "../../../Redux/user/userSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProfilePostSearch from "../../../Components/Profile/ProfilePostSearch";
 import ProfileAbout from "../Profile/ProfileAbout";
-import ProfileQuickLink from "../../../Components/Profile/ProfileQuickLink";
 import ProfilePosts from "../../../Components/Profile/ProfilePosts";
 import { HiOutlineUserAdd } from "react-icons/hi";
 import { HiOutlineUserMinus } from "react-icons/hi2";
@@ -24,18 +23,23 @@ function Stat({ value, label }) {
 export default function DeveloperProfilePage() {
   const { id } = useParams();
   const { profile, user, posts } = useSelector((state) => state.user.viewedProfileUser);
+  const authUser = useSelector((state) => state.user.user);
   const skills = useSelector((state) => state.user.viewedProfileUser.profile?.skills);
   const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
     setUserId(id);
   }, [id]);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (authUser && authUser?.id == id) {
+      navigate("/profile");
+    }
     if (user?.id !== id) {
       dispatch(fetchDeveloperProfile(id));
     }
-  }, [userId]);
+  }, [userId, authUser]);
 
   function makeFollowUserApi() {
     if (userId) {
@@ -74,11 +78,16 @@ export default function DeveloperProfilePage() {
                           <FaCheckCircle size={14} /> {user.role}
                         </div>
                       )}
+                      {user?.gender && (
+                        <div className={`badge ${user?.gender === "male" ? "badge-primary" : "badge-secondary"}`}>
+                          {user?.gender}
+                        </div>
+                      )}
                     </div>
                     <p className="mt-1 text-sm opacity-80 max-w-2xl">{user.bio || ""}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                       {profile?.address && (
-                        <span className="inline-flex items-center gap-1 opacity-80">
+                        <span className="inline-flex items-center gap-1 opacity-80 ">
                           <FaMapMarkerAlt size={16} />
                           {profile.address}
                         </span>
@@ -108,7 +117,7 @@ export default function DeveloperProfilePage() {
                         ? "Following"
                         : "Follow Back"}
                     </button>
-                    <button className="btn btn-outline gap-2">
+                    {/* <button className="btn btn-outline gap-2">
                       <FaShareAlt size={16} /> Share
                     </button>
                     <div className="dropdown dropdown-end">
@@ -126,7 +135,7 @@ export default function DeveloperProfilePage() {
                           <a href="/settings/preferences">Preferences</a>
                         </li>
                       </ul>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
