@@ -7,13 +7,13 @@ const Feed = () => {
   return (
     <div className=" mx-auto flex px-2 gap-3 w-full">
       <main className="w-full col-span-2 ">
-        <FilterTabs />
+        {/* <FilterTabs /> */}
         <Composer />
         <PostContainer />
       </main>
-      <div className="xl:block hidden">
+      {/*       <div className="xl:block hidden">
         <CreatorSnapshot />
-      </div>
+      </div> */}
     </div>
   );
 };

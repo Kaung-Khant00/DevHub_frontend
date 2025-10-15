@@ -32,7 +32,7 @@ export default function DeveloperProfilePage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user.id !== id) {
+    if (user?.id !== id) {
       dispatch(fetchDeveloperProfile(id));
     }
   }, [userId]);
@@ -149,7 +149,7 @@ export default function DeveloperProfilePage() {
 
             {/* Posts */}
             <main className="lg:col-span-2">
-              <ProfilePostSearch postsLength={posts?.length} />
+              {user?.id === id && <ProfilePostSearch postsLength={posts?.length} id={id} />}
               <ProfilePosts posts={posts} />
             </main>
           </div>

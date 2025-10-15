@@ -45,15 +45,15 @@ export default function CreateAdminPage() {
   useEffect(() => {
     const setData = (data) => {
       setForm({
-        name: data.name || "",
-        email: data.email || "",
-        password: data.password || "",
-        phone: data.phone || "",
-        admin_specialty: data.admin_specialty || "general_admin",
-        address: data.admin_profile.address || "",
-        permission_role: data.permission_role || "ADMIN",
-        age: data.age || "",
-        gender: data.gender || "",
+        name: data?.name || "",
+        email: data?.email || "",
+        password: data?.password || "",
+        phone: data?.phone || "",
+        admin_specialty: data?.admin_specialty || "general_admin",
+        address: data?.admin_profile.address || "",
+        permission_role: data?.permission_role || "ADMIN",
+        age: data?.age || "",
+        gender: data?.gender || "",
       });
       setOfficeImagePreview(data?.admin_profile?.office_image_url || null);
     };
@@ -127,8 +127,8 @@ export default function CreateAdminPage() {
       try {
         await dispatch(createAdmin({ form, officeImage: fileRef.current ?? null })).unwrap();
         toast.success("Admin created successfully");
-        /*       navigate(-1);
-      resetData(); */
+        navigate(-1);
+        resetData();
       } catch {
         toast.error("Failed to create admin");
       }

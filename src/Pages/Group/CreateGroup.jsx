@@ -65,7 +65,7 @@ export default function CreateGroup() {
   async function createGroupApi(e) {
     e.preventDefault();
     try {
-      dispatch(createGroup({ name, description, image: imageFile, tags })).unwrap();
+      await dispatch(createGroup({ name, description, image: imageFile, tags })).unwrap();
       navigate("/group");
       clearAll();
     } catch (err) {
@@ -111,7 +111,8 @@ export default function CreateGroup() {
                   placeholder="Enter group name"
                   maxLength={80}
                 />
-                {error?.field === "name" && <div className="text-sm text-error mt-2">{error.message}</div>}
+
+                {error?.name && <div className="text-sm text-error mt-2">{error.name}</div>}
 
                 <label className="label mt-4">
                   <span className="label-text font-medium">Description</span>
@@ -125,6 +126,7 @@ export default function CreateGroup() {
                   className="textarea textarea-bordered w-full h-28 resize-y text-sm"
                   placeholder="Describe this group (what it's for, rules, topics)"
                 />
+                {error?.description && <div className="text-sm text-error mt-2">{error.description}</div>}
                 {/* Tags input */}
                 <div className="mt-4">
                   <label className="label">
@@ -133,17 +135,21 @@ export default function CreateGroup() {
 
                   <div className="flex flex-wrap items-center gap-2">
                     {tags.map((t, i) => (
-                      <div key={i} className="badge badge-primary py-2 px-3 flex items-center gap-2">
-                        <span className="text-sm">{t}</span>
-                        <button type="button" className="btn btn-ghost btn-xs" onClick={() => removeTag(i)}>
-                          <FaTimes />
-                        </button>
-                      </div>
+                      <>
+                        <div key={i} className="badge badge-primary py-2 px-3 flex items-center gap-2 overflow-hidden">
+                          <span className="text-sm">{t}</span>
+                          <button type="button" className="btn btn-ghost btn-xs" onClick={() => removeTag(i)}>
+                            <FaTimes />
+                          </button>
+                        </div>
+                      </>
                     ))}
 
                     <input
                       value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value.length < 25) setTagInput(e.target.value);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -219,6 +225,7 @@ export default function CreateGroup() {
                     />
                   </div>
                 </div>
+                {error?.image && <div className="text-sm text-error mt-2">{error.image}</div>}
               </div>
             </div>
 

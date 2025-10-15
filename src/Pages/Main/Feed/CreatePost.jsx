@@ -262,26 +262,18 @@ export default function CreatePost() {
 
                   {imagePreview ? (
                     <div className="mt-3 w-full">
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center justify-center gap-2">
                         <img src={imagePreview} alt="preview" className="rounded max-h-36 object-cover" />
-                        <div className="flex flex-col items-end">
-                          <button
-                            className="btn btn-xs btn-ghost mb-2"
-                            onClick={() => {
-                              setImageFile(null);
-                              setImagePreview(null);
-                            }}>
-                            Remove
-                          </button>
-                          <div className="text-xs text-base-content/70">Image ready to upload</div>
-                        </div>
                       </div>
                     </div>
                   ) : (
                     <div className="mt-3 text-sm text-base-content/70">No image attached</div>
                   )}
 
-                  <div className="mt-3 w-full flex gap-2">
+                  {error?.image && <div className="text-sm text-error mt-2">{error.image}</div>}
+                </div>
+                <div className="flex items-center mt-3 gap-2">
+                  <div className=" w-full flex gap-2 flex-1">
                     <label
                       className="btn btn-outline btn-sm flex-1"
                       onClick={() => imageInputRef.current && imageInputRef.current.click()}>
@@ -295,8 +287,14 @@ export default function CreatePost() {
                       className="hidden"
                     />
                   </div>
-
-                  {error?.image && <div className="text-sm text-error mt-2">{error.image}</div>}
+                  <button
+                    className="btn btn-error btn-sm  flex-1"
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview(null);
+                    }}>
+                    Remove
+                  </button>
                 </div>
               </div>
 

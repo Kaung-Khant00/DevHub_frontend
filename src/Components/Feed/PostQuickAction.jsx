@@ -1,10 +1,4 @@
-import {
-  FaFlag,
-  FaHeart,
-  FaLink,
-  FaRegCommentDots,
-  FaShareAlt,
-} from "react-icons/fa";
+import { FaFlag, FaHeart, FaLink, FaRegCommentDots, FaShareAlt } from "react-icons/fa";
 import FollowButton from "./FollowButton";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { useDispatch } from "react-redux";
@@ -24,9 +18,7 @@ const PostQuickAction = ({ detail, user }) => {
           <div className="mb-2">
             <strong>Published</strong>
           </div>
-          <div className="mb-3 text-xs">
-            {detail.data?.created_at_formatted}
-          </div>
+          <div className="mb-3 text-xs">{detail.data?.created_at_formatted}</div>
 
           <div className="mb-2">
             <strong>Stats</strong>
@@ -38,9 +30,7 @@ const PostQuickAction = ({ detail, user }) => {
                 <FaHeart className="text-base-content/60" />
                 <span>Likes</span>
               </div>
-              <div className="font-medium">
-                {detail.data?.liked_users_count ?? 0}
-              </div>
+              <div className="font-medium">{detail.data?.liked_users_count ?? 0}</div>
             </div>
 
             <div className="flex items-center justify-between">
@@ -48,16 +38,14 @@ const PostQuickAction = ({ detail, user }) => {
                 <FaRegCommentDots className="text-base-content/60" />
                 <span>Comments</span>
               </div>
-              <div className="font-medium">
-                {detail.data?.comments_count ?? 3}
-              </div>
+              <div className="font-medium">{detail.data?.comments_count ?? 3}</div>
             </div>
           </div>
         </div>
 
         {/* Actions grid */}
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <button
+          {/* <button
             type="button"
             className="btn btn-outline btn-primary btn-sm w-full flex items-center justify-center gap-2"
             // onClick={handleShare}
@@ -71,18 +59,17 @@ const PostQuickAction = ({ detail, user }) => {
             // onClick={handleCopyLink}
           >
             <FaLink /> <span className="text-xs">Copy</span>
-          </button>
+          </button> */}
 
           {detail.data?.user.id === user?.id ? (
-            <button className="btn btn-primary btn-sm w-full col-span-2 flex items-center justify-center gap-2">
+            <>
+              {/* <button className="btn btn-primary btn-sm w-full col-span-2 flex items-center justify-center gap-2">
               <BsGraphUpArrow /> <span className="text-xs">Analysis post</span>
-            </button>
+            </button> */}
+            </>
           ) : (
             <>
-              <FollowButton
-                followUserApi={followUserApi}
-                followed={detail.data?.followed}
-              />
+              <FollowButton followUserApi={followUserApi} followed={detail.data?.followed} />
 
               <button
                 type="button"

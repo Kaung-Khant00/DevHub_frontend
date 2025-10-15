@@ -23,7 +23,7 @@ const ReportAdminPage = () => {
       <div className="w-full flex justify-between border-b border-base-300 pb-4 ">
         <div className="text-2xl font-bold text-info-content flex-1">Reports</div>
 
-        <div className="tabs tabs-box flex-1">
+        {/* <div className="tabs tabs-box flex-1">
           <input
             type="radio"
             disabled={fetch.loading}
@@ -65,7 +65,7 @@ const ReportAdminPage = () => {
             className="tab"
             aria-label="Comments"
           />
-        </div>
+        </div> */}
         <div className="w-1/3 flex flex-1">
           <div className="flex-1">
             <input type="text" className="input w-full rounded-r-none" />

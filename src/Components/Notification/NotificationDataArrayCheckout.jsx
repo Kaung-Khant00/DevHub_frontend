@@ -1,6 +1,7 @@
 import PostCard from "../Feed/PostCard";
 
 const NotificationDataArrayCheckout = ({ notification }) => {
+  console.log(notification);
   return (
     <div>
       {notification.type.includes("GROUP_CREATION_REQUEST") && (
@@ -22,6 +23,14 @@ const NotificationDataArrayCheckout = ({ notification }) => {
             </div>
           </div>
         )}
+      {notification.type.includes("SOLUTION") && (
+        <div>
+          <div>
+            <div className="text-gray-500">Solution :</div>
+          </div>
+          <p className="bg-base-200 p-2 w-full text-lg">{notification?.question_message?.body}</p>
+        </div>
+      )}
     </div>
   );
 };

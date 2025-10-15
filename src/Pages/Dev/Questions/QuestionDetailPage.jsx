@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FiThumbsUp, FiThumbsDown, FiUser, FiSend, FiPlusSquare, FiCheckCircle } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
+import { FiSend, FiPlusSquare, FiCheckCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
+  deleteQuestion,
   fetchQuestionDetail,
   fetchQuestionMessages,
   resetMessages,
@@ -15,8 +16,10 @@ import MessageSection from "../../../Components/Question/MessageSession";
 import ReturnBackButton from "../../../Components/Common/ReturnBackButton";
 import { TbUserQuestion } from "react-icons/tb";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 export default function QuestionDetailPage() {
+  const navigate = useNavigate();
   const [messageBody, setMessageBody] = useState("");
   const [messageType, setMessageType] = useState("solution"); // 'solution' or 'comment'
   const [tab, setTab] = useState("all");
@@ -27,6 +30,7 @@ export default function QuestionDetailPage() {
 
   const { messageLoading, allMessages, comments, solutions, messagePagination, commentPagination, solutionPagination } =
     useSelector((state) => state.question.messages);
+  const deleteLoading = useSelector((state) => state.question.fetch.deleteLoading);
   const dispatch = useDispatch();
   const { id } = useParams();
   const isFetched = useRef(false);
@@ -97,6 +101,15 @@ export default function QuestionDetailPage() {
       })
     );
   }
+  function deleteQuestionApi() {
+    try {
+      dispatch(deleteQuestion({ id }));
+      navigate("/question");
+      toast.success("Question deleted successfully!");
+    } catch {
+      toast.error("Something went wrong!");
+    }
+  }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 w-full">
@@ -131,7 +144,7 @@ export default function QuestionDetailPage() {
               </div>
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-semibold leading-tight">{question?.title}</h1>
+              <h1 className="text-2xl font-semibold leading-tight hidden sm:block">{question?.title}</h1>
               <div className="mt-2 text-sm text-muted">
                 Posted by {question?.user?.name ?? "Anonymous"} • {question?.created_at}
               </div>
@@ -147,6 +160,11 @@ export default function QuestionDetailPage() {
                     <li>
                       <Link to={`/question/${question?.id}/edit`}>Edit Question</Link>
                     </li>
+                    <li>
+                      <button disabled={deleteLoading} onClick={deleteQuestionApi} className="text-error">
+                        {deleteLoading && <Spinner />}Delete Question
+                      </button>
+                    </li>
                   </ul>
                 </div>
               )}
@@ -155,7 +173,10 @@ export default function QuestionDetailPage() {
 
           <div className="prose mt-6">
             {/* You may want to sanitize/convert Markdown on real app */}
-            <p style={{ whiteSpace: "pre-wrap" }}>{question?.body}</p>
+            <h1 className="text-xl font-bold leading-tight block sm:hidden">{question?.title}</h1>
+            <p className="text-muted text-md" style={{ whiteSpace: "pre-wrap" }}>
+              {question?.body}
+            </p>
           </div>
           <div className="relative max-w-96 my-2">
             <ImageWIthSkeleton src={question?.image_url} alt="question image" className={"w-full h-full peer"} />
@@ -213,7 +234,7 @@ export default function QuestionDetailPage() {
           {errors?.body && <div className="text-danger text-sm">{errors?.body}</div>}
 
           <div className="flex items-center justify-between mt-4">
-            <div className="text-sm text-muted">Be respectful. Cite sources where relevant.</div>
+            <div className="text-sm text-muted hidden sm:block">Be respectful. Cite sources where relevant.</div>
             <div className="flex items-center gap-2">
               <button
                 className="btn btn-ghost"
@@ -240,7 +261,7 @@ export default function QuestionDetailPage() {
         </div>
         {/*  Comments and solution section  */}
         <div className="card bg-base-100 p-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between sm:flex-row flex-col">
             <div role="tablist" className="tabs tabs-box w-fit">
               <div
                 role="tab"
@@ -261,7 +282,7 @@ export default function QuestionDetailPage() {
                 Solution
               </div>
             </div>
-            <select className="select" onChange={(e) => handleSortChangeApi(e.target.value)}>
+            <select className="select select-sm sm:mt-0 mt-3" onChange={(e) => handleSortChangeApi(e.target.value)}>
               <option value="created_at,desc" selected>
                 Latest
               </option>

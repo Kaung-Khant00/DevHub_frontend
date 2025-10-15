@@ -142,9 +142,9 @@ export const deleteMessage = createAsyncThunk("questions/deleteMessage", async (
     return rejectWithValue(err.response?.data || err.message);
   }
 });
-export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (id, { rejectWithValue }) => {
+export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async ({ id }, { rejectWithValue }) => {
   try {
-    await api.delete(`/questions/${id}`);
+    await api.delete(`/questions/${id}/question`);
     return id;
   } catch (err) {
     return rejectWithValue(err.response?.data || err.message);
@@ -413,8 +413,8 @@ const questionSlice = createSlice({
         state.messages.allMessages = state.messages.allMessages.filter((m) => m.id !== message.id);
       })
       .addCase(deleteQuestion.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = state.items.filter((q) => q.id !== action.payload);
+        state.fetch.deleteLoading = false;
+        state.fetch.data = state.fetch.data.filter((question) => question.id !== action.payload.id);
       })
       // Generic loading matcher
       .addMatcher(isPending, (state, action) => {
@@ -443,6 +443,9 @@ const questionSlice = createSlice({
             break;
           case "toggleQuestionLike":
             state.likeLoading = true;
+            break;
+          case "deleteQuestion":
+            state.fetch.deleteLoading = true;
             break;
         }
       })
@@ -476,6 +479,9 @@ const questionSlice = createSlice({
             break;
           case "toggleQuestionLike":
             state.likeLoading = false;
+            break;
+          case "deleteQuestion":
+            state.fetch.deleteLoading = false;
             break;
         }
       });

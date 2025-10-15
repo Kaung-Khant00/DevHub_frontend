@@ -190,9 +190,11 @@ export const filterSortPosts = createAsyncThunk(
   "user/fetchUserPosts",
   async ({ searchQuery, sortBy }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/profile/posts/search", {
-        searchQuery,
-        sortBy,
+      const response = await api.get("/profile/posts/search", {
+        params: {
+          searchQuery,
+          sortBy,
+        },
       });
       console.log(response);
       return response.data.posts;

@@ -4,6 +4,7 @@ import Pagination from "../../../Pages/Admin/Pagination";
 import { fetchAllGroupRequest, fetchGroupRequest } from "../../../Redux/admin/admin.groupRequest";
 import GroupCreationRequestRole from "../TableRoles/GroupCreationRequestRole";
 import { FaInbox } from "react-icons/fa";
+import Spinner from "../../Common/Spinner";
 
 const GroupCreationRequestTable = () => {
   const {
@@ -91,19 +92,26 @@ const GroupCreationRequestTable = () => {
           </thead>
           <tbody>
             {data && data.map((group) => <GroupCreationRequestRole group={group} key={group.id} />)}
-            {requestStatus === "pending" && data?.length === 0 && (
+            {!fetchLoading && data?.length === 0 && (
               <tr>
                 <td colSpan={6} className="text-center text-xl font-bold py-5 text-gray-500">
                   <div className="flex flex-col items-center justify-center py-12 text-gray-500">
                     <FaInbox size={40} />
                     <p className="mt-4 text-lg">No group requests found</p>
-                    <p className="text-sm">Once users request to create groups, you’ll see them here.</p>
+                    {requestStatus === "pending" && (
+                      <p className="text-sm">Once users request to create groups, you’ll see them here.</p>
+                    )}
                   </div>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        {fetchLoading && (
+          <div className="flex justify-center items-center h-10">
+            <Spinner />
+          </div>
+        )}
         <div>
           <div className="mt-6 flex justify-center">
             <Pagination currentPage={page} totalPages={pagination.last_page} setPage={setPage} loading={fetchLoading} />

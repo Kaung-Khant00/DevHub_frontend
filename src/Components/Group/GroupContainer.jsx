@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import GroupCard from "./GroupCard";
 import Spinner from "../Common/Spinner";
 
-const GroupContainer = ({ groupLoading }) => {
+const GroupContainer = () => {
   const { data, loading } = useSelector((state) => state.group.fetch);
   return (
     <>
@@ -13,7 +13,7 @@ const GroupContainer = ({ groupLoading }) => {
           <GroupCard group={group} key={group.id} />
         ))}
       </main>
-      {groupLoading && data.length === 0 && <h1 className="text-center">No Group Found</h1>}
+      {!loading && data.length === 0 && <h1 className="text-center">No Group Found</h1>}
     </>
   );
 };

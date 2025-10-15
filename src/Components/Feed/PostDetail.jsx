@@ -1,13 +1,11 @@
 // DetailPostPage.jsx
 import { useState } from "react";
 import { FaCode, FaFile, FaClock, FaDownload } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { api } from "../../Services/axios_instance";
 import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
 
 export default function DetailPostPage({ detail }) {
   const [expand, setExpand] = useState(false);
-  const navigate = useNavigate();
 
   const contentLimit = 280;
   const isLong = detail.data?.content.length > contentLimit;
@@ -39,11 +37,6 @@ export default function DetailPostPage({ detail }) {
 
   return (
     <div>
-      <div className="flex justify-between">
-        <button className="btn btn-ghost btn-sm md:hidden" onClick={() => navigate(-1)} aria-label="Back">
-          Back
-        </button>
-      </div>
       {detail.loading ? (
         <div className="card-body p-5 rounded shadow-sm my-2 bg-white flex w-full flex-col gap-4">
           <div className="flex items-center gap-4">

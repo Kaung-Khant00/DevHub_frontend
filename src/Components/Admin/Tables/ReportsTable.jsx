@@ -45,8 +45,8 @@ const ReportsTable = () => {
                 <td colSpan={6} className="text-center text-xl font-bold py-5 text-gray-500">
                   <div className="flex flex-col items-center justify-center py-12 text-gray-500">
                     <FaInbox size={40} />
-                    <p className="mt-4 text-lg">No group requests found</p>
-                    <p className="text-sm">Once users request to create groups, you’ll see them here.</p>
+                    <p className="mt-4 text-lg">No reports found yet</p>
+                    <p className="text-sm">Once user reports , you’ll see them here.</p>
                   </div>
                 </td>
               </tr>

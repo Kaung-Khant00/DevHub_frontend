@@ -7,8 +7,8 @@ function Composer() {
   const navigate = useNavigate();
 
   return (
-    <div className="cardBox">
-      <div className=" p-4">
+    <div className="  flex justify-center">
+      <div className="cardBox p-4 max-w-[700px] w-full">
         <div className="flex gap-3 items-center">
           {/* Avatar */}
           <div className="avatar">
@@ -30,8 +30,7 @@ function Composer() {
           {/* Fake Input (clickable) */}
           <button
             onClick={() => navigate("/post/create")}
-            className="flex-1 text-left input input-bordered cursor-pointer hover:bg-base-200 transition"
-          >
+            className="flex-1 text-left input input-bordered cursor-pointer hover:bg-base-200 transition">
             Start a post…
           </button>
         </div>
@@ -41,27 +40,21 @@ function Composer() {
           <div className="flex gap-5">
             <button
               className="flex items-center gap-2 hover:text-primary"
-              onClick={() => navigate("/post/create?tab=image")}
-            >
+              onClick={() => navigate("/post/create?tab=image")}>
               <FaImage /> Photo
             </button>
             <button
               className="flex items-center gap-2 hover:text-primary"
-              onClick={() => navigate("/post/create?tab=code")}
-            >
+              onClick={() => navigate("/post/create?tab=code")}>
               <FaCode /> Code
             </button>
             <button
               className="flex items-center gap-2 hover:text-primary"
-              onClick={() => navigate("/post/create?tab=file")}
-            >
+              onClick={() => navigate("/post/create?tab=file")}>
               <FaFile /> File
             </button>
           </div>
-          <button
-            onClick={() => navigate("/post/create")}
-            className="btn btn-primary btn-sm"
-          >
+          <button onClick={() => navigate("/post/create")} className="btn btn-primary btn-sm">
             <FaPlus /> New Post
           </button>
         </div>

@@ -38,7 +38,7 @@ const NavBar = ({ setShowSideBar, showSideBar }) => {
         </div>
         <div className="avatar">
           <div className="w-12 rounded-full">
-            <img src={data?.admin_profile?.office_image_url} />
+            <img src={data?.admin_profile?.office_image_url || data?.profile_image_url} />
           </div>
         </div>
       </div>

@@ -39,7 +39,9 @@ const NavBar = () => {
               </Link>
             </li>
             <li className={location.pathname === "/qa" ? "active" : ""}>
-              <a className="btn-purple">Q&A</a>
+              <Link to="/question" className="btn-purple">
+                Questions
+              </Link>
             </li>
           </ul>
         </div>
@@ -95,9 +97,9 @@ const NavBar = () => {
                 Edit Profile
               </Link>
             </li>
-            <li>
+            {/*  <li>
               <a className="btn-purple">Setting</a>
-            </li>
+            </li> */}
             <li onClick={handleLogout}>
               <a className="btn-purple">
                 <div>Logout</div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch, FaPlus, FaSlidersH } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -10,7 +10,6 @@ export default function GroupsPage() {
   const groupCreationRequests = useSelector((state) => state.notification.groupRequest.data);
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
-  const groupLoading = useSelector((state) => state.group.fetch.loading);
 
   function searchGroupApi() {
     dispatch(fetchGroups({ searchQuery }));
@@ -76,20 +75,18 @@ export default function GroupsPage() {
               </button>
             </div>
 
-            <div className="hidden sm:flex items-center gap-2">
-              <select
-                defaultValue="Sort By"
-                className="select"
-                onChange={(e) => dispatch(fetchGroups({ sortBy: e.target.value }))}>
-                <option disabled>Sort By</option>
-                <option value="members_count,desc">Most members</option>
-                <option value="posts_count,desc">Most posts</option>
-              </select>
-            </div>
+            <select
+              defaultValue="Sort By"
+              className="select"
+              onChange={(e) => dispatch(fetchGroups({ sortBy: e.target.value, searchQuery }))}>
+              <option disabled>Sort By</option>
+              <option value="members_count,desc">Most members</option>
+              <option value="posts_count,desc">Most posts</option>
+            </select>
           </div>
         </div>
       </div>
-      <GroupContainer groupLoading={groupLoading} />
+      <GroupContainer />
     </div>
   );
 }

@@ -10,12 +10,14 @@ const ProfilePosts = ({ posts, loading }) => {
       )}
       {/* FIXME: I have to fix the post liking cuz it is not the same as liking post in postCard*/}
 
-      {posts?.length > 0 && (
+      {!loading && posts?.length > 0 ? (
         <>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} isInProfile={true} />
           ))}
         </>
+      ) : (
+        <div className="m-3">No posts upload yet</div>
       )}
     </div>
   );

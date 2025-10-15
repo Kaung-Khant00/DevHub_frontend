@@ -14,7 +14,7 @@ function PostCard({ post, isInProfile = false }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, file, content, title, code, code_lang, followed, image, image_url, created_at_formatted } = post;
+  const { user, file, content, title, code, code_lang, followed, image, image_url, created_at_formatted, tags } = post;
   const { user: authUser } = useSelector((state) => state.user);
   const likeLoading = useSelector((state) => state.post.like.loading);
   const [expand, setExpand] = useState(false);
@@ -104,6 +104,15 @@ function PostCard({ post, isInProfile = false }) {
 
         {/* Body */}
         <div>
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <span key={tag.id} className="badge badge-outline badge-sm">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
           <h2 className="text-lg font-bold mt-2">{title}</h2>
           <p className="text-base-content/90 text-base leading-relaxed">
             {displayText}
@@ -198,9 +207,9 @@ function PostCard({ post, isInProfile = false }) {
             <FaRegCommentDots size={16} /> <span>Comments</span>
           </Link>
 
-          <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80 cursor-pointer">
+          {/* <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80 cursor-pointer">
             <PiShareFatBold /> <span>Share</span>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

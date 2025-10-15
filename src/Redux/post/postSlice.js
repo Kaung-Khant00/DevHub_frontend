@@ -76,7 +76,7 @@ export const fetchSpecificPost = createAsyncThunk("posts/fetchSpecificPost", asy
 export const editPost = createAsyncThunk("posts/editPost", async ({ id, form, navigate }, { rejectWithValue }) => {
   console.log(form);
   try {
-    const response = await api.patch(`/posts/edit/${id}`, form, {
+    const response = await api.post(`/posts/${id}`, form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     toast.success("Post updated successfully!");
@@ -427,6 +427,13 @@ const postSlice = createSlice({
       .addCase(fetchDetailPost.fulfilled, (state, action) => {
         state.detail.data = action.payload;
         state.detail.loading = false;
+        state.comment.data = [];
+        state.comment.pagination = {
+          perPage: 10,
+          page: 1,
+          lastPage: 1,
+          nextPageURL: null,
+        };
       })
       .addCase(fetchDetailPost.pending, (state) => {
         state.detail.loading = true;

@@ -61,6 +61,7 @@ const AdminsTable = () => {
             )}
           </tbody>
         </table>
+        {!loading && data.length === 0 && <div className="text-center w-full py-5">No admins found</div>}
         <div className="flex justify-center my-5">
           <Pagination currentPage={page} totalPages={pagination.last_page} setPage={setPage} loading={loading} />
         </div>

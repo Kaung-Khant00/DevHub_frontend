@@ -17,6 +17,14 @@ const PostCardAction = ({ authUser, DeletePostApi, EditPostApi, user, FollowUser
     dispatch(setReportingPost(post));
     navigate(`/report/post/${post.id}`);
   }
+  /*   async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard");
+    } catch {
+      toast.error("Failed to copy link");
+    }
+  } */
   return (
     <div className="dropdown dropdown-end">
       <div tabIndex={0} role="button" className="btn btn-circle m-1">
@@ -42,15 +50,15 @@ const PostCardAction = ({ authUser, DeletePostApi, EditPostApi, user, FollowUser
           </li>
         )}
 
-        <li>
-          <a>
+        {/*         <li>
+          <div onClick={copyLink}>
             <FaLink />
             Copy Link
-          </a>
-        </li>
-        <li>
+          </div>
+        </li> */}
+        {/*         <li>
           <a>Share</a>
-        </li>
+        </li> */}
         {user?.id === authUser?.id ? (
           <li>
             <div onClick={DeletePostApi} className="text-red-600 hover:bg-red-500 hover:text-white">

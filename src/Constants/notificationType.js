@@ -45,7 +45,12 @@ export const NOTIFICATION_TYPES = {
     bgClass: "bg-yellow-50",
     badgeText: "Violation",
   },
-
+  SOLUTION: {
+    Icon: FaCheckCircle,
+    colorClass: "text-success",
+    bgClass: "bg-success/10",
+    badgeText: "Violation",
+  },
   SYSTEM: {
     Icon: FaBell,
     colorClass: "text-gray-600",

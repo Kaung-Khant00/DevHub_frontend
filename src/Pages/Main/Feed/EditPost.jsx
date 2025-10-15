@@ -27,7 +27,7 @@ export default function EditPost() {
   };
 
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState();
+  const [imagePreview, setImagePreview] = useState(null);
   const [attachedFile, setAttachedFile] = useState(null);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
@@ -41,17 +41,15 @@ export default function EditPost() {
   const codeRef = useRef();
 
   useEffect(() => {
-    dispatch(fetchSpecificPost(id, setPost));
-  }, [dispatch, id]);
-  useEffect(() => {
-    if (data) {
-      setPost(data);
-      if (data.image) {
-        setImagePreview(data?.image_url);
-      }
-      setTags(data.tags);
-    }
-  }, [data]);
+    const fetchPost = async () => {
+      const response = await dispatch(fetchSpecificPost(id)).unwrap();
+      console.log("FETCHING", response);
+      setPost(response);
+      setImagePreview(response.image_url);
+      setTags(response.tags);
+    };
+    fetchPost();
+  }, [id]);
 
   function onImageSelect(e) {
     const file = e.target.files && e.target.files[0];
@@ -106,6 +104,16 @@ export default function EditPost() {
       user_id: data.user.id,
     };
     console.log(form);
+    if (imagePreview) {
+      setImagePreview(null);
+      setImageFile(null);
+      URL.revokeObjectURL(imagePreview);
+    }
+    if (attachedFile) {
+      setAttachedFile(null);
+      URL.revokeObjectURL(attachedFile);
+    }
+
     dispatch(editPost({ id: post.id, form, navigate }));
   }
 
@@ -296,6 +304,22 @@ export default function EditPost() {
                               Remove image
                             </button>
                           )}
+                        </div>
+                      )}
+                      {!post?.image && (
+                        <div className="flex-1">
+                          <button
+                            className="btn btn-sm btn-error mb-2 w-full text-white"
+                            onClick={() => {
+                              setDeletingPrevious((pre) => ({
+                                ...pre,
+                                image: true,
+                              }));
+                              setImageFile(null);
+                              setImagePreview(null);
+                            }}>
+                            Remove image
+                          </button>
                         </div>
                       )}
 

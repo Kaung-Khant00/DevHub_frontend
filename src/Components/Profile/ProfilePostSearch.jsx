@@ -38,21 +38,14 @@ const ProfilePostSearch = ({ postsLength }) => {
                 </div>
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] w-40 p-2 shadow"
-                >
+                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] w-40 p-2 shadow">
                   <li>
-                    <button
-                      className={sortBy === "desc" ? "menu-active" : ""}
-                      onClick={() => handleSorting("desc")}
-                    >
+                    <button className={sortBy === "desc" ? "menu-active" : ""} onClick={() => handleSorting("desc")}>
                       Latest
                     </button>
                   </li>
                   <li>
-                    <button
-                      className={sortBy === "asc" ? "menu-active" : ""}
-                      onClick={() => handleSorting("asc")}
-                    >
+                    <button className={sortBy === "asc" ? "menu-active" : ""} onClick={() => handleSorting("asc")}>
                       Oldest
                     </button>
                   </li>

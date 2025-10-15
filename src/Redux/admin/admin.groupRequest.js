@@ -99,7 +99,7 @@ const initialState = {
       current_page: 1,
       all_per_page: 3,
       last_page: 1,
-      per_page: 1,
+      per_page: 3,
       total: null,
     },
     status: "pending",

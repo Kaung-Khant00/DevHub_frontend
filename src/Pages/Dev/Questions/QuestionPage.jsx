@@ -32,17 +32,15 @@ export default function DevQPage() {
   return (
     <div className="min-h-screen p-6 bg-base-200 w-full">
       <div className="max-w-6xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
+        <header className="flex flex-col items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold ">Developer Q • Ask & Discover</h1>
             <p className="text-sm opacity-70">Concise questions. Fast answers. Clear outcomes.</p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link to="create" className="btn btn-primary btn-sm gap-2">
-              <FiPlus /> Create Question
-            </Link>
-          </div>
+          <Link to="create" className="sm:hidden flex btn btn-primary btn-sm gap-2 w-full sm:mt-0 mt-3">
+            <FiPlus /> Create Question
+          </Link>
         </header>
 
         {/* search + filters */}
@@ -96,6 +94,9 @@ export default function DevQPage() {
               </select>
             </div>
           </div>
+          <Link to="create" className="btn btn-primary gap-2 w-full sm:mt-0 mt-3 sm:flex hidden">
+            <FiPlus /> Create Question
+          </Link>
         </div>
 
         {/* results */}

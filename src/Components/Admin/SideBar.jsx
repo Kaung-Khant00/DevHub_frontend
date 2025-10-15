@@ -16,7 +16,7 @@ import { logoutUser } from "../../Redux/user/userSlice";
 import { Link, useLocation } from "react-router-dom";
 
 const SideBar = ({ showSideBar }) => {
-  const admin = useSelector((state) => state.user.admin);
+  const admin = useSelector((state) => state.admin.user.user.data);
   const dispatch = useDispatch();
   const location = useLocation();
   function handleLogout() {
@@ -31,7 +31,7 @@ const SideBar = ({ showSideBar }) => {
         }`}>
         <ul className=" bgInfo menu text-gray-700 flex flex-col gap-2 items-center">
           {/* Dashboard */}
-          <li className={isActive("/admin/dashboard") ? "active" : ""}>
+          {/*           <li className={isActive("/admin/dashboard") ? "active" : ""}>
             <Link
               to="/admin/dashboard"
               className="bg-gray-300 flex justify-center p-2 rounded-md hover:bg-info"
@@ -40,7 +40,7 @@ const SideBar = ({ showSideBar }) => {
                 <HiOutlineHome className="text-2xl" />
               </span>
             </Link>
-          </li>
+          </li> */}
 
           {/* Management */}
           {admin?.role === "SUPER_ADMIN" && (
@@ -59,27 +59,27 @@ const SideBar = ({ showSideBar }) => {
               </span>
             </Link>
           </li>
-          <li className={isActive("/admin/posts") ? "active" : ""}>
+          {/*  <li className={isActive("/admin/posts") ? "active" : ""}>
             <Link to="/admin/posts" className="flex justify-center p-2 rounded-md hover:bg-info" title="Posts">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Posts">
                 <HiOutlineDocumentText className="text-2xl" />
               </span>
             </Link>
-          </li>
-          <li className={isActive("/admin/questions") ? "active" : ""}>
+          </li> */}
+          {/* <li className={isActive("/admin/questions") ? "active" : ""}>
             <Link to="/admin/questions" className="flex justify-center p-2 rounded-md hover:bg-info" title="Questions">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Questions">
                 <HiOutlineQuestionMarkCircle className="text-2xl" />
               </span>
             </Link>
-          </li>
-          <li className={isActive("/admin/groups") ? "active" : ""}>
+          </li> */}
+          {/* <li className={isActive("/admin/groups") ? "active" : ""}>
             <Link to="/admin/groups" className="flex justify-center p-2 rounded-md hover:bg-info" title="Groups">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Groups">
                 <HiOutlineCollection className="text-2xl" />
               </span>
             </Link>
-          </li>
+          </li> */}
           <li className={isActive("/admin/group_creation_requests") ? "active" : ""}>
             <Link
               to="/admin/group_creation_requests"
@@ -99,20 +99,20 @@ const SideBar = ({ showSideBar }) => {
           </li>
 
           {/* Account */}
-          <li className={isActive("/admin/profile") ? "active" : ""}>
+          {/* <li className={isActive("/admin/profile") ? "active" : ""}>
             <Link to="/admin/profile" className="flex justify-center p-2 rounded-md hover:bg-info" title="Profile">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Profile">
                 <HiOutlineUser className="text-2xl" />
               </span>
             </Link>
-          </li>
-          <li className={isActive("/admin/settings") ? "active" : ""}>
+          </li> */}
+          {/* <li className={isActive("/admin/settings") ? "active" : ""}>
             <Link to="/admin/settings" className="flex justify-center p-2 rounded-md hover:bg-info" title="Settings">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Settings">
                 <HiOutlineCog className="text-2xl" />
               </span>
             </Link>
-          </li>
+          </li> */}
           <li>
             <div onClick={handleLogout} className="flex justify-center p-2 rounded-md hover:bg-info" title="Logout">
               <span className="tooltip tooltip-right tooltip-info" data-tip="Logout">
@@ -128,16 +128,17 @@ const SideBar = ({ showSideBar }) => {
           showSideBar ? "w-0" : "w-60"
         }`}>
         <ul className="menu py-0 px-4 w-full ">
-          <li className="pt-8">
+          {/*           <li className="pt-8">
             <a href="/admin/dashboard" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineHome className="text-xl" />
               <span>Dashboard</span>
             </a>
-          </li>
+          </li> */}
 
           {/* Management */}
           <li className="menu-title mt-4 text-blue-300">Management</li>
-          {admin?.role === "SUPER_ADMIN" && (
+
+          {admin?.role == "SUPER_ADMIN" && (
             <li>
               <details>
                 <summary className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
@@ -146,12 +147,12 @@ const SideBar = ({ showSideBar }) => {
                 </summary>
                 <ul>
                   <li>
-                    <a>Admin List</a>
+                    <Link to={"/admin/admins"}>Admin List</Link>
                   </li>
 
-                  <li>
+                  {/* <li>
                     <a>Admin Actions</a>
-                  </li>
+                  </li> */}
                   <li>
                     <Link to="/admin/admins/create">Create Admin</Link>
                   </li>
@@ -165,24 +166,24 @@ const SideBar = ({ showSideBar }) => {
               <span>Users</span>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <a href="/admin/posts" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineDocumentText className="text-xl" />
               <span>Posts</span>
             </a>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <a href="/admin/questions" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineQuestionMarkCircle className="text-xl" />
               <span>Questions</span>
             </a>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <a href="/admin/groups" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineCollection className="text-xl" />
               <span>Groups</span>
             </a>
-          </li>
+          </li> */}
           <li>
             <Link to="/admin/group_creation_requests" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <MdLibraryAdd className="text-xl" />
@@ -190,26 +191,26 @@ const SideBar = ({ showSideBar }) => {
             </Link>
           </li>
           <li>
-            <a href="/admin/reports" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
+            <Link to="/admin/reports" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineExclamationCircle className="text-xl" />
               <span>Reports</span>
-            </a>
+            </Link>
           </li>
 
           {/* Account */}
           <li className="menu-title mt-4 text-blue-300">Account</li>
-          <li>
+          {/* <li>
             <a href="/admin/profile" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineUser className="text-xl" />
               <span>Profile</span>
             </a>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <a href="/admin/settings" className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineCog className="text-xl" />
               <span>Settings</span>
             </a>
-          </li>
+          </li> */}
           <li>
             <div onClick={handleLogout} className="flex items-center gap-2 hover:bg-info p-2 rounded-md">
               <HiOutlineLogout className="text-xl" />

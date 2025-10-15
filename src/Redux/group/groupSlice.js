@@ -19,21 +19,24 @@ export const createGroup = createAsyncThunk("group/createGroup", async (groupDat
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
-export const fetchGroups = createAsyncThunk("group/fetchGroups", async ({ sortBy, query }, { rejectWithValue }) => {
-  try {
-    const response = await api.get(`groups`, {
-      params: {
-        sortBy,
-        query,
-      },
-    });
-    console.log(response);
-    return response.data.groups;
-  } catch (err) {
-    console.log(err);
-    return rejectWithValue(err.response?.data?.errors || err.message);
+export const fetchGroups = createAsyncThunk(
+  "group/fetchGroups",
+  async ({ sortBy, searchQuery }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`groups`, {
+        params: {
+          sortBy,
+          searchQuery,
+        },
+      });
+      console.log(response);
+      return response.data.groups;
+    } catch (err) {
+      console.log(err);
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
   }
-});
+);
 
 export const fetchGroupDetail = createAsyncThunk("group/fetchGroupDetail", async (id, { rejectWithValue }) => {
   try {
