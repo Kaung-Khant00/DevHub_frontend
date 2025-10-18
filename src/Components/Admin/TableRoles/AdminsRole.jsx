@@ -39,11 +39,11 @@ const AdminsRole = ({ admin }) => {
             <BiEdit size={20} />
           </Link>
         </div>
-        <div className="tooltip tooltip-error " data-tip="Delete permanently">
+        {/*         <div className="tooltip tooltip-error " data-tip="Delete permanently">
           <button className="btn btn-square btn-error btn-soft hover:text-white">
             <MdDelete size={20} />
           </button>
-        </div>
+        </div> */}
         <div className="tooltip tooltip-error " data-tip="Ban user">
           {/* TODO:: ban user feature is not available yet */}
           {/*<button className="btn btn-square btn-error btn-soft hover:text-white">

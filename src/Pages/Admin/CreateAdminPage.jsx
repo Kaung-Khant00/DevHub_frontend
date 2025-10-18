@@ -27,7 +27,6 @@ export default function CreateAdminPage() {
     gender: "",
   });
   const { id } = useParams();
-  console.log(id ? "This is create page" : "This is edit page");
   const [officeImagePreview, setOfficeImagePreview] = useState(null);
   const detailLoading = useSelector((state) => state.admin.admins.detail.loading);
   const { loading, updatingLoading } = useSelector((state) => state.admin.admins.create);
@@ -107,12 +106,6 @@ export default function CreateAdminPage() {
     setFileSize(0);
     fileRef.current && (fileRef.current = null);
   };
-  function handleRemoveImage() {
-    setOfficeImagePreview(null);
-    URL.revokeObjectURL(officeImagePreview);
-    setFileSize(0);
-    fileRef.current && (fileRef.current = null);
-  }
   async function onSubmit(e) {
     e.preventDefault();
     console.log(fileRef.current);
@@ -120,6 +113,7 @@ export default function CreateAdminPage() {
       try {
         await dispatch(editAdminById({ id, form, officeImage: fileRef.current ?? null })).unwrap();
         toast.success("Admin updated successfully");
+        resetData();
       } catch {
         toast.error("Failed to update admin");
       }
@@ -333,11 +327,7 @@ export default function CreateAdminPage() {
                   </div>
                 )}
                 {error?.officeImage && <div className="text-error text-sm">{error.officeImage}</div>}
-                {officeImagePreview && (
-                  <button onClick={handleRemoveImage} className="btn">
-                    Remove image
-                  </button>
-                )}
+
                 <div className="mt-4">
                   <label className="label">
                     <span className="label-text">Upload avatar</span>

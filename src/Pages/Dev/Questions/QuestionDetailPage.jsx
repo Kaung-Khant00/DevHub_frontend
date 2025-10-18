@@ -37,7 +37,6 @@ export default function QuestionDetailPage() {
   const { id } = useParams();
   const isFetched = useRef(false);
   const inputRef = useRef(null);
-
   useEffect(() => {
     const fetchData = () => {
       if (!isFetched.current && !messageLoading) {
@@ -120,7 +119,8 @@ export default function QuestionDetailPage() {
       toast.error("Something went wrong!");
     }
   }
-  if (loading) {
+  console.log("+++++", question);
+  if (loading && !question) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 w-full">
         <div className="text-center">
@@ -145,11 +145,13 @@ export default function QuestionDetailPage() {
                     <TbUserQuestion size={24} />
                   </div>
                 ) : (
-                  <ImageWIthSkeleton
-                    src={question?.user?.profile_image_url}
-                    alt="avatar"
-                    className={"w-full h-full rounded-full"}
-                  />
+                  <Link to={`/profile/${question?.user?.id}`}>
+                    <ImageWIthSkeleton
+                      src={question?.user?.profile_image_url}
+                      alt="avatar"
+                      className={"w-full h-full rounded-full"}
+                    />
+                  </Link>
                 )}
               </div>
             </div>

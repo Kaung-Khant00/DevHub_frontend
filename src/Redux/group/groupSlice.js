@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice, isPending, isRejected } from "@reduxjs/t
 import { api } from "../../Services/axios_instance";
 import { toast } from "react-toastify";
 import { fetchGroupRequest } from "../user/notificationSlice";
-import { resetPostPagination } from "./groupPostsSlice";
 
 export const createGroup = createAsyncThunk("group/createGroup", async (groupData, { rejectWithValue, dispatch }) => {
   try {
@@ -140,10 +139,10 @@ const groupSlice = createSlice({
             : state.detail.data.members_count - 1;
         }
       })
-      .addCase(createGroupPost.fulfilled, (state, action) => {
+      .addCase(createGroupPost.fulfilled, (state) => {
         state.createPost.loading = false;
         state.createPost.error = null;
-        state.fetch.data = [action.payload, ...state.fetch.data];
+        state.fetch.data = [];
       })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];

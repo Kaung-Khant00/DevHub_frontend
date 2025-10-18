@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isPending, isRejected } from "@reduxjs/toolkit";
 import { api } from "../../Services/axios_instance";
+import { toast } from "react-toastify";
 
 export const fetchReports = createAsyncThunk(
   "report/fetchReports",
@@ -86,6 +87,7 @@ export const notifyOwner = createAsyncThunk("report/notifyOwner", async (notific
   try {
     const response = await api.post(`/admin/reports/notify/owner`, notification);
     console.log("notify owner", response);
+    toast.success("Message send");
     return response.data.report;
   } catch (err) {
     console.log(err);
@@ -110,7 +112,7 @@ const initialState = {
     status: "",
   },
   pagination: {
-    per_page: 2,
+    per_page: 4,
     current_page: 1,
     last_page: null,
     sortBy: "created_at,desc",
@@ -164,7 +166,7 @@ const adminReportsSlice = createSlice({
       })
       .addCase(changeReportStatus.fulfilled, (state, action) => {
         state.detail.data = action.payload;
-        if (state.fetch.data.length > 0) {
+        if (state.fetch.data?.length > 0) {
           state.fetch.data = state.fetch.data.map((report) => {
             if (report.id === action.payload.id) {
               return action.payload;

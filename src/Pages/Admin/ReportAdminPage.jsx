@@ -67,11 +67,11 @@ const ReportAdminPage = () => {
           />
         </div> */}
         <div className="w-1/3 flex flex-1">
-          <div className="flex-1">
+          {/*           <div className="flex-1">
             <input type="text" className="input w-full rounded-r-none" />
           </div>
-          <button className="btn btn-info text-white rounded-l-none rounded-r-none">Search</button>
-          <select onChange={(e) => changeStatus(e.target.value)} name="status" className="select w-fit rounded-l-none">
+          <button className="btn btn-info text-white rounded-l-none rounded-r-none">Search</button> */}
+          <select onChange={(e) => changeStatus(e.target.value)} name="status" className="select w-40">
             <option value="">All</option>
             <option value="pending" className="text-warning">
               Pending

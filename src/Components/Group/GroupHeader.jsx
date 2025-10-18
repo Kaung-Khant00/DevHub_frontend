@@ -18,7 +18,7 @@ const GroupHeader = ({ group, admin }) => {
         <ImageWIthSkeleton
           src={group?.image_url}
           alt="group cover"
-          className={"absolute inset-0 w-full h-full object-cover opacity-75"}
+          className={"absolute inset-0 w-full h-full object-cover opacity-75 blur-[5px]"}
         />
       </div>
 
@@ -26,7 +26,7 @@ const GroupHeader = ({ group, admin }) => {
       <div className="p-5 flex items-start gap-5 ">
         <div className="flex-shrink-0">
           <div className="w-20 h-20 rounded-lg ring ring-primary/30 overflow-hidden">
-            <a href="#group" title="Open group" className="block w-full h-full">
+            <a href="#group" title="Open group" className="block w-full h-full ">
               <img src={group?.image_url} alt="group avatar" className="w-full h-full object-cover" />
             </a>
           </div>
@@ -55,10 +55,16 @@ const GroupHeader = ({ group, admin }) => {
             <div className="flex items-center gap-3">
               {admin?.id !== userId ? (
                 <>
-                  <button className={`btn btn-primary ${!group?.joined && "btn-soft"}`} onClick={joinGroupApi}>
-                    {group?.joined ? "Joined" : "Join"}
-                  </button>
-                  <button className="btn btn-primary">Message</button>
+                  {!admin ? (
+                    <div>Admin acc Deleted</div>
+                  ) : (
+                    <>
+                      <button className={`btn btn-primary ${!group?.joined && "btn-soft"}`} onClick={joinGroupApi}>
+                        {group?.joined ? "Joined" : "Join"}
+                      </button>
+                      <button className="btn btn-primary">Message</button>
+                    </>
+                  )}
                 </>
               ) : (
                 <div className="badge badge-primary"> Admin</div>
@@ -77,14 +83,18 @@ const GroupHeader = ({ group, admin }) => {
         </div>
 
         {/* Compact admin bubble attached to header (smaller) */}
-        {admin?.id !== userId && (
+        {admin && admin?.id !== userId && (
           <div className="absolute right-4 top-28 transform translate-y-1/2">
             <Link
               to={`/profile/${admin?.id}`}
               title={`View ${admin?.name} profile`}
               className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full ring ring-primary/30 overflow-hidden cursor-pointer">
-                <ImageWIthSkeleton src={admin?.profile_url} alt={admin?.name} className="w-full h-full object-cover" />
+                <ImageWIthSkeleton
+                  src={admin?.profile_image_url}
+                  alt={admin?.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="hidden sm:block text-sm badge badge-primary badge-soft">
                 <div className="font-medium ">{admin?.name}</div>

@@ -31,7 +31,7 @@ export const createPost = createAsyncThunk("posts/createPost", async ({ form, na
 */
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
-  async ({ perPage = 10, page = 1, sortBy = "created_at,desc", isFetchingRef = null } = {}, { rejectWithValue }) => {
+  async ({ perPage = 10, page = 1, sortBy = "created_at,desc" } = {}, { rejectWithValue }) => {
     try {
       const response = await api.get(`/posts`, {
         params: { perPage, page, sortBy },
@@ -41,14 +41,6 @@ export const fetchPosts = createAsyncThunk(
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.errors || err.message);
-    } finally {
-      try {
-        if (isFetchingRef) {
-          isFetchingRef.current = false;
-        }
-      } catch (e) {
-        console.log(e);
-      }
     }
   }
 );
@@ -101,7 +93,6 @@ export const deletePost = createAsyncThunk("posts/deletePost", async (id, { reje
     return response.data;
   } catch (err) {
     console.log(err);
-    toast.error("You can't delete others posts!");
     return rejectWithValue(err.response?.data?.errors || err.message);
   }
 });
@@ -239,7 +230,7 @@ export const followUser = createAsyncThunk(
   "posts/followUser",
   async ({ userId, isInProfile = false }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await api.get(`/users/${userId}/follow`);
+      const response = await api.get(`/user/${userId}/follow`);
       if (isInProfile) {
         dispatch(followProfileUser());
       }
@@ -471,6 +462,12 @@ const postSlice = createSlice({
         state.comment.createLoading = false;
         state.detail.data.comments_count += 1;
         state.comment.data = [action.payload, ...state.comment.data];
+        state.posts = state.posts.map((post) => {
+          if (post.id === action.payload.post_id) {
+            return { ...post, comments_count: post.comments_count + 1 };
+          }
+          return post;
+        });
       })
       .addCase(deleteComment.fulfilled, (state, action) => {
         state.comment.deleteLoading = false;

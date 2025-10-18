@@ -109,6 +109,10 @@ const router = createBrowserRouter([
                 path: ":id/post/create",
                 element: <CreateGroupPost />,
               },
+              /*               {
+                path: ":id/post/:postId/edit",
+                element: <CreateGroupPost />,
+              }, */
               {
                 path: ":postId/post/comments",
                 element: <GroupCommentPage />,

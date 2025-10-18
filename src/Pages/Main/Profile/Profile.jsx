@@ -34,7 +34,7 @@ export default function ProfilePage() {
         <div className=" min-h-screen bg-base-100">
           {/* Cover */}
           <div className="relative">
-            <ReturnBackButton defaultBackTo={"/feed"} except={"/profile/edit"} />
+            <ReturnBackButton defaultBackTo={-1} except={"/profile"} />
             <div className="h-30 w-full bg-gradient-to-r from-primary/30 via-secondary/30 to-accent/30 rounded-b-2xl" />
             <div className="max-w-6xl mx-auto px-4">
               <div className="absolute -bottom-12 md:-bottom-14 max-sm:inset-x-0 flex sm:block justify-center">

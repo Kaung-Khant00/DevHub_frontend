@@ -225,6 +225,17 @@ export const fetchDeveloperProfile = createAsyncThunk(
   }
 );
 
+export const deleteUser = createAsyncThunk("user/deleteUser", async (confirmText, { rejectWithValue }) => {
+  try {
+    const response = await api.post("/user/delete", { confirmText });
+    console.log(response);
+    // localStorage.clear();
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return rejectWithValue("Failed to delete user");
+  }
+});
 /*
 |------------------------------------------------------------------------
 | INITIAL STATE

@@ -7,9 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { deletePost } from "../../Redux/post/postSlice";
 import { api } from "../../Services/axios_instance";
 import Spinner from "../Common/Spinner";
-import PostCardAction from "../Common/PostCardAction";
-import { followUser } from "../../Redux/post/postSlice";
 import { likeGroupPost } from "../../Redux/group/groupPostsSlice";
+import GroupPostCardAction from "../Common/GroupPostCardAction";
 
 function PostCard({ post }) {
   const navigate = useNavigate();
@@ -35,11 +34,6 @@ function PostCard({ post }) {
 
   function DeletePostApi() {
     dispatch(deletePost(post.id));
-  }
-  function FollowUserApi() {
-    if (user.id) {
-      dispatch(followUser({ userId: user.id }));
-    }
   }
   async function handleFileDownload(path) {
     try {
@@ -77,18 +71,20 @@ function PostCard({ post }) {
               <div className="text-sm text-base-content/60">Posted in {created_at_formatted}</div>
             </div>
           </div>
-          <PostCardAction
-            authUser={authUser}
-            DeletePostApi={DeletePostApi}
-            EditPostApi={EditPostApi}
-            FollowUserApi={FollowUserApi}
-            user={user}
-            followed={followed}
-          />
+          <GroupPostCardAction authUser={authUser} user={user} followed={followed} post={post} />
         </div>
 
         {/* Body */}
         <div>
+          {/*           {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <span key={tag.id} className="badge badge-outline badge-sm">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )} */}
           <h2 className="text-lg font-bold mt-2">{title}</h2>
           <p className="text-base-content/90 text-base leading-relaxed">
             {displayText}

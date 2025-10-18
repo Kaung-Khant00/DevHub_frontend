@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ProfileImagePopup from "../../../Components/Profile/ProfileImagePopup";
 import { editProfile } from "../../../Redux/user/userSlice";
+import DeleteUser from "../../Auth/DeleteUser";
 
 export default function DeveloperProfileEdit() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -105,6 +106,7 @@ export default function DeveloperProfileEdit() {
                           placeholder="+95 9 123 456 789"
                         />
                       </div>
+                      {error?.phone && <div className="text-xs text-error mt-1">{error?.phone}</div>}
                     </div>
                     <div className="w-full">
                       <label className="label">
@@ -293,15 +295,17 @@ export default function DeveloperProfileEdit() {
               </Link>
             </div>
 
-            {/*             <div>
-              <button
-                type="button"
-                className="btn btn-outline btn-error"
-                onClick={() => setShowDeleteConfirm(true)}
-                aria-label="Delete account">
-                <FaTrash /> Delete account
-              </button>
-            </div> */}
+            {
+              <div>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-error"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  aria-label="Delete account">
+                  <FaTrash /> Delete account
+                </button>
+              </div>
+            }
           </div>
 
           {/* Server error */}
@@ -309,27 +313,7 @@ export default function DeveloperProfileEdit() {
         </form>
       </div>
       {/* Delete confirmation modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="bg-base-100 rounded-xl p-6 max-w-md w-full shadow-lg border border-base-200">
-            <h3 className="text-lg font-semibold">Confirm account deletion</h3>
-            <p className="mt-2 text-sm opacity-80">
-              This action cannot be undone. All your data will be removed. Are you sure?
-            </p>
-            <div className="mt-4 flex items-center justify-end gap-2">
-              <button className="btn btn-ghost" onClick={() => setShowDeleteConfirm(false)}>
-                Cancel
-              </button>
-              <button
-                className={`btn btn-error ${loading ? "loading" : ""}`}
-                // onClick={handleDelete}
-              >
-                Yes, delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {showDeleteConfirm && <DeleteUser setShowDeleteConfirm={setShowDeleteConfirm} />}
     </div>
   );
 }

@@ -8,12 +8,12 @@ const AdminsPage = () => {
       <div className="flex justify-between">
         <div className="text-2xl font-bold text-info-content flex-1">Admins</div>
 
-        <div className="w-full flex justify-end">
+        {/* <div className="w-full flex justify-end">
           <div className="w-1/3">
             <input type="text" className="input w-full rounded-r-none" />
           </div>
           <button className="btn btn-primary rounded-l-none">Search</button>
-        </div>
+        </div> */}
         <Link to="create" className="btn btn-primary ml-2">
           Create Admin
           <BiPlus size={20} />

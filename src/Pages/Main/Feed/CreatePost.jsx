@@ -19,10 +19,6 @@ export default function CreatePost() {
     return p.get("tab");
   }, [search]);
 
-  const isOpen = (section) => {
-    return tab === section;
-  };
-
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -144,24 +140,32 @@ export default function CreatePost() {
         {/* LEFT: main column */}
         <div className="flex-3 col-span-3 space-y-5">
           {/* Content Card */}
-          <section
-            className={`collapse ${
-              isOpen("content") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
-            <input type="checkbox" className="hidden" defaultChecked={isOpen("content")} />
+          <section className={`bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
             <div className="card-body p-4">
               <div>
+                <div className="flex justify-between ">
+                  <h2 className="text-md font-semibold">Title</h2>
+                  <div className="text-sm text-base-content/60">
+                    255 <strong className="text-error mx-1">*</strong>
+                    {title.length} letters
+                  </div>
+                </div>
                 <input
                   type="text"
                   className="input input-bordered w-full mb-3 font-semibold text-lg"
                   placeholder="title your post"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 255) setTitle(e.target.value);
+                  }}
                 />
               </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-md font-semibold">Content</h2>
-                <span className="text-sm text-base-content/60 hidden md:inline">Characters: {content.length}</span>
+                <div className="text-sm text-base-content/60">
+                  8000 <strong className="text-error mx-1">*</strong>
+                  {content.length} letters
+                </div>
               </div>
 
               <p className="text-sm text-base-content/60 mb-3 md:hidden">
@@ -171,7 +175,11 @@ export default function CreatePost() {
               <textarea
                 rows={3}
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length <= 8000) {
+                    setContent(e.target.value);
+                  }
+                }}
                 placeholder="What's on your mind?"
                 className="textarea w-full h-20 resize-y font-sans text-sm"
               />
@@ -189,7 +197,6 @@ export default function CreatePost() {
 
           {/* Code Card */}
           <section className={`bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
-            <input type="checkbox" className="hidden" defaultChecked={isOpen("code")} />
             <div className=" p-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-md font-semibold flex items-center gap-2">
@@ -360,11 +367,7 @@ export default function CreatePost() {
           </section>
 
           {/* Tags Card */}
-          <section
-            className={`collapse ${
-              isOpen("tags") ? "collapse-open" : ""
-            } md:collapse-open bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
-            <input type="checkbox" className="hidden" defaultChecked={isOpen("tags")} />
+          <section className={`bg-base-100 border border-base-300 shadow-sm rounded-lg`}>
             <div className="card-body p-4">
               <h2 className="text-md font-semibold">Tags</h2>
               <p className="text-sm text-base-content/60 mb-3 md:hidden">

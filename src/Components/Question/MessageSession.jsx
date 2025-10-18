@@ -9,6 +9,8 @@ import {
 } from "../../Redux/question/questionSlice";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdOutlineThumbDownOffAlt, MdOutlineThumbUpOffAlt, MdThumbDown, MdThumbUp } from "react-icons/md";
+import ImageWIthSkeleton from "../Common/ImageWIthSkeleton";
+import { TbGhost } from "react-icons/tb";
 const MessageSection = ({
   messages = [],
   messageLoading,
@@ -56,12 +58,21 @@ const MessageSection = ({
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <img
-                  src={message.user?.profile_image_url}
-                  alt={message.user?.name}
-                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
-                />
-                <h3 className="font-semibold text-sm truncate">{message.user?.name}</h3>
+                {message.user ? (
+                  <ImageWIthSkeleton
+                    src={message.user?.profile_image_url}
+                    alt={message.user?.name}
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="bg-orange-600 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center">
+                    <TbGhost size={30} />
+                  </div>
+                )}
+                <h3 className="font-semibold text-sm truncate">
+                  {message?.user ? message.user.name : "Deleted account"}
+                </h3>
+
                 {message.type === "solution" && <span className="badge badge-sm badge-success">Solution</span>}
               </div>
 

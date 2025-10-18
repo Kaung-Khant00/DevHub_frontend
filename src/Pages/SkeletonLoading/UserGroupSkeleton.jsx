@@ -34,9 +34,10 @@ const UserGroupSkeleton = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main column skeleton */}
-        <main className="lg:col-span-2">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
+      {/* Main column skeleton */}
+      <div className="flex flex-col items-center">
+        <main className="w-3xl">
           <div className="card bg-base-100 shadow-sm mb-5 p-4 space-y-4">
             <div className="flex gap-3 items-center">
               <div className="w-10 h-10 rounded-full bg-base-200 skeleton"></div>
@@ -54,7 +55,7 @@ const UserGroupSkeleton = () => {
         </main>
 
         {/* Sidebar skeleton */}
-        <aside className="lg:col-span-1 space-y-4">
+        {/*         <aside className="lg:col-span-1 space-y-4">
           <div className="card bg-base-100 shadow-sm p-4 space-y-2">
             <div className="h-5 w-20 bg-base-200 rounded skeleton"></div>
             <div className="h-4 w-32 bg-base-200 rounded skeleton"></div>
@@ -65,7 +66,7 @@ const UserGroupSkeleton = () => {
             <div className="h-4 w-20 bg-base-200 rounded skeleton"></div>
             <div className="h-8 w-full rounded bg-base-200 skeleton"></div>
           </div>
-        </aside>
+        </aside> */}
       </div>
     </div>
   );

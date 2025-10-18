@@ -7,11 +7,11 @@ export const NavigationContext = createContext(null);
 
 export const NavigationProvider = ({ children }) => {
   const location = useLocation();
-  const [previousPath, setPreviousPath] = useState(null);
+  const [previousPath, setPreviousPath] = useState([]);
   const currentPath = useRef(location.pathname);
 
   useEffect(() => {
-    setPreviousPath(currentPath.current);
+    setPreviousPath((pre) => [currentPath.current, ...pre]);
     currentPath.current = location.pathname;
   }, [location.pathname]);
 

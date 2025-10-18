@@ -207,7 +207,7 @@ function PostCard({ post, isInProfile = false }) {
           </button>
 
           <Link to={`/post/${post?.id}/comments`} className="flex items-center gap-1 text-sm text-base-content/80 ">
-            <FaRegCommentDots size={16} /> <span>Comments</span>
+            <FaRegCommentDots size={16} /> <span>{post?.comments_count ?? 0} Comments</span>
           </Link>
 
           {/* <button className="ml-auto flex items-center gap-1 text-sm text-base-content/80 cursor-pointer">

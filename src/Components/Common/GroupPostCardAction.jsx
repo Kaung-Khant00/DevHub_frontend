@@ -1,29 +1,32 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiTrash2 } from "react-icons/fi";
-import { GoReport } from "react-icons/go";
 import { HiOutlineUserAdd } from "react-icons/hi";
 import { HiOutlineUserMinus } from "react-icons/hi2";
 import Spinner from "../Common/Spinner";
+import { followUser } from "../../Redux/post/postSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { setReportingPost } from "../../Redux/report/reportSlice";
-import { useNavigate } from "react-router-dom";
+import { deleteGroupPost, followUserChangeInGroupPost } from "../../Redux/group/groupPostsSlice";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const PostCardAction = ({ authUser, DeletePostApi, EditPostApi, user, FollowUserApi, followed, post }) => {
-  const followLoading = useSelector((state) => state.post.follow.loading);
-  const navigate = useNavigate();
+const GroupPostCardAction = ({ authUser, user, followed, post }) => {
   const dispatch = useDispatch();
-  function ReportPostApi() {
-    dispatch(setReportingPost(post));
-    navigate(`/report/post/${post.id}`);
-  }
-  /*   async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard");
-    } catch {
-      toast.error("Failed to copy link");
+  const followLoading = useSelector((state) => state.post.follow.loading);
+  const deleteLoading = useSelector((state) => state.groupPost.deleteLoading);
+  function FollowUserApi() {
+    if (post.user?.id) {
+      dispatch(followUser({ userId: user.id }));
+      dispatch(followUserChangeInGroupPost(post));
     }
-  } */
+  }
+  async function deletePostApi() {
+    try {
+      await dispatch(deleteGroupPost(post.id)).unwrap();
+      toast.success("Group Post Deleted");
+    } catch {
+      toast.error("Failed to Delete post");
+    }
+  }
   return (
     <div className="dropdown dropdown-end">
       <div tabIndex={0} role="button" className="btn btn-circle m-1">
@@ -36,11 +39,7 @@ const PostCardAction = ({ authUser, DeletePostApi, EditPostApi, user, FollowUser
               <li>
                 <a>Unfollow User</a>
               </li> */}
-        {user?.id === authUser?.id ? (
-          <li onClick={EditPostApi}>
-            <a>Edit Post</a>
-          </li>
-        ) : (
+        {user?.id !== authUser?.id && (
           <li>
             <div onClick={FollowUserApi} className={`${followed ? "text-red-600" : ""}`}>
               {followLoading ? <Spinner size="sm" /> : <>{followed ? <HiOutlineUserMinus /> : <HiOutlineUserAdd />}</>}
@@ -58,23 +57,21 @@ const PostCardAction = ({ authUser, DeletePostApi, EditPostApi, user, FollowUser
         {/*         <li>
           <a>Share</a>
         </li> */}
-        {user?.id === authUser?.id ? (
-          <li>
-            <div onClick={DeletePostApi} className="text-red-600 hover:bg-red-500 hover:text-white">
-              <FiTrash2 /> Delete this post
-            </div>
-          </li>
-        ) : (
-          <li>
-            <div onClick={ReportPostApi} className="text-red-600 hover:bg-red-500 hover:text-white">
-              <GoReport />
-              Report
-            </div>
-          </li>
+        {user?.id === authUser?.id && (
+          <>
+            {/*            <li>
+              <Link to={`post/${post.id}/edit`}>Edit Post</Link>
+            </li> */}
+            <li>
+              <div onClick={deletePostApi} className="text-red-600 hover:bg-red-500 hover:text-white">
+                {deleteLoading ? <Spinner /> : <FiTrash2 />} Delete this post
+              </div>
+            </li>
+          </>
         )}
       </ul>
     </div>
   );
 };
 
-export default PostCardAction;
+export default GroupPostCardAction;

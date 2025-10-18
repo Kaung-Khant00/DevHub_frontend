@@ -85,7 +85,7 @@ export default function CreateGroup() {
   const nameChars = useMemo(() => (name ? name.length : 0), [name]);
 
   return (
-    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-base-200 pt-4 pb-6 px-4 min-w-4xl mx-auto">
       <header className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Link to={`/group`} className="btn btn-ghost btn-square" aria-label="Back" title="Back">
@@ -102,7 +102,7 @@ export default function CreateGroup() {
               <div className="md:col-span-2">
                 <label className="label">
                   <span className="label-text font-medium">Group name</span>
-                  <span className="label-text text-sm text-base-content/60">{nameChars} chars</span>
+                  <span className="label-text text-sm text-base-content/60">{nameChars} chars (255 max)</span>
                 </label>
                 <input
                   value={name}
@@ -114,12 +114,15 @@ export default function CreateGroup() {
 
                 {error?.name && <div className="text-sm text-error mt-2">{error.name}</div>}
 
-                <label className="label mt-4">
-                  <span className="label-text font-medium">Description</span>
-                  <span className="label-text text-sm text-base-content/60">
-                    Optional — a short summary for the group
-                  </span>
-                </label>
+                <div className="flex justify-between items-center mt-4">
+                  <label className="label ">
+                    <span className="label-text font-medium">Description</span>
+                    <span className="label-text text-sm text-base-content/60">
+                      Optional — a short summary for the group
+                    </span>
+                  </label>
+                  <div className="opacity-80">{description.length} / 255 </div>
+                </div>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -163,6 +166,7 @@ export default function CreateGroup() {
                       className="input input-sm input-bordered max-w-[180px]"
                     />
                   </div>
+                  {error?.tags && <div className="text-sm text-error mt-2">{error.tags}</div>}
                 </div>
               </div>
 

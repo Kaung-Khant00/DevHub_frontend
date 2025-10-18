@@ -39,7 +39,9 @@ export default function GroupCard({ group }) {
             <h1 className="font-bold text-lg">{group.name}</h1>
             {group.user_id == userId && <span className="badge badge-primary">Owner</span>}{" "}
           </div>
-          <div className="text-sm text-gray-700">{group.description}</div>
+          <div className="text-sm text-gray-700">
+            {group.description.length > 100 ? group.description.slice(0, 100) + "..." : group.description}
+          </div>
           <div className="flex gap-1 py-3">
             {group.tags &&
               group.tags.map((tag, index) => (

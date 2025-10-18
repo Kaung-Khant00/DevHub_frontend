@@ -1,6 +1,7 @@
 import { MdDelete } from "react-icons/md";
 
 const UsersRole = ({ user }) => {
+  console.log(user);
   return (
     <tr className="hover:bg-base-300">
       <th>

@@ -57,7 +57,7 @@ export const createGroupPostComment = createAsyncThunk(
 );
 export const fetchGroupPostComments = createAsyncThunk(
   "groupPost/fetchGroupPostComments",
-  async ({ pagination, postId }, { rejectWithValue }) => {
+  async ({ pagination, postId }) => {
     try {
       const response = await api.get(`groups/posts/${postId}/comments`, {
         params: {
@@ -98,6 +98,30 @@ export const deleteGroupPostComment = createAsyncThunk(
     }
   }
 );
+export const editGroupPostData = createAsyncThunk(
+  "groupPost/editGroupPostData",
+  async ({ id, form }, { rejectWithValue }) => {
+    console.log(form);
+    try {
+      const response = await api.post(`/groups/posts/${id}/edit`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log(response);
+      return response.data.post;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.errors || err.message);
+    }
+  }
+);
+export const deleteGroupPost = createAsyncThunk("groupPost/deleteGroupPost", async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.delete(`/groups/posts/${id}`);
+    console.log(response);
+    return id;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.errors || err.message);
+  }
+});
 
 const initialState = {
   fetch: {
@@ -127,6 +151,7 @@ const initialState = {
     updateLoading: false,
     deleteLoading: false,
   },
+  deleteLoading: false,
   likeLoading: false,
 };
 const groupPostsSlice = createSlice({
@@ -136,17 +161,31 @@ const groupPostsSlice = createSlice({
     resetPostPagination: (state) => {
       state.pagination = {
         current_page: 1,
-        last_page: 1,
+        last_page: null,
         per_page: 5,
         total: null,
       };
+    },
+    followUserChangeInGroupPost: (state, action) => {
+      state.fetch.data = state.fetch.data.map((post) => {
+        if (post.user_id === action.payload.user_id) {
+          return {
+            ...post,
+            followed: !post.followed,
+          };
+        }
+        return post;
+      });
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchGroupPosts.fulfilled, (state, action) => {
+        const filteredPosts = action.payload.data.filter(
+          (newPost) => !state.fetch.data.some((oldPost) => oldPost.id === newPost.id)
+        );
         state.fetch.loading = false;
-        state.fetch.data = [...state.fetch.data, ...action.payload.data];
+        state.fetch.data = [...state.fetch.data, ...filteredPosts];
         state.pagination = {
           current_page: action.payload.current_page + 1,
           last_page: action.payload.last_page,
@@ -203,6 +242,10 @@ const groupPostsSlice = createSlice({
         state.comment.deleteLoading = false;
         state.comment.data = state.comment.data.filter((comment) => comment.id !== action.payload);
       })
+      .addCase(deleteGroupPost.fulfilled, (state, action) => {
+        state.fetch.data = state.fetch.data.filter((post) => post.id !== action.payload);
+        state.deleteLoading = false;
+      })
       .addMatcher(isRejected, (state, action) => {
         const actionName = action.type.split("/")[1];
         switch (actionName) {
@@ -228,6 +271,9 @@ const groupPostsSlice = createSlice({
             break;
           case "deleteGroupPostComment":
             state.comment.deleteLoading = false;
+            break;
+          case "deleteGroupPost":
+            state.deleteLoading = false;
             break;
           default:
             break;
@@ -257,11 +303,14 @@ const groupPostsSlice = createSlice({
           case "deleteGroupPostComment":
             state.comment.deleteLoading = true;
             break;
+          case "deleteGroupPost":
+            state.deleteLoading = true;
+            break;
           default:
             break;
         }
       });
   },
 });
-export const { resetPostPagination } = groupPostsSlice.actions;
+export const { resetPostPagination, followUserChangeInGroupPost } = groupPostsSlice.actions;
 export default groupPostsSlice.reducer;

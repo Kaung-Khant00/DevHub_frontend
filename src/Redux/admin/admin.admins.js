@@ -70,7 +70,7 @@ export const fetchAdminById = createAsyncThunk("admin/fetchAdminById", async (id
 
 const initialState = {
   fetch: {
-    data: null,
+    data: [],
     loading: false,
   },
   create: {

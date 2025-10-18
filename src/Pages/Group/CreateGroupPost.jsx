@@ -9,23 +9,22 @@ import ImageWIthSkeleton from "../../Components/Common/ImageWIthSkeleton";
 import { createGroupPost, fetchGroupDetail } from "../../Redux/group/groupSlice";
 import CreateGroupPostSkeleton from "../SkeletonLoading/CreateGroupPostSkeleton";
 import { toast } from "react-toastify";
-import { resetPostPagination } from "../../Redux/group/groupPostsSlice";
+import { editGroupPostData, fetchGroupPostDetail, resetPostPagination } from "../../Redux/group/groupPostsSlice";
 // import { createPost } from "../../../Redux/post/postSlice";
 
 export default function CreateGroupPost() {
-  const { id } = useParams();
+  const { id, postId } = useParams();
   const { search } = useLocation();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.group.createPost);
   const { data: groupData, loading: detailLoading } = useSelector((state) => state.group.detail);
-
+  const { loading: postLoading } = useSelector((state) => state.groupPost.detail);
   // parse `tab` query param; allow comma-separated values (e.g. ?tab=code,image)
   const tab = useMemo(() => {
     const p = new URLSearchParams(search);
     return p.get("tab");
   }, [search]);
 
-  // --- Local state (kept from original) ---
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -36,6 +35,7 @@ export default function CreateGroupPost() {
   const [tagInput, setTagInput] = useState("");
   const [code, setCode] = useState("");
   const [codeLang, setCodeLang] = useState();
+  const [deletingData, setDeletingData] = useState({ image: false, file: false });
 
   const imageInputRef = useRef();
   const fileInputRef = useRef();
@@ -73,11 +73,30 @@ export default function CreateGroupPost() {
   }, [tab]);
 
   useEffect(() => {
-    if (groupData?.id != id) {
-      dispatch(fetchGroupDetail(id));
-    }
+    const fetchGroupPostDetailApi = async () => {
+      if (postId) {
+        const response = await dispatch(fetchGroupPostDetail(postId)).unwrap();
+        console.log(response);
+        setContent(response.content);
+        setTitle(response.title);
+        setImagePreview(response.image_url);
+        if (response.file) {
+          setFileInfo({
+            name: response.file?.name,
+            size: response.file?.size,
+            type: response.file?.type,
+          });
+        }
+        setTags(response.tags || []);
+        setCode(response.code);
+        setCodeLang(response.code_lang);
+      } else if (groupData?.id != id) {
+        dispatch(fetchGroupDetail(id));
+      }
+    };
+    fetchGroupPostDetailApi();
   }, []);
-  // --- Handlers (kept) ---
+
   function onImageSelect(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -121,9 +140,8 @@ export default function CreateGroupPost() {
     setTags((s) => s.filter((_, i) => i !== index));
   }
 
-  // Publish: inject group_id and keep original createPost dispatch
-  async function createGroupPostApi() {
-    const form = {
+  function getFormData() {
+    return {
       title,
       content,
       image: imageFile,
@@ -134,6 +152,9 @@ export default function CreateGroupPost() {
       tags,
       group_id: id || groupData?.id,
     };
+  }
+  async function createGroupPostApi() {
+    const form = getFormData();
 
     try {
       await dispatch(createGroupPost(form)).unwrap();
@@ -144,10 +165,19 @@ export default function CreateGroupPost() {
       toast.error("Failed to create post");
     }
   }
-
+  async function editGroupPostApi() {
+    let form = getFormData();
+    form = { ...form, isDeleteImage: deletingData.image, isDeleteFile: deletingData.file };
+    try {
+      await dispatch(editGroupPostData({ id: postId, form })).unwrap();
+      toast.success("Post updated successfully!");
+    } catch {
+      toast.error("Failed to edit post");
+    }
+  }
   return (
     <div className="bg-base-200 p-4 rounded-lg shadow-sm w-full">
-      {detailLoading ? (
+      {postLoading || detailLoading ? (
         <CreateGroupPostSkeleton />
       ) : (
         <>
@@ -269,12 +299,13 @@ export default function CreateGroupPost() {
                       <FaImage className="mr-2 text-primary" /> Upload Image
                     </label>
                     <button
-                      className="btn btn-sm btn-error btn-soft flex-1 mb-1"
+                      className="btn btn-sm btn-error text-white flex-1 mb-1"
                       onClick={() => {
                         setImageFile(null);
                         setImagePreview(null);
+                        setDeletingData((pre) => ({ ...pre, image: true }));
                       }}>
-                      Remove
+                      Remove Image
                     </button>
                     <input
                       type="file"
@@ -295,28 +326,36 @@ export default function CreateGroupPost() {
                   <h3 className="text-md font-semibold">Attachment</h3>
                   <label className="input input-sm max-w-50">
                     <CiFileOn />
+                    {console.log(attachedFile, fileInfo?.name)}
                     <input
                       type="text"
                       className="grow"
-                      disabled={!attachedFile}
+                      disabled={!attachedFile && !fileInfo.name}
                       value={fileInfo?.name}
                       onChange={(e) => setFileInfo((pre) => ({ ...pre, name: e.target.value }))}
                       placeholder="Enter File Name"
                     />
                   </label>
                 </div>
-
-                {attachedFile ? (
+                {attachedFile || fileInfo?.name ? (
                   <div className="bg-base-200 p-3 rounded flex items-center justify-between gap-3 w-full">
                     <div className="flex items-center gap-3">
                       <FaFileAlt className="text-lg text-primary" />
                       <div>
-                        <div className="text-sm font-medium">{attachedFile.name}</div>
-                        <div className="text-xs text-base-content/70">{Math.round(attachedFile.size / 1024)} KB</div>
+                        <div className="text-sm font-medium">{attachedFile?.name || fileInfo?.name}</div>
+                        <div className="text-xs text-base-content/70">
+                          {Math.round((attachedFile?.size || fileInfo?.size) / 1024)} KB
+                        </div>
                       </div>
                     </div>
                     <div>
-                      <button className="btn btn-ghost btn-xs" onClick={() => setAttachedFile(null)}>
+                      <button
+                        className="btn btn-ghost btn-xs"
+                        onClick={() => {
+                          setFileInfo(null);
+                          setAttachedFile(null);
+                          setDeletingData((pre) => ({ ...pre, file: true }));
+                        }}>
                         <FaTimes />
                       </button>
                     </div>
@@ -331,11 +370,7 @@ export default function CreateGroupPost() {
                     onClick={() => fileInputRef.current && fileInputRef.current.click()}>
                     <FaFileAlt className="mr-2 text-primary" /> Upload File
                   </label>
-                  {attachedFile && (
-                    <button className="btn btn-error text-white btn-sm flex-1" onClick={() => setAttachedFile(null)}>
-                      Remove File
-                    </button>
-                  )}
+
                   <input type="file" ref={fileInputRef} onChange={(e) => onFileSelect(e)} className="hidden" />
                 </div>
 
@@ -394,15 +429,24 @@ export default function CreateGroupPost() {
                     <FaTrashAlt /> Clear
                   </button>
 
-                  <button className="btn btn-primary btn-sm" onClick={createGroupPostApi} disabled={loading}>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => {
+                      if (postId) {
+                        editGroupPostApi();
+                      } else {
+                        createGroupPostApi();
+                      }
+                    }}
+                    disabled={loading}>
                     {loading ? (
                       <div className="flex items-center gap-2">
                         <div className="loading loading-ring loading-sm"></div>
-                        Posting...
+                        {postId ? "Updating..." : "Posting..."}
                       </div>
                     ) : (
                       <>
-                        <FaPaperPlane className="mr-2" /> Post in {groupData?.name}
+                        <FaPaperPlane className="mr-2" /> {postId ? "Update Post" : <>Post in {groupData?.name}</>}
                       </>
                     )}
                   </button>

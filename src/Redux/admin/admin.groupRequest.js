@@ -117,7 +117,7 @@ const groupRequestSlice = createSlice({
         ...state.groupRequests.pagination,
         current_page: 1,
         last_page: null,
-        per_page: 1,
+        per_page: 3,
         total: null,
       };
     },

@@ -8,19 +8,22 @@ const ReturnBackButton = ({ defaultBackTo, className, except }) => {
   const location = useLocation();
   const { previousPath } = useContext(NavigationContext);
   const handleBack = () => {
-    // If history length > 1, go back
     if (
       window.history.length > 1 &&
-      previousPath !== location.pathname &&
-      !(except === previousPath || previousPath.includes(except))
+      previousPath[0] !== location.pathname &&
+      !(except === previousPath[0] || previousPath[0].includes(except))
     ) {
-      console.log("previous Path ::", previousPath);
-      console.log("location Path ::", location.pathname);
-      console.log("except ::", except);
-      navigate(-1);
-    } else {
-      // fallback to profile page (or safe route)
-      navigate(defaultBackTo);
+      return navigate(-1);
+    }
+    if (!except) {
+      return navigate(defaultBackTo);
+    }
+    for (let i = 0; i < previousPath.length; i++) {
+      if (!previousPath[i].includes(except)) {
+        return navigate(previousPath[i]);
+      } else if (i === previousPath.length - 1) {
+        return navigate(defaultBackTo);
+      }
     }
   };
 

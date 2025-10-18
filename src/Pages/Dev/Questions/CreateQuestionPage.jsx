@@ -135,9 +135,22 @@ export default function CreateQuestion() {
   }
   return (
     <div className="w-full m-5 bg-base-100 p-5 rounded">
-      <div className="flex items-center gap-3 mb-2">
-        <ReturnBackButton defaultBackTo={`${id ? `/question/${id}` : "/question"}`} />
-        <h2 className="text-lg font-semibold">{id ? "Update the" : "Ask a"} question </h2>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <ReturnBackButton defaultBackTo={`${id ? `/question/${id}` : "/question"}`} />
+          <h2 className="text-lg font-semibold">{id ? "Update the" : "Ask a"} question </h2>
+        </div>
+        <div>
+          <label className="label cursor-pointer">
+            <span className="label-text">Anonymous</span>
+            <input
+              type="checkbox"
+              className="toggle toggle-primary"
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+            />
+          </label>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">

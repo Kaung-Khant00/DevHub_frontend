@@ -7,17 +7,14 @@ const PostContainer = () => {
   const dispatch = useDispatch();
   const { posts, pagination, fetch } = useSelector((state) => state.post);
   const isFetching = useRef(false);
-  console.log(pagination);
   function loadMorePosts() {
-    if (isFetching.current || pagination.page >= pagination.lastPage) return;
-    isFetching.current = true;
-    dispatch(fetchPosts(pagination.perPage, pagination.page, pagination.sortBy, isFetching));
+    dispatch(fetchPosts({ perPage: pagination.perPage, page: pagination.page }));
   }
 
   useEffect(() => {
     if (isFetching.current || pagination.page !== 1) return;
     isFetching.current = true;
-    dispatch(fetchPosts(pagination.perPage, pagination.page, pagination.sortBy, isFetching));
+    dispatch(fetchPosts({ perPage: pagination.perPage, page: pagination.page }));
   }, []);
   return (
     <div className="flex items-center flex-col mt-2">
@@ -39,7 +36,7 @@ const PostContainer = () => {
             </div>
           ) : (
             <>
-              {pagination.page < pagination.lastPage ? (
+              {pagination.page <= pagination.lastPage ? (
                 <button onClick={loadMorePosts} className="btn btn-primary mt-2">
                   Show more
                 </button>

@@ -47,7 +47,7 @@ const GroupCreationRequestRole = ({ group }) => {
           </div>
         </div>
       </td>
-      <td>{group.description.length > 100 ? group.description.slice(0, 100) + "..." : group.description}</td>
+      <td>{group.description}</td>
       <td>
         <div className="flex items-center gap-3">
           <div className="avatar">
@@ -62,7 +62,7 @@ const GroupCreationRequestRole = ({ group }) => {
         </div>
       </td>
       <th className="space-x-1 space-y-1">
-        {group.tags.length > 0 &&
+        {group.tags?.length > 0 &&
           group.tags.map((tag, index) => (
             <div key={index} className="badge badge-soft badge-primary text-sm">
               {tag}
